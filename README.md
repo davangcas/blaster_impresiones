@@ -38,7 +38,7 @@ git checkout develop
 ```
 git pull
 ```
-- Luego se debe crear una nueva rama con el numero del issue, por ejemplo ```issue_1```
+- Luego se debe crear una nueva rama con el numero del issue, por ejemplo ```issue_XXXX```, se debe reemplazar XXXX por el numero del issue
 ```
 git checkout -b issue_XXXX
 ```
