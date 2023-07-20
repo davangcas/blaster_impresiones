@@ -15,7 +15,8 @@ python -m venv venv
 set DEBUG=True
 set ENVIRONMENT=local
 set DJANGO_SETTINGS_MODULE=config.settings
-...
+
+```
 
 2) Abrir el cmd y luego hacerle doble click al archivo generado. Este archivo sera permanente para cada vez que se quiera correr el proyecto
 3) Activar el entorno virtual
