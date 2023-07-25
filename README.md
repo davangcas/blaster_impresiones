@@ -1,30 +1,45 @@
 # blaster_impresiones
 
 ## Configuracion del entorno local:
-- Dentro de la carpeta del repositorio de debe crear un entorno local
-- Para ello se debe ejecutar el siguiente comando asegurandose que la version de python sea la del proyecto en ```runtime.txt```
+- Para este proyecto es necesario tener instalado docker y docker compose
+- crear un entorno virtual de python
+- activar el entorno virtual
+- crear un archivo ```.env``` en el raiz del proyecto con el siguiente codigo:
 ```
-python -m venv venv
+SECRET_KEY='secret'
+DB_NAME='blaster_impresiones'
+DB_USER='postgres'
+DB_PASSWORD='postgres'
+DB_HOST='localhost'
+DB_PORT='5432'
+DJANGO_SETTINGS_MODULE='config.settings.production'
 ```
-- Configurar las variables de entorno: Para ello depende del sistema operativo donde se encuentre:
-### windows
-1) Crear un archivo con el nombre ```export_env_vars.bat```, luego copiar el siguiente codigo y pegarlo en ese archivo
+- crear un archivo ```app_init.sh`` en el raiz del proyecto con el siguiente codigo:
+```
+#!/bin/sh
 
-```
-@echo off
-set DEBUG=True
-set DJANGO_SETTINGS_MODULE=config.settings.development
+echo "Collecting static files"
+python manage.py collectstatic --noinput
 
+echo "Apply database migrations"
+python manage.py wait_for_database
+python manage.py migrate
+
+echo "Starting server"
+gunicorn --env DJANGO_SETTINGS_MODULE=config.settings.development config.wsgi:application --bind 0.0.0.0:8000
+```
+- ejecutar este comando de docker
+```
+docker compose build
+```
+- Levantar el contenedor de docker
+```
+docker compose up
 ```
 
-2) Abrir el cmd y luego hacerle doble click al archivo generado. Este archivo sera permanente para cada vez que se quiera correr el proyecto
-3) Activar el entorno virtual
+## Detener los contenedores
 ```
-cd venv
-cd Scripts
-activate
-cd ..
-cd ..
+docker compose stop
 ```
 
 ## Proceso de desarrollo
