@@ -3,6 +3,7 @@ import time
 from django.db import connection
 from django.core.management.base import BaseCommand
 
+
 class Command(BaseCommand):
     help = "whait for database"
 

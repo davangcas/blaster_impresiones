@@ -5,8 +5,7 @@ from config.logging import *
 
 load_dotenv(Path.joinpath(BASE_DIR, ".env"))
 DEBUG = False
-SECRET_KEY = 'django-insecure-nmx2ha(^#qes&%)@a$*36#_5g&od+%_$1h%_vlz*6(4cl1q$9c'
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "default")
 ALLOWED_HOSTS = ["*"]
 
 DATABASES = {
