@@ -2,7 +2,7 @@ from config.settings.base import *
 from config.logging import *
 
 DEBUG = True
-SECRET_KEY = 'django-insecure-nmx2ha(^#qes&%)@a$*36#_5g&od+%_$1h%_vlz*6(4cl1q$9c'
+SECRET_KEY = os.environ.get("SECRET_KEY", 'default')
 ALLOWED_HOSTS = ["*"]
 
 DATABASES = {
