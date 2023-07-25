@@ -13,8 +13,7 @@ python -m venv venv
 ```
 @echo off
 set DEBUG=True
-set ENVIRONMENT=local
-set DJANGO_SETTINGS_MODULE=config.settings
+set DJANGO_SETTINGS_MODULE=config.settings.development
 
 ```
 

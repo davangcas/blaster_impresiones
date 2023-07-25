@@ -1,3 +1,8 @@
 venv/
 **.pyc
 media/
+postgres_data/
+staticfiles/
+.env
+app_init.sh
+```
