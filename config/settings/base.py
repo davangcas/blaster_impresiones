@@ -19,7 +19,10 @@ LOCAL_APPS = [
     'core',
 ]
 
-THIRD_APPS = []
+THIRD_APPS = [
+    'rest_framework',
+    'simple_history',
+]
 
 # Application definition
 
@@ -39,6 +42,7 @@ LOCAL_MIDDLEWARE = []
 
 THIRD_MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 MIDDLEWARE = BASE_MIDDLEWARE + LOCAL_MIDDLEWARE + THIRD_MIDDLEWARE
