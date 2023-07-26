@@ -24,6 +24,8 @@ THIRD_APPS = [
     "rest_framework",
     "simple_history",
     "phonenumber_field",
+    "crispy_forms",
+    "crispy_bootstrap4",
 ]
 
 # Application definition
@@ -121,3 +123,5 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 AUTH_USER_MODEL = "users.User"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
