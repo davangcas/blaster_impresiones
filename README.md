@@ -1,8 +1,14 @@
 # blaster_impresiones
 
 ## Configuracion del entorno local:
+
+Para configurar el entorno local se puede hacer de dos formas:
+- Una realizandolo mediante docker
+- Otra de manera tradicional con un entorno virtual en la computadora
+
+### Metodo docker
 - Para este proyecto es necesario tener instalado docker y docker compose
-- crear un entorno virtual de python
+- crear un entorno virtual de python con la version del ```runtime.txt```
 - activar el entorno virtual
 - crear un archivo ```.env``` en el raiz del proyecto con el siguiente codigo:
 ```
@@ -10,9 +16,9 @@ SECRET_KEY='secret'
 DB_NAME='blaster_impresiones'
 DB_USER='postgres'
 DB_PASSWORD='postgres'
-DB_HOST='localhost'
+DB_HOST='postgres'
 DB_PORT='5432'
-DJANGO_SETTINGS_MODULE='config.settings.production'
+DEBUG="True"
 ```
 - crear un archivo ```app_init.sh`` en el raiz del proyecto con el siguiente codigo:
 ```
@@ -26,9 +32,11 @@ python manage.py wait_for_database
 python manage.py migrate
 
 echo "Starting server"
-gunicorn --env DJANGO_SETTINGS_MODULE=config.settings.development config.wsgi:application --bind 0.0.0.0:8000
+gunicorn --env DJANGO_SETTINGS_MODULE=config.settings.production config.wsgi:application --bind 0.0.0.0:8000
+
 ```
-- ejecutar este comando de docker
+
+- ejecutar el siguiente comando para compilar la imagen de docker
 ```
 docker compose build
 ```
@@ -37,9 +45,36 @@ docker compose build
 docker compose up
 ```
 
-## Detener los contenedores
+-- Detener los contenedores
 ```
-docker compose stop
+docker compose down --volumes
+```
+
+### Metodo tradicional
+- crear un entorno virtual de python con la version del ```runtime.txt```
+- activar el entorno virtual
+- instalar dependencias del proyecto con
+```
+pip install -r requirements.txt
+```
+- crear una base de datos postgres con el nombre de ```blaster_impresiones```
+(en caso de usar ubuntu ejecutar este comando)
+```
+createdb blaster_impresiones
+```
+- Hacer el migrate del proyecto en la base de datos con el siguiente comando
+```
+python manage.py migrate
+```
+
+## Correr el proyecto
+- Docker:
+```
+docker compose up --build
+```
+- Metodo normal:
+```
+python manage.py runserver
 ```
 
 ## Proceso de desarrollo
