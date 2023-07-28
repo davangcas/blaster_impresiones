@@ -5,4 +5,5 @@ postgres_data/
 staticfiles/
 .env
 app_init.sh
+export_env_vars.sh
 ```
