@@ -18,6 +18,7 @@ LOCAL_APPS = [
     "users",
     "core",
     "clients",
+    "prints",
 ]
 
 THIRD_APPS = [
