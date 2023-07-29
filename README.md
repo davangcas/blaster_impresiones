@@ -52,7 +52,24 @@ docker compose down --volumes
 
 ### Metodo tradicional
 - crear un entorno virtual de python con la version del ```runtime.txt```
-- activar el entorno virtual
+- Crear un archivo llamado ```export_env_vars.sh``` con el siguiente contenido:
+```
+#!/bin/sh
+
+source venv/bin/activate
+export DEBUG="True"
+export DJANGO_SETTINGS_MODULE=config.settings.development
+```
+- activar el entorno virtual, puede hacerse de dos maneras dependiendo del sistema operativo
+- - windows: (activar el entorno virtual manualmente) y luego en la consola escribir
+    ```
+    setx DEBUG="True"
+    setx DJANGO_SETTINGS_MODULE="config.settings.development"
+    ```
+- - ubuntu:
+    ```
+    . export_env_vars.sh
+    ```
 - instalar dependencias del proyecto con
 ```
 pip install -r requirements.txt
