@@ -89,6 +89,9 @@ python manage.py migrate
 ```
 docker compose up --build
 ```
+```
+docker compose down --volumes
+```
 - Metodo normal:
 ```
 python manage.py runserver
