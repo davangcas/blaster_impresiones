@@ -63,8 +63,8 @@ export DJANGO_SETTINGS_MODULE=config.settings.development
 - activar el entorno virtual, puede hacerse de dos maneras dependiendo del sistema operativo
 - - windows: (activar el entorno virtual manualmente) y luego en la consola escribir
     ```
-    setx DEBUG="True"
-    setx DJANGO_SETTINGS_MODULE="config.settings.development"
+    setx DEBUG "True"
+    setx DJANGO_SETTINGS_MODULE "config.settings.development"
     ```
 - - ubuntu:
     ```
