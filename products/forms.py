@@ -1,5 +1,5 @@
-from products.models import Product
 from core.forms import DefaultModelForm
+from products.models import Product
 
 
 class ProductEditForm(DefaultModelForm):

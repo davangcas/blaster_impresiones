@@ -1,9 +1,9 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from clients.models import Client
 from clients.forms import ClientCreateForm, ClientEditForm
+from clients.models import Client
 
 
 class ClientListView(ListView, LoginRequiredMixin):

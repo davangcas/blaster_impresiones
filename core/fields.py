@@ -1,4 +1,4 @@
-from crispy_forms.layout import Layout, Field, Submit, Div, HTML
+from crispy_forms.layout import HTML, Div, Field, Layout, Submit
 
 
 class CommonLayout(Layout):

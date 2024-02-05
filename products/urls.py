@@ -1,12 +1,11 @@
 from django.urls import path
 
 from products.views import (
-    ProductListView,
     ProductCreateView,
-    ProductUpdateView,
     ProductDeleteView,
+    ProductListView,
+    ProductUpdateView,
 )
-
 
 app_name = "products"
 urlpatterns = [
