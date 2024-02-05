@@ -1,8 +1,9 @@
 import ast
+
 from dotenv import load_dotenv
 
-from config.settings.base import *
 from config.logging import *
+from config.settings.base import *
 
 load_dotenv(Path.joinpath(BASE_DIR, ".env"))
 DEBUG = ast.literal_eval(os.environ.get("DEBUG", "False"))

@@ -16,7 +16,7 @@ class PrintModel(models.Model):
 
 
 class PrintFile(models.Model):
-    file = models.FileField(upload_to='print_model/')
+    file = models.FileField(upload_to="print_model/")
     print_model = models.ForeignKey(PrintModel, on_delete=models.CASCADE)
 
 

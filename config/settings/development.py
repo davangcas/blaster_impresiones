@@ -1,5 +1,5 @@
-from config.settings.base import *
 from config.logging import *
+from config.settings.base import *
 
 DEBUG = True
 SECRET_KEY = os.environ.get("SECRET_KEY", "default")
