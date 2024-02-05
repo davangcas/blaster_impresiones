@@ -1,5 +1,3 @@
-from django import forms
-
 from clients.models import Client
 from core.forms import DefaultModelForm
 

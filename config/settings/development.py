@@ -2,7 +2,7 @@ from config.settings.base import *
 from config.logging import *
 
 DEBUG = True
-SECRET_KEY = os.environ.get("SECRET_KEY", 'default')
+SECRET_KEY = os.environ.get("SECRET_KEY", "default")
 ALLOWED_HOSTS = ["*"]
 
 DATABASES = {
