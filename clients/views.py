@@ -1,11 +1,12 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from clients.models import Client
 from clients.forms import ClientCreateForm, ClientEditForm
 
 
-class ClientListView(ListView):
+class ClientListView(ListView, LoginRequiredMixin):
     model = Client
     template_name = "clients/list.html"
 
