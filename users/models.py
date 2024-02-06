@@ -11,9 +11,16 @@ class Role(models.Model):
 
 class User(AbstractUser):
     historical = HistoricalRecords()
-    role = models.ForeignKey(Role, on_delete=models.SET_NULL, related_name="users")
+    role = models.ForeignKey(
+        Role, on_delete=models.SET_NULL, related_name="users", null=True, blank=True
+    )
 
     def save(self, *args, **kwargs):
-        self.user_permissions.clear()
-        self.user_permissions.add(*self.role.permissions.all())
+        if self.pk:
+            self.user_permissions.clear()
+        else:
+            self.set_password("admin1234")
+
+        if self.role:
+            self.user_permissions.add(*self.role.permissions.all())
         return super().save(*args, **kwargs)

@@ -1,0 +1,26 @@
+{% extends 'core/list.html' %}
+
+{% block table_headers %}
+    <th>Usuario</th>
+    <th>Correo</th>
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Rol</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block table_columns %}
+    <td>{{ object.username }}</td>
+    <td>{{ object.email }}</td>
+    <td>{{ object.first_name }}</td>
+    <td>{{ object.last_name }}</td>
+    <td>{{ object.role.name }}</td>
+    <td>
+        <a href="{% url 'users:update' object.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="{% url 'users:delete' object.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+        </a>
+    </td>
+{% endblock %}
