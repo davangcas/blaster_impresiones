@@ -1,0 +1,31 @@
+{% extends 'core/body.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <form action="." method="post">
+                {% csrf_token %}
+                <div class="card card-danger">
+                    <div class="card-header">
+                    <h4 class="card-title w-100">
+                        <a class="d-block w-100" data-toggle="collapse" href="#collapseTwo" aria-expanded="true">
+                        Atención
+                        </a>
+                    </h4>
+                    </div>
+                    <div id="collapseTwo" class="collapse show" data-parent="#accordion">
+                    <div class="card-body">
+                        {% block delete_message %}
+                        {% endblock %}
+                    </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                        <a href="{{ cancel_url }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
