@@ -1,0 +1,6 @@
+{% extends 'core/delete.html' %}
+{% load static %}
+
+{% block delete_message %}
+    ¿Está seguro de querer eliminar el cliente <b>{{ object.first_name }} {{ object.last_name }}</b>?
+{% endblock %}
