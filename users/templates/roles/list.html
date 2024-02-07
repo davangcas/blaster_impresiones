@@ -1,0 +1,20 @@
+{% extends 'core/list.html' %}
+
+{% block table_headers %}
+    <th>Nombre</th>
+    <th>Permisos</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block table_columns %}
+    <td>{{ object.name }}</td>
+    <td>{{ object.get_permission_names }}</td>
+    <td>
+        <a href="{% url 'users:roles_update' object.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="{% url 'users:roles_delete' object.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+        </a>
+    </td>
+{% endblock %}

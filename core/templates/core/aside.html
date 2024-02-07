@@ -25,9 +25,15 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'users:list' %}" class="nav-link">
+                    <a href="{% url 'users:list' %}" class="nav-link" selection="users">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Usuarios</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'users:roles' %}" class="nav-link" selection="roles">
+                        <i class="nav-icon fas fa-user-tag"></i>
+                        <p>Roles</p>
                     </a>
                 </li>
             </ul>
