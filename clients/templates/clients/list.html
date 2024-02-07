@@ -1,1 +1,24 @@
-{% extends 'core/body.html' %}
+{% extends 'core/list.html' %}
+
+{% block table_headers %}
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Correo</th>
+    <th>Numero de telefono</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block table_columns %}
+    <td>{{ object.first_name }}</td>
+    <td>{{ object.last_name }}</td>
+    <td>{{ object.email }}</td>
+    <td>{{ object.phone_number }}</td>
+    <td>
+        <a href="{% url 'clients:update' object.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="{% url 'clients:delete' object.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+        </a>
+    </td>
+{% endblock %}
