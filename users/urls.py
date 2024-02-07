@@ -1,24 +1,15 @@
 from django.urls import path
 
-from users.views import (
-    UserListView,
-    UserCreateView,
-    UserDeleteView,
-    UserUpdateView,
-    RoleListView,
-    RoleCreateView,
-    RoleDeleteView,
-    RoleUpdateView,
-)
+from . import views
 
 app_name = "users"
 urlpatterns = [
-    path("", UserListView.as_view(), name="list"),
-    path("create/", UserCreateView.as_view(), name="create"),
-    path("delete/<int:pk>/", UserDeleteView.as_view(), name="delete"),
-    path("update/<int:pk>/", UserUpdateView.as_view(), name="update"),
-    path("roles/", RoleListView.as_view(), name="roles"),
-    path("roles/create/", RoleCreateView.as_view(), name="roles_create"),
-    path("roles/delete/<int:pk>/", RoleDeleteView.as_view(), name="roles_delete"),
-    path("roles/update/<int:pk>/", RoleUpdateView.as_view(), name="roles_update"),
+    path("", views.UserListView.as_view(), name="list"),
+    path("create/", views.UserCreateView.as_view(), name="create"),
+    path("delete/<int:pk>/", views.UserDeleteView.as_view(), name="delete"),
+    path("update/<int:pk>/", views.UserUpdateView.as_view(), name="update"),
+    path("roles/", views.RoleListView.as_view(), name="roles"),
+    path("roles/create/", views.RoleCreateView.as_view(), name="roles_create"),
+    path("roles/delete/<int:pk>/", views.RoleDeleteView.as_view(), name="roles_delete"),
+    path("roles/update/<int:pk>/", views.RoleUpdateView.as_view(), name="roles_update"),
 ]
