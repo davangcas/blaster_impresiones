@@ -30,3 +30,7 @@ class CustomDateField(Field):
 
 class CustomTimeField(Field):
     template = "core/fields/custom_time_field.html"
+
+
+class CustomSelectMultiple(Field):
+    template = "core/fields/custom_select_multiple.html"

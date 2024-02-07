@@ -6,9 +6,7 @@
         <title>{{ title }}</title>
 
         {% include 'core/styles.html' %}
-
-        {% block styles %}
-        {% endblock %}
+        {% block styles %}{% endblock %}
     </head>
 
     <body class="hold-transition sidebar-mini layout-fixed">
@@ -19,14 +17,12 @@
             <div class="content-wrapper">
                 <div class="content-header">
                     <div class="container-fluid">
-                        {% block content_header %}
-                        {% endblock %}
+                        {% block content_header %}{% endblock %}
                     </div>
                 </div>
                 <section class="content">
                     <div class="container-fluid">
-                        {% block content %}
-                        {% endblock %}
+                        {% block content %}{% endblock %}
                     </div>
                 </section>
             </div>
@@ -35,20 +31,6 @@
         </div>
 
         {% include 'core/scripts.html' %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const active_url = window.location.pathname;
-                const $nav_items = document.querySelectorAll('.nav-item a');
-
-                $nav_items.forEach($nav_item => {
-                    if ($nav_item.getAttribute('href') === active_url) {
-                        $nav_item.classList.add('active');
-                    }
-                });
-            });
-        </script>
-
-        {% block scripts %}
-        {% endblock %}
+        {% block scripts %}{% endblock %}
     </body>
 </html>

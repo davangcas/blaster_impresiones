@@ -1,12 +1,35 @@
 from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
 from simple_history.models import HistoricalRecords
+from django.utils.translation import activate
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Role(models.Model):
     name = models.CharField(max_length=100)
-    historical = HistoricalRecords()
     permissions = models.ManyToManyField(Permission, related_name="roles")
+
+    def get_permission_names(self):
+        activate(settings.LANGUAGE_CODE)
+        permission_names = ", ".join(
+            [
+                permission.name.replace("Can view", "Ver")
+                .replace("Can add", "Agregar")
+                .replace("Can change", "Editar")
+                .replace("Can delete", "Eliminar")
+                for permission in self.permissions.all()
+            ]
+        )
+        return (
+            f"{permission_names[:40]}(...)"
+            if len(permission_names) > 20
+            else permission_names
+        )
+
+    def __str__(self):
+        return self.name
 
 
 class User(AbstractUser):
@@ -16,11 +39,11 @@ class User(AbstractUser):
     )
 
     def save(self, *args, **kwargs):
-        if self.pk:
-            self.user_permissions.clear()
-        else:
-            self.set_password("admin1234")
-
-        if self.role:
-            self.user_permissions.add(*self.role.permissions.all())
+        self.set_password("user1234")
         return super().save(*args, **kwargs)
+
+
+@receiver(post_save, sender=User)
+def user_post_save(sender, instance, created, **kwargs):
+    instance.user_permissions.clear()
+    instance.user_permissions.add(*instance.role.permissions.all())

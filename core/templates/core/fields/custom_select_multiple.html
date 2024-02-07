@@ -1,0 +1,53 @@
+{% load crispy_forms_field %}
+
+<div id="div_{{ field.auto_id }}" class="form-group row">
+    <label {% if field.id_for_label and not field|is_radioselect %}for="{{ field.id_for_label }}" {% endif %}class="{% if 'form-horizontal' in form_class %}col-form-label {% endif %}{{ label_class }}{% if field.field.required %} requiredField{% endif %}">
+        {{ field.label }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+    </label>
+    <div{% if field_class %} class="{{ field_class }}"{% endif %}>
+        {% if field.errors %}
+            {% crispy_field field 'class' 'custom-select is-invalid' %}
+        {% else %}
+            {% crispy_field field 'class' 'custom-select' %}
+        {% endif %}
+
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input select-all-options" type="checkbox" id="select_all_{{ field.auto_id }}">
+            <label for="select_all_{{ field.auto_id }}" class="custom-control-label">seleccionar todo</label>
+        </div>
+
+        {% if help_text_inline and not error_text_inline %}
+            {% if field.help_text %}
+                {% if help_text_inline %}
+                    <span id="hint_{{ field.auto_id }}" class="text-muted">{{ field.help_text|safe }}</span>
+                {% else %}
+                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted">{{ field.help_text|safe }}</small>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if error_text_inline %}
+            {% if form_show_errors and field.errors %}
+                {% for error in field.errors %}
+                    <span id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback"><strong>{{ error }}</strong></span>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            {% if form_show_errors and field.errors %}
+                {% for error in field.errors %}
+                    <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback"><strong>{{ error }}</strong></p>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if not help_text_inline %}
+            {% if field.help_text %}
+                {% if help_text_inline %}
+                    <span id="hint_{{ field.auto_id }}" class="text-muted">{{ field.help_text|safe }}</span>
+                {% else %}
+                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted">{{ field.help_text|safe }}</small>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

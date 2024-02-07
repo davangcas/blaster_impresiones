@@ -1,8 +1,21 @@
 {% load static %}
 
 <script src="{% static 'lib/adminlte-3.2.0/plugins/jquery/jquery.min.js' %}"></script>
-<script src="{% static 'lib/adminlte-3.2.0/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
 <script src="{% static 'lib/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'lib/adminlte-3.2.0/plugins/moment/moment.min.js' %}"></script>
-<script src="{% static 'lib/adminlte-3.2.0/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-<script src="{% static 'lib/adminlte-3.2.0/js/adminlte.js' %}"></script>
+<script src="{% static 'lib/adminlte-3.2.0/plugins/toastr/toastr.min.js' %}"></script>
+<script src="{% static 'lib/adminlte-3.2.0/js/adminlte.min.js' %}"></script>
+<script type="application/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        active_section = "{{ active_section }}";
+        $nav_items = document.querySelectorAll(`[selection=${active_section}]`);
+        $nav_items.forEach(function ($nav_item) {
+            $nav_item.classList.add("active");
+        });
+    });
+
+    {% if messages %}
+        {% for message in messages %}
+            toastr["{{ message.tags }}"]("{{ message }}");
+        {% endfor %}
+    {% endif %}
+</script>
