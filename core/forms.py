@@ -1,9 +1,14 @@
 from crispy_forms.helper import FormHelper
 from django import forms
-from django.forms.fields import DateField, TimeField
 from django.forms import ModelMultipleChoiceField
+from django.forms.fields import DateField, TimeField
 
-from core.fields import CommonLayout, CustomDateField, CustomTimeField, CustomSelectMultiple
+from core.fields import (
+    CommonLayout,
+    CustomDateField,
+    CustomSelectMultiple,
+    CustomTimeField,
+)
 
 
 class DefaultModelForm(forms.ModelForm):

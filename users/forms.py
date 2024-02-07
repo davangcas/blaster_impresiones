@@ -1,7 +1,8 @@
-from core.forms import DefaultModelForm
-from users.models import User, Role
-from django.contrib.auth.models import Permission
 from django import forms
+from django.contrib.auth.models import Permission
+
+from core.forms import DefaultModelForm
+from users.models import Role, User
 
 
 class CreateUserForm(DefaultModelForm):

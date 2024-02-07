@@ -1,8 +1,8 @@
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from users.models import User, Role
-from users.forms import CreateUserForm, UpdateUserForm, CreateRoleForm, UpdateRoleForm
+from users.forms import CreateRoleForm, CreateUserForm, UpdateRoleForm, UpdateUserForm
+from users.models import Role, User
 
 
 class UserListView(ListView):
