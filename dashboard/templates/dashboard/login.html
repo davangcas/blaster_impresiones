@@ -1,0 +1,93 @@
+{% load static widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Iniciar sesion</title>
+
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
+        />
+        <link
+            rel="stylesheet"
+            href="{% static 'lib/adminlte-3.2.0/plugins/fontawesome-free/css/all.min.css' %}"
+        />
+        <link
+            rel="stylesheet"
+            href="{% static 'lib/adminlte-3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}"
+        />
+        <link
+            rel="stylesheet"
+            href="{% static 'lib/adminlte-3.2.0/css/adminlte.min.css' %}"
+        />
+    </head>
+    <body class="hold-transition login-page">
+        <div class="login-box">
+            <div class="card card-outline card-primary">
+                <div class="card-header text-center">
+                    <a href="#" class="h1">Blaster impresiones</a>
+                </div>
+                <div class="card-body">
+                    <p class="login-box-msg">Iniciar sesion</p>
+
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            {{ form.username|add_class:'form-control'|attr:'autocomplete:on'|attr:'placeholder:Usuario' }}
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            {{ form.password|add_class:'form-control'|attr:'autocomplete:on'|attr:'placeholder:Contraseña' }}
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary btn-block"
+                                >
+                                    Ingresar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script src="{% static 'lib/adminlte-3.2.0/plugins/jquery/jquery.min.js' %}"></script>
+        <script src="{% static 'lib/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'lib/adminlte-3.2.0/plugins/toastr/toastr.min.js' %}"></script>
+        <script src="{% static 'lib/adminlte-3.2.0/js/adminlte.min.js' %}"></script>
+        <script src="{% static 'lib/adminlte-3.2.0/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+        <script>
+            {% if form.errors %}
+                let errors = '';
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        errors += '{{ error }} \n';
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    errors += '{{ error }}\n';
+                {% endfor %}
+                Swal.fire({
+                    title: 'Error',
+                    text: errors,
+                    icon: 'error'
+                });
+            {% endif %}
+        </script>
+    </body>
+</html>

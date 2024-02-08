@@ -1,4 +1,6 @@
 from django.views.generic import TemplateView
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect
 
 
 class IndexView(TemplateView):
@@ -9,3 +11,12 @@ class IndexView(TemplateView):
         context["title"] = "Dashboard"
         context["active_section"] = "dashboard"
         return context
+
+
+class LoginFormView(LoginView):
+    template_name = "dashboard/login.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("dashboard:index")
+        return super().dispatch(request, *args, **kwargs)

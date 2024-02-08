@@ -28,6 +28,7 @@ THIRD_APPS = [
     "phonenumber_field",
     "crispy_forms",
     "crispy_bootstrap4",
+    "widget_tweaks",
 ]
 
 # Application definition
