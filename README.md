@@ -7,9 +7,9 @@ Para configurar el entorno local se puede hacer de dos formas:
 - Otra de manera tradicional con un entorno virtual en la computadora
 
 ### Metodo docker
-- Para este proyecto es necesario tener instalado docker y docker compose
-- crear un entorno virtual de python con la version del ```runtime.txt```
-- activar el entorno virtual
+- Para este proyecto es necesario tener instalado docker y docker compose.
+- crear un entorno virtual de python con la version del archivo ```runtime.txt``` en raiz del proyecto.
+- activar el entorno virtual.
 - crear un archivo ```.env``` en el raiz del proyecto con el siguiente codigo:
 ```
 SECRET_KEY='secret'
@@ -51,7 +51,7 @@ docker compose down --volumes
 ```
 
 ### Metodo tradicional
-- crear un entorno virtual de python con la version del ```runtime.txt```
+- crear un entorno virtual de python con la version del ```runtime.txt```.
 - Crear un archivo llamado ```export_env_vars.sh``` con el siguiente contenido:
 ```
 #!/bin/sh
