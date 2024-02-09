@@ -20,6 +20,7 @@ LOCAL_APPS = [
     "prints",
     "products",
     "dashboard",
+    "landing",
 ]
 
 THIRD_APPS = [

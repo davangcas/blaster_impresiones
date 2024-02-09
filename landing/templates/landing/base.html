@@ -1,0 +1,25 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{{ title }}</title>
+        <link rel="stylesheet" href="{% static 'lib/amado-furniture/css/core-style.css' %}">
+    </head>
+    <body>
+        {% include 'landing/search.html' %}
+        {% include 'landing/main-content.html' %}
+        {% include 'landing/newsletter-area.html' %}
+        {% include 'landing/footer.html' %}
+
+        <script src="{% static 'lib/amado-furniture/js/jquery/jquery-2.2.4.min.js' %}"></script>
+        <script src="{% static 'lib/amado-furniture/js/popper.min.js' %}"></script>
+        <script src="{% static 'lib/amado-furniture/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'lib/amado-furniture/js/plugins.js' %}"></script>
+        <script src="{% static 'lib/amado-furniture/js/active.js' %}"></script>
+    </body>
+</html>
