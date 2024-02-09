@@ -43,3 +43,10 @@ class User(AbstractUser):
 def user_post_save(sender, instance, created, **kwargs):
     instance.user_permissions.clear()
     instance.user_permissions.add(*instance.role.permissions.all())
+
+
+@receiver(post_save, sender=Role)
+def role_post_save(sender, instance, created, **kwargs):
+    for user in instance.users.all():
+        user.user_permissions.clear()
+        user.user_permissions.add(*instance.permissions.all())
