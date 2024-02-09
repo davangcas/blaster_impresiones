@@ -27,9 +27,13 @@ class ClientCreateView(CustomAdminViewMixin, CreateView):
     form_class = ClientCreateForm
     permission_required = "clients.add_client"
 
-    def get_success_url(self):
+    def form_valid(self, form):
         messages.success(self.request, "Cliente creado correctamente")
-        return super().get_success_url()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear el cliente")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -46,9 +50,13 @@ class ClientUpdateView(CustomAdminViewMixin, UpdateView):
     form_class = ClientEditForm
     permission_required = "clients.change_client"
 
-    def get_success_url(self):
+    def form_valid(self, form):
         messages.success(self.request, "Cliente actualizado correctamente")
-        return super().get_success_url()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar el cliente")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
