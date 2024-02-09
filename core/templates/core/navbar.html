@@ -6,4 +6,24 @@
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
     </ul>
+
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="fas fa-user"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <span class="dropdown-item dropdown-header">Opciones de Perfil</span>
+
+                <div class="dropdown-divider"></div>
+
+                <div class="dropdown-divider"></div>
+
+                <a href="{% url 'dashboard:logout' %}" class="dropdown-item text-center">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </a>
+
+            </div>
+        </li>
+    </ul>
 </nav>
