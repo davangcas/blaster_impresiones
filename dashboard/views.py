@@ -1,6 +1,8 @@
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
+from django.contrib.auth import login as auth_login
+from django.http import HttpResponseRedirect
 
 
 class IndexView(TemplateView):

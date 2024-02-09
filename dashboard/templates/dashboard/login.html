@@ -28,12 +28,12 @@
         <div class="login-box">
             <div class="card card-outline card-primary">
                 <div class="card-header text-center">
-                    <a href="#" class="h1">Blaster</a>
+                    <a href="{% url 'landing:index' %}" class="h1">Blaster</a>
                 </div>
                 <div class="card-body">
                     <p class="login-box-msg">Iniciar sesion</p>
 
-                    <form action="" method="post">
+                    <form action="." method="post">
                         {% csrf_token %}
                         <div class="input-group mb-3">
                             {{ form.username|add_class:'form-control'|attr:'autocomplete:on'|attr:'placeholder:Usuario' }}

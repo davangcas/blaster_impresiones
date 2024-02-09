@@ -38,10 +38,6 @@ class User(AbstractUser):
         Role, on_delete=models.SET_NULL, related_name="users", null=True, blank=True
     )
 
-    def save(self, *args, **kwargs):
-        self.set_password("user1234")
-        return super().save(*args, **kwargs)
-
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, created, **kwargs):
