@@ -30,9 +30,13 @@ class UserCreateView(CustomAdminViewMixin, CreateView):
     success_url = reverse_lazy("users:list")
     permission_required = "users.add_user"
 
-    def get_success_url(self):
+    def form_valid(self, form):
         messages.success(self.request, "Usuario creado correctamente")
-        return super().get_success_url()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear el usuario")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,9 +53,13 @@ class UserUpdateView(CustomAdminViewMixin, UpdateView):
     success_url = reverse_lazy("users:list")
     permission_required = "users.change_user"
 
-    def get_success_url(self):
+    def form_valid(self, form):
         messages.success(self.request, "Usuario actualizado correctamente")
-        return super().get_success_url()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar el usuario")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -99,9 +107,13 @@ class RoleCreateView(CustomAdminViewMixin, CreateView):
     success_url = reverse_lazy("users:roles")
     permission_required = "users.add_role"
 
-    def get_success_url(self):
+    def form_valid(self, form):
         messages.success(self.request, "Rol creado correctamente")
-        return super().get_success_url()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear el rol")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -118,9 +130,13 @@ class RoleUpdateView(CustomAdminViewMixin, UpdateView):
     success_url = reverse_lazy("users:roles")
     permission_required = "users.change_role"
 
-    def get_success_url(self):
+    def form_valid(self, form):
         messages.success(self.request, "Rol actualizado correctamente")
-        return super().get_success_url()
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar el rol")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

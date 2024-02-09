@@ -1,4 +1,5 @@
 from crispy_forms.layout import HTML, Div, Field, Layout, Submit
+from django.forms import DecimalField
 
 
 class CommonLayout(Layout):
@@ -34,3 +35,11 @@ class CustomTimeField(Field):
 
 class CustomSelectMultiple(Field):
     template = "core/fields/custom_select_multiple.html"
+
+
+class CustomPriceFieldLayout(Field):
+    template = "core/fields/custom_price_field.html"
+
+
+class CustomPriceDecimalField(DecimalField):
+    pass

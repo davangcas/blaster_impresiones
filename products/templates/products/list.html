@@ -1,0 +1,22 @@
+{% extends 'core/list.html' %}
+
+{% block table_headers %}
+    <th>Nombre</th>
+    <th>Precio</th>
+    <th>Stock</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block table_columns %}
+    <td>{{ object.name }}</td>
+    <td>{{ object.price }}</td>
+    <td>{{ object.stock }}</td>
+    <td>
+        <a href="{% url 'products:update' object.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="{% url 'products:delete' object.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash"></i>
+        </a>
+    </td>
+{% endblock %}
