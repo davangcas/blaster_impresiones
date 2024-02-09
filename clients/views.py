@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
@@ -23,6 +24,10 @@ class ClientCreateView(CreateView):
     success_url = reverse_lazy("clients:list")
     form_class = ClientCreateForm
 
+    def get_success_url(self):
+        messages.success(self.request, "Cliente creado correctamente")
+        return super().get_success_url()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Crear cliente"
@@ -37,6 +42,10 @@ class ClientUpdateView(UpdateView):
     success_url = reverse_lazy("clients:list")
     form_class = ClientEditForm
 
+    def get_success_url(self):
+        messages.success(self.request, "Cliente actualizado correctamente")
+        return super().get_success_url()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Actualizar cliente"
@@ -49,6 +58,10 @@ class ClientDeleteView(DeleteView):
     model = Client
     template_name = "clients/delete.html"
     success_url = reverse_lazy("clients:list")
+
+    def get_success_url(self):
+        messages.success(self.request, "Cliente eliminado correctamente")
+        return super().get_success_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

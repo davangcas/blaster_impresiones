@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
@@ -26,6 +27,10 @@ class UserCreateView(CreateView):
     template_name = "users/create.html"
     success_url = reverse_lazy("users:list")
 
+    def get_success_url(self):
+        messages.success(self.request, "Usuario creado correctamente")
+        return super().get_success_url()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Crear usuario"
@@ -40,6 +45,10 @@ class UserUpdateView(UpdateView):
     template_name = "users/update.html"
     success_url = reverse_lazy("users:list")
 
+    def get_success_url(self):
+        messages.success(self.request, "Usuario actualizado correctamente")
+        return super().get_success_url()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Actualizar usuario"
@@ -52,6 +61,10 @@ class UserDeleteView(DeleteView):
     model = User
     template_name = "users/delete.html"
     success_url = reverse_lazy("users:list")
+
+    def get_success_url(self):
+        messages.success(self.request, "Usuario eliminado correctamente")
+        return super().get_success_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -79,6 +92,10 @@ class RoleCreateView(CreateView):
     template_name = "roles/create.html"
     success_url = reverse_lazy("users:roles")
 
+    def get_success_url(self):
+        messages.success(self.request, "Rol creado correctamente")
+        return super().get_success_url()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Crear rol"
@@ -93,6 +110,10 @@ class RoleUpdateView(UpdateView):
     template_name = "roles/update.html"
     success_url = reverse_lazy("users:roles")
 
+    def get_success_url(self):
+        messages.success(self.request, "Rol actualizado correctamente")
+        return super().get_success_url()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Actualizar rol"
@@ -105,6 +126,10 @@ class RoleDeleteView(DeleteView):
     model = Role
     template_name = "roles/delete.html"
     success_url = reverse_lazy("users:roles")
+
+    def get_success_url(self):
+        messages.success(self.request, "Rol eliminado correctamente")
+        return super().get_success_url()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
