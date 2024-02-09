@@ -4,11 +4,13 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from clients.forms import ClientCreateForm, ClientEditForm
 from clients.models import Client
+from core.mixins import CustomAdminViewMixin
 
 
-class ClientListView(ListView):
+class ClientListView(CustomAdminViewMixin, ListView):
     model = Client
     template_name = "clients/list.html"
+    permission_required = "clients.view_client"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -18,11 +20,12 @@ class ClientListView(ListView):
         return context
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(CustomAdminViewMixin, CreateView):
     model = Client
     template_name = "clients/create.html"
     success_url = reverse_lazy("clients:list")
     form_class = ClientCreateForm
+    permission_required = "clients.add_client"
 
     def get_success_url(self):
         messages.success(self.request, "Cliente creado correctamente")
@@ -36,11 +39,12 @@ class ClientCreateView(CreateView):
         return context
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(CustomAdminViewMixin, UpdateView):
     model = Client
     template_name = "clients/update.html"
     success_url = reverse_lazy("clients:list")
     form_class = ClientEditForm
+    permission_required = "clients.change_client"
 
     def get_success_url(self):
         messages.success(self.request, "Cliente actualizado correctamente")
@@ -54,10 +58,11 @@ class ClientUpdateView(UpdateView):
         return context
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(CustomAdminViewMixin, DeleteView):
     model = Client
     template_name = "clients/delete.html"
     success_url = reverse_lazy("clients:list")
+    permission_required = "clients.delete_client"
 
     def get_success_url(self):
         messages.success(self.request, "Cliente eliminado correctamente")
