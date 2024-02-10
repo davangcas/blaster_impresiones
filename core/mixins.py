@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.views.generic import ListView
+from django.http import JsonResponse
 
 
 class CustomAdminViewMixin(LoginRequiredMixin, PermissionRequiredMixin):
@@ -10,3 +12,8 @@ class CustomAdminViewMixin(LoginRequiredMixin, PermissionRequiredMixin):
             messages.error(request, "No posee los permisos para realizar la accion")
             return HttpResponseRedirect(reverse_lazy("dashboard:login"))
         return super().dispatch(request, *args, **kwargs)
+
+
+class PostListView(ListView):
+    def post(self, request, *args, **kwargs):
+        return JsonResponse({"message": "This is a post request"})
