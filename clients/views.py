@@ -4,13 +4,15 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from clients.forms import ClientCreateForm, ClientEditForm
 from clients.models import Client
-from core.mixins import CustomAdminViewMixin
+from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from clients.serializers import ClientSerializer
 
 
-class ClientListView(CustomAdminViewMixin, ListView):
+class ClientListView(PostListViewMixin):
     model = Client
     template_name = "clients/list.html"
     permission_required = "clients.view_client"
+    serializer_class = ClientSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -53,12 +53,14 @@ const CustomDataTable = (tableId, source_url, options = {}) => {
                 type: "POST",
                 dataSrc: "",
                 data: {
-                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                    csrfmiddlewaretoken: $(
+                        "input[name=csrfmiddlewaretoken]"
+                    ).val(),
                 },
             },
-            ...options,
+            columns: options.columns,
         })
         .buttons()
         .container()
-        .appendTo("#main-table_wrapper .col-md-6:eq(0)");
+        .appendTo(`${tableId}_wrapper .col-md-6:eq(0)`);
 };
