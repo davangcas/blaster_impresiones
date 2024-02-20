@@ -1,10 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView
-from django.http import JsonResponse
-from django.db.models import F
 
 
 class CustomAdminViewMixin(LoginRequiredMixin, PermissionRequiredMixin):
@@ -19,4 +17,5 @@ class PostListViewMixin(CustomAdminViewMixin, ListView):
     def post(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         data = self.serializer_class(self.object_list, many=True).data
-        return JsonResponse(data, safe=False)
+        response = JsonResponse({"data": data}, safe=False)
+        return response

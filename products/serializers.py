@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from clients.models import Client
+from products.models import Product
 
 
-class ClientSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Client
+        model = Product
         fields = "__all__"
         read_only_fields = ["id"]

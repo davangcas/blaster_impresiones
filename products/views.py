@@ -1,15 +1,18 @@
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.contrib import messages
-from core.mixins import CustomAdminViewMixin
-from products.models import Product
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, UpdateView
+
+from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from products.forms import ProductCreateForm, ProductEditForm
+from products.models import Product
+from products.serializers import ProductSerializer
 
 
-class ProductListView(CustomAdminViewMixin, ListView):
+class ProductListView(PostListViewMixin):
     model = Product
     template_name = "products/list.html"
     permission_required = "products.view_product"
+    serializer_class = ProductSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

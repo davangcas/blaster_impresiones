@@ -1,13 +1,18 @@
-const CustomDataTable = (tableId, source_url, options = {}) => {
-    $(tableId)
-        .DataTable({
+const CommonDataTable = (function () {
+    const initTable = function (settings) {
+        const table_id = settings.table_id;
+        const source_url = settings.source_url;
+        const commonTable = $(table_id).DataTable({
             responsive: true,
             lengthChange: false,
             autoWidth: false,
             paging: true,
+            processing: true,
+            serverSide: false,
             searching: true,
             ordering: true,
             info: true,
+            deferRender: true,
             buttons: [
                 { extend: "copy", className: "btn btn-secondary" },
                 { extend: "csv", className: "btn btn-info" },
@@ -51,16 +56,31 @@ const CustomDataTable = (tableId, source_url, options = {}) => {
             ajax: {
                 url: source_url,
                 type: "POST",
-                dataSrc: "",
+                dataSrc: "data",
                 data: {
                     csrfmiddlewaretoken: $(
                         "input[name=csrfmiddlewaretoken]"
                     ).val(),
                 },
             },
-            columns: options.columns,
-        })
-        .buttons()
-        .container()
-        .appendTo(`${tableId}_wrapper .col-md-6:eq(0)`);
-};
+            columns: settings.columns,
+            columnDefs: settings.columnDefs,
+        });
+        return commonTable;
+    };
+
+    return {
+        init: function (settings) {
+            initTable(settings);
+        },
+        buttonsRender: function (table_id) {
+            $(table_id).on("draw.dt", function () {
+                $(table_id)
+                    .DataTable()
+                    .buttons()
+                    .container()
+                    .appendTo($(`${table_id}_wrapper .col-md-6:eq(0)`));
+            });
+        },
+    };
+})();
