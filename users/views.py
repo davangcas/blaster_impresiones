@@ -1,16 +1,18 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, UpdateView
 
-from core.mixins import CustomAdminViewMixin
+from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from users.forms import CreateRoleForm, CreateUserForm, UpdateRoleForm, UpdateUserForm
 from users.models import Role, User
+from users.serializers import RoleSerializer, UserSerializer
 
 
-class UserListView(CustomAdminViewMixin, ListView):
+class UserListView(PostListViewMixin):
     model = User
     template_name = "users/list.html"
     permission_required = "users.view_user"
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return super().get_queryset().select_related("role")
@@ -87,10 +89,11 @@ class UserDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class RoleListView(CustomAdminViewMixin, ListView):
+class RoleListView(PostListViewMixin):
     model = Role
     template_name = "roles/list.html"
     permission_required = "users.view_role"
+    serializer_class = RoleSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -6,15 +6,42 @@
     <th>Acciones</th>
 {% endblock %}
 
-{% block table_columns %}
-    <td>{{ object.name }}</td>
-    <td>{{ object.get_permission_names }}</td>
-    <td>
-        <a href="{% url 'users:roles_update' object.pk %}" class="btn btn-warning">
-            <i class="fas fa-edit"></i>
-        </a>
-        <a href="{% url 'users:roles_delete' object.pk %}" class="btn btn-danger">
-            <i class="fas fa-trash"></i>
-        </a>
-    </td>
+{% block table_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "name" },
+                    { data: "permissions" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'users:roles_update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'users:roles_delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+        });
+    </script>
 {% endblock %}
