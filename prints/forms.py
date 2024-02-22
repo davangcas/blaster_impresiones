@@ -1,7 +1,9 @@
-from prints.models import PrintMaterial, Print, PrintProduct
-from core.forms import DefaultModelForm
+from typing import Any
 from django import forms
+
 from core.fields import CustomPriceDecimalField
+from core.forms import DefaultModelForm
+from prints.models import Print, PrintMaterial, PrintModel, PrintModelRelation
 
 
 class PrintMaterialForm(DefaultModelForm):
@@ -56,4 +58,58 @@ class PrintCreateForm(PrintUpdateForm):
         instance = super().save(commit=False)
         instance.product_id = self.product_id
         instance.save()
+        return instance
+
+
+class PrintModelCommonForm(DefaultModelForm):
+    quantity = forms.IntegerField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Cantidad",
+        required=True,
+        help_text="Cantidad de modelos de impresión",
+        initial=1,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].label = "Nombre"
+        self.fields["x_scale"].label = "Escala X"
+        self.fields["x_scale"].initial = 100
+        self.fields["y_scale"].label = "Escala Y"
+        self.fields["y_scale"].initial = 100
+        self.fields["z_scale"].label = "Escala Z"
+        self.fields["z_scale"].initial = 100
+        self.fields["file"].label = "STL"
+
+    class Meta:
+        model = PrintModel
+        fields = "__all__"
+
+
+class PrintModelCreateForm(PrintModelCommonForm):
+    def __init__(self, *args, **kwargs):
+        self.print_id = kwargs.pop("print_id")
+        super().__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        instance = super().save(commit=False)
+        instance.save()
+        PrintModelRelation.objects.create(
+            print_id=self.print_id,
+            print_model_id=instance.id,
+            quantity=self.cleaned_data["quantity"],
+        )
+        return instance
+
+
+class PrintModelUpdateForm(PrintModelCommonForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["quantity"].initial = self.instance.printmodelrelation_set.first().quantity
+
+    def save(self, *args, **kwargs):
+        instance = super().save(commit=False)
+        instance.save()
+        instance.printmodelrelation_set.update(quantity=self.cleaned_data["quantity"])
         return instance

@@ -77,7 +77,14 @@
                                 "0",
                                 data
                             );
+                            let detail_url = `{% url 'prints:models' 0 %}`.replace(
+                                "0",
+                                data
+                            );
                             return `
+                                <a href="${detail_url}" class="btn btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="${update_url}" class="btn btn-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>

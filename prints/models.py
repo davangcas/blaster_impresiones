@@ -1,4 +1,5 @@
 from django.db import models
+
 from products.models import Product
 
 
@@ -34,12 +35,15 @@ class Print(models.Model):
         return f"{self.hours}h {self.minutes}m"
 
 
-class PrintProduct(models.Model):
+class PrintModelRelation(models.Model):
     print_model = models.ForeignKey(
         PrintModel, on_delete=models.CASCADE, blank=True, null=True
     )
     print = models.ForeignKey(Print, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField(default=1, blank=True,)
+    quantity = models.PositiveSmallIntegerField(
+        default=1,
+        blank=True,
+    )
 
     class Meta:
         constraints = [

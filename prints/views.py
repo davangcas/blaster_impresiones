@@ -1,16 +1,21 @@
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, UpdateView
 
-
-from core.mixins import PostListViewMixin, CustomAdminViewMixin
-from prints.models import PrintMaterial, Print
+from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from prints.forms import (
+    PrintCreateForm,
+    PrintMaterialForm,
+    PrintUpdateForm,
+    PrintModelCreateForm,
+    PrintModelUpdateForm,
+)
+from prints.models import Print, PrintMaterial, PrintModelRelation, PrintModel
 from prints.serializers import (
     PrintMaterialSerializer,
     PrintSerializer,
+    PrintModelRelationSerializer,
 )
-from prints.forms import PrintMaterialForm, PrintCreateForm, PrintUpdateForm
 from products.models import Product
 
 
@@ -94,7 +99,7 @@ class PrintMaterialDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class PrintProductListView(PostListViewMixin):
+class PrintListView(PostListViewMixin):
     model = Print
     template_name = "prints/list.html"
     permission_required = "prints.view_print"
@@ -195,6 +200,112 @@ class PrintDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy(
             "prints:list",
             kwargs={"pk": self.get_object().product.id},
+        )
+        context["active_section"] = "products"
+        return context
+
+
+class PrintModelRelationListView(PostListViewMixin):
+    model = PrintModelRelation
+    template_name = "models/list.html"
+    permission_required = "prints.view_printmodelrelation"
+    serializer_class = PrintModelRelationSerializer
+
+    def get_queryset(self):
+        return PrintModelRelation.objects.filter(print__id=self.kwargs.get("pk"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["print"] = Print.objects.get(id=self.kwargs.get("pk"))
+        context["title"] = "Modelos de la impresión"
+        context["create_url"] = reverse_lazy(
+            "prints:models_create", kwargs={"pk": self.kwargs.get("pk")}
+        )
+        context["active_section"] = "products"
+        return context
+
+
+class PrintModelCreateView(CustomAdminViewMixin, CreateView):
+    model = PrintModel
+    template_name = "models/create.html"
+    permission_required = "prints.add_printmodel"
+    form_class = PrintModelCreateForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["print_id"] = self.kwargs.get("pk")
+        return form_kwargs
+
+    def get_success_url(self):
+        return reverse_lazy("prints:models", kwargs={"pk": self.kwargs.get("pk")})
+
+    def form_valid(self, form):
+        messages.success(self.request, "Modelo de impresión creado correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear el modelo de impresión")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Crear modelo de impresión"
+        context["cancel_url"] = reverse_lazy(
+            "prints:models", kwargs={"pk": self.kwargs.get("pk")}
+        )
+        context["active_section"] = "products"
+        return context
+
+
+class PrintModelUpdateView(CustomAdminViewMixin, UpdateView):
+    model = PrintModel
+    template_name = "models/update.html"
+    permission_required = "prints.change_printmodel"
+    form_class = PrintModelUpdateForm
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "prints:models",
+            kwargs={"pk": self.get_object().printmodelrelation_set.first().print.id},
+        )
+
+    def form_valid(self, form):
+        messages.success(self.request, "Modelo de impresión actualizado correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar el modelo de impresión")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Actualizar modelo de impresión"
+        context["cancel_url"] = reverse_lazy(
+            "prints:models",
+            kwargs={"pk": self.get_object().printmodelrelation_set.first().print.id},
+        )
+        context["active_section"] = "products"
+        return context
+
+
+class PrintModelDeleteView(CustomAdminViewMixin, DeleteView):
+    model = PrintModel
+    template_name = "models/delete.html"
+    permission_required = "prints.delete_printmodel"
+
+    def get_success_url(self):
+        messages.success(self.request, "Modelo de impresión eliminado correctamente")
+        return reverse_lazy(
+            "prints:models",
+            kwargs={"pk": self.get_object().printmodelrelation_set.first().print.id},
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Eliminar modelo de impresión"
+        context["cancel_url"] = reverse_lazy(
+            "prints:models",
+            kwargs={"pk": self.get_object().printmodelrelation_set.first().print.id},
         )
         context["active_section"] = "products"
         return context
