@@ -1,0 +1,94 @@
+{% extends 'core/list.html' %}
+
+{% block previous_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">{{ product.name }}</h3>
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Precio <span class="float-right badge bg-success">${{ product.price }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Unidades en stock <span class="float-right badge bg-primary">{{ product.stock }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Visible al publico <span class="float-right badge bg-info">{% if product.available %}Si{% else %}No{% endif %}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block table_headers %}
+    <th>Horas</th>
+    <th>Minutos</th>
+    <th>Gramos</th>
+    <th>Material</th>
+    <th>Precio</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block list_footer %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <a class="btn btn-outline-secondary" href="{% url 'products:list' %}"><i class="fas fa-caret-left"></i> Volver</a>
+        </div>
+    </div>
+{% endblock%}
+
+{% block table_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "hours" },
+                    { data: "minutes" },
+                    { data: "grams" },
+                    { data: "material" },
+                    { data: "price" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'prints:update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'prints:delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+        });
+    </script>
+{% endblock %}

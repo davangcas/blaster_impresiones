@@ -3,7 +3,6 @@
 {% block table_headers %}
     <th>Nombre</th>
     <th>Precio</th>
-    <th>Stock</th>
     <th>Acciones</th>
 {% endblock %}
 
@@ -16,7 +15,6 @@
                 columns: [
                     { data: "name" },
                     { data: "price" },
-                    { data: "stock" },
                     { data: "id" },
                 ],
                 columnDefs: [
@@ -24,22 +22,15 @@
                         targets: [-1],
                         orderable: false,
                         render: function (data, type, row) {
-                            let update_url = `{% url 'products:update' 0 %}`.replace(
+                            let update_url = `{% url 'prints:materials_update' 0 %}`.replace(
                                 "0",
                                 data
                             );
-                            let delete_url = `{% url 'products:delete' 0 %}`.replace(
-                                "0",
-                                data
-                            );
-                            let detail_url = `{% url 'prints:list' 0 %}`.replace(
+                            let delete_url = `{% url 'prints:materials_delete' 0 %}`.replace(
                                 "0",
                                 data
                             );
                             return `
-                                <a href="${detail_url}" class="btn btn-info">
-                                    <i class="fas fa-eye"></i>
-                                </a>
                                 <a href="${update_url}" class="btn btn-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>

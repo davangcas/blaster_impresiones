@@ -16,6 +16,7 @@ class ProductEditForm(DefaultModelForm):
         required=True,
         max_digits=10,
         decimal_places=2,
+        initial=0,
     )
     description = forms.CharField(
         widget=forms.Textarea(attrs={"class": "form-control"}),
@@ -31,11 +32,14 @@ class ProductEditForm(DefaultModelForm):
         widget=forms.NumberInput(attrs={"class": "form-control"}),
         label="Stock",
         required=True,
+        initial=0,
     )
     available = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Disponible",
         required=False,
+        initial=True,
+        help_text="Indica si el producto está disponible para la venta",
     )
 
     class Meta:
