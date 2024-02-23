@@ -26,6 +26,7 @@ urlpatterns = [
     path("dashboard/", include("dashboard.urls")),
     path("products/", include("products.urls")),
     path("prints/", include("prints.urls")),
+    path("orders/", include("orders.urls")),
     path("api-auth/", include("rest_framework.urls")),
 ]
 

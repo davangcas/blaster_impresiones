@@ -5,16 +5,25 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from prints.forms import (
     PrintCreateForm,
+    PrintMaterialColorCreateForm,
+    PrintMaterialColorUpdateForm,
     PrintMaterialForm,
-    PrintUpdateForm,
     PrintModelCreateForm,
     PrintModelUpdateForm,
+    PrintUpdateForm,
 )
-from prints.models import Print, PrintMaterial, PrintModelRelation, PrintModel
+from prints.models import (
+    Print,
+    PrintMaterial,
+    PrintMaterialColor,
+    PrintModel,
+    PrintModelRelation,
+)
 from prints.serializers import (
+    PrintMaterialColorSerializer,
     PrintMaterialSerializer,
-    PrintSerializer,
     PrintModelRelationSerializer,
+    PrintSerializer,
 )
 from products.models import Product
 
@@ -205,7 +214,7 @@ class PrintDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class PrintModelRelationListView(PostListViewMixin):
+class PrintModelListView(PostListViewMixin):
     model = PrintModelRelation
     template_name = "models/list.html"
     permission_required = "prints.view_printmodelrelation"
@@ -308,4 +317,115 @@ class PrintModelDeleteView(CustomAdminViewMixin, DeleteView):
             kwargs={"pk": self.get_object().printmodelrelation_set.first().print.id},
         )
         context["active_section"] = "products"
+        return context
+
+
+class PrintMaterialColorListView(PostListViewMixin):
+    model = PrintMaterialColor
+    template_name = "colors/list.html"
+    permission_required = "prints.view_printmaterialcolor"
+    serializer_class = PrintMaterialColorSerializer
+
+    def get_queryset(self):
+        return PrintMaterialColor.objects.filter(material__id=self.kwargs.get("pk"))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["material"] = PrintMaterial.objects.get(id=self.kwargs.get("pk"))
+        context["title"] = "Colores del material"
+        context["create_url"] = reverse_lazy(
+            "prints:colors_create", kwargs={"pk": self.kwargs.get("pk")}
+        )
+        context["active_section"] = "materials"
+        return context
+
+
+class PrintMaterialColorCreateView(CustomAdminViewMixin, CreateView):
+    model = PrintMaterialColor
+    template_name = "colors/create.html"
+    permission_required = "prints.add_printmaterialcolor"
+    form_class = PrintMaterialColorCreateForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["material_id"] = self.kwargs.get("pk")
+        return form_kwargs
+
+    def get_success_url(self):
+        return reverse_lazy("prints:colors", kwargs={"pk": self.kwargs.get("pk")})
+
+    def form_valid(self, form):
+        messages.success(self.request, "Color del material creado correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear el color del material")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Crear color del material"
+        context["cancel_url"] = reverse_lazy(
+            "prints:colors", kwargs={"pk": self.kwargs.get("pk")}
+        )
+        context["active_section"] = "materials"
+        return context
+
+
+class PrintMaterialColorUpdateView(CustomAdminViewMixin, UpdateView):
+    model = PrintMaterialColor
+    template_name = "colors/update.html"
+    permission_required = "prints.change_printmaterialcolor"
+    form_class = PrintMaterialColorUpdateForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["material_id"] = self.kwargs.get("pk")
+        return form_kwargs
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "prints:colors",
+            kwargs={"pk": self.get_object().material.id},
+        )
+
+    def form_valid(self, form):
+        messages.success(self.request, "Color del material actualizado correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar el color del material")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Actualizar color del material"
+        context["cancel_url"] = reverse_lazy(
+            "prints:colors",
+            kwargs={"pk": self.get_object().material.id},
+        )
+        context["active_section"] = "materials"
+        return context
+
+
+class PrintMaterialColorDeleteView(CustomAdminViewMixin, DeleteView):
+    model = PrintMaterialColor
+    template_name = "colors/delete.html"
+    permission_required = "prints.delete_printmaterialcolor"
+
+    def get_success_url(self):
+        messages.success(self.request, "Color del material eliminado correctamente")
+        return reverse_lazy(
+            "prints:colors",
+            kwargs={"pk": self.get_object().material.id},
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Eliminar color del material"
+        context["cancel_url"] = reverse_lazy(
+            "prints:colors",
+            kwargs={"pk": self.get_object().material.id},
+        )
+        context["active_section"] = "materials"
         return context

@@ -22,6 +22,22 @@ class PrintMaterial(models.Model):
         return self.name
 
 
+class PrintMaterialColor(models.Model):
+    material = models.ForeignKey(PrintMaterial, on_delete=models.CASCADE)
+    color = models.CharField(max_length=50, default="white", blank=True)
+    remaining = models.PositiveIntegerField(default=0, blank=True)
+
+    def __str__(self):
+        return self.color
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["material", "color"], name="unique_material_color"
+            )
+        ]
+
+
 class Print(models.Model):
     material = models.ForeignKey(PrintMaterial, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

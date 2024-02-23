@@ -1,9 +1,16 @@
 from typing import Any
+
 from django import forms
 
 from core.fields import CustomPriceDecimalField
 from core.forms import DefaultModelForm
-from prints.models import Print, PrintMaterial, PrintModel, PrintModelRelation
+from prints.models import (
+    Print,
+    PrintMaterial,
+    PrintMaterialColor,
+    PrintModel,
+    PrintModelRelation,
+)
 
 
 class PrintMaterialForm(DefaultModelForm):
@@ -106,10 +113,47 @@ class PrintModelUpdateForm(PrintModelCommonForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["quantity"].initial = self.instance.printmodelrelation_set.first().quantity
+        self.fields["quantity"].initial = (
+            self.instance.printmodelrelation_set.first().quantity
+        )
 
     def save(self, *args, **kwargs):
         instance = super().save(commit=False)
         instance.save()
         instance.printmodelrelation_set.update(quantity=self.cleaned_data["quantity"])
+        return instance
+
+
+class PrintMaterialColorUpdateForm(DefaultModelForm):
+    def __init__(self, *args, **kwargs):
+        self.material_id = kwargs.pop("material_id")
+        super().__init__(*args, **kwargs)
+        self.fields["color"].label = "Color"
+        self.fields["remaining"].label = "Cantidad"
+        self.fields["remaining"].help_text = (
+            "Cantidad de material de impresión expresado en gramos"
+        )
+        self.fields["remaining"].initial = 1000
+
+    class Meta:
+        model = PrintMaterialColor
+        exclude = ("material",)
+
+    def clean_color(self) -> Any:
+        color = self.cleaned_data["color"]
+        material = PrintMaterial.objects.get(id=self.material_id)
+
+        if PrintMaterialColor.objects.filter(material=material, color=color).exists():
+            raise forms.ValidationError(
+                f"El color ya existe para el material {material.name}"
+            )
+
+        return color
+
+
+class PrintMaterialColorCreateForm(PrintMaterialColorUpdateForm):
+    def save(self, *args, **kwargs):
+        instance = super().save(commit=False)
+        instance.material_id = self.material_id
+        instance.save()
         return instance

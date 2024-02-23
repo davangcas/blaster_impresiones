@@ -4,15 +4,19 @@ from prints.views import (
     PrintCreateView,
     PrintDeleteView,
     PrintListView,
+    PrintMaterialColorCreateView,
+    PrintMaterialColorDeleteView,
+    PrintMaterialColorListView,
+    PrintMaterialColorUpdateView,
     PrintMaterialCreateView,
     PrintMaterialDeleteView,
     PrintMaterialListView,
     PrintMaterialUpdateView,
-    PrintUpdateView,
-    PrintModelRelationListView,
     PrintModelCreateView,
-    PrintModelUpdateView,
     PrintModelDeleteView,
+    PrintModelListView,
+    PrintModelUpdateView,
+    PrintUpdateView,
 )
 
 app_name = "prints"
@@ -37,7 +41,7 @@ urlpatterns = [
     path("update/<int:pk>/", PrintUpdateView.as_view(), name="update"),
     path(
         "models-relation/<int:pk>/",
-        PrintModelRelationListView.as_view(),
+        PrintModelListView.as_view(),
         name="models",
     ),
     path(
@@ -54,5 +58,21 @@ urlpatterns = [
         "models/delete/<int:pk>/",
         PrintModelDeleteView.as_view(),
         name="models_delete",
+    ),
+    path("colors/<int:pk>/", PrintMaterialColorListView.as_view(), name="colors"),
+    path(
+        "colors/create/<int:pk>/",
+        PrintMaterialColorCreateView.as_view(),
+        name="colors_create",
+    ),
+    path(
+        "colors/update/<int:pk>/",
+        PrintMaterialColorUpdateView.as_view(),
+        name="colors_update",
+    ),
+    path(
+        "colors/delete/<int:pk>/",
+        PrintMaterialColorDeleteView.as_view(),
+        name="colors_delete",
     ),
 ]
