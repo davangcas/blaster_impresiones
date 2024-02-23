@@ -1,7 +1,6 @@
 {% extends 'core/list.html' %}
 
 {% block table_headers %}
-    <th>Material</th>
     <th>Color</th>
     <th>Disponible</th>
     <th>Acciones</th>
@@ -22,7 +21,6 @@
                 table_id: "#main-table",
                 source_url: window.location.href,
                 columns: [
-                    { data: "material" },
                     { data: "color" },
                     { data: "remaining" },
                     { data: "id" },

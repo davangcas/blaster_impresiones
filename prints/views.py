@@ -331,8 +331,8 @@ class PrintMaterialColorListView(PostListViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["material"] = PrintMaterial.objects.get(id=self.kwargs.get("pk"))
-        context["title"] = "Colores del material"
+        material = PrintMaterial.objects.get(id=self.kwargs.get("pk"))
+        context["title"] = f"Colores disponibles - {material.name}"
         context["create_url"] = reverse_lazy(
             "prints:colors_create", kwargs={"pk": self.kwargs.get("pk")}
         )
@@ -380,7 +380,7 @@ class PrintMaterialColorUpdateView(CustomAdminViewMixin, UpdateView):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs["material_id"] = self.kwargs.get("pk")
+        form_kwargs["material_id"] = self.get_object().material.id
         return form_kwargs
 
     def get_success_url(self):

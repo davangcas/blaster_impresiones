@@ -134,6 +134,8 @@ class PrintMaterialColorUpdateForm(DefaultModelForm):
             "Cantidad de material de impresión expresado en gramos"
         )
         self.fields["remaining"].initial = 1000
+        self.fields["remaining"].widget.attrs["min"] = 0
+        self.fields["remaining"].widget.attrs["step"] = 1000
 
     class Meta:
         model = PrintMaterialColor
@@ -142,8 +144,17 @@ class PrintMaterialColorUpdateForm(DefaultModelForm):
     def clean_color(self) -> Any:
         color = self.cleaned_data["color"]
         material = PrintMaterial.objects.get(id=self.material_id)
+        filter_lookup = {"material": material, "color": color}
+        exclude_lookup = {}
 
-        if PrintMaterialColor.objects.filter(material=material, color=color).exists():
+        if self.instance:
+            exclude_lookup = {"id": self.instance.id}
+
+        if (
+            PrintMaterialColor.objects.filter(**filter_lookup)
+            .exclude(**exclude_lookup)
+            .exists()
+        ):
             raise forms.ValidationError(
                 f"El color ya existe para el material {material.name}"
             )
