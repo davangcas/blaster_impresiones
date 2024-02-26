@@ -3,6 +3,7 @@ from django.db import models
 from clients.models import Client
 from prints.models import Print, PrintMaterialColor
 from products.models import Product
+from orders.choices import ORDER_STATE_CHOICES
 
 
 class Order(models.Model):
@@ -10,12 +11,16 @@ class Order(models.Model):
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="orders")
+    state = models.CharField(max_length=50, default="pending", blank=True, choices=ORDER_STATE_CHOICES)
 
     def __str__(self):
         return f"Order {self.id}"
 
     def get_total_cost(self):
         return sum(item.get_cost() for item in self.items.all())
+
+    def get_state_display(self):
+        return dict(ORDER_STATE_CHOICES).get(self.state)
 
 
 class OrderItem(models.Model):
@@ -25,7 +30,7 @@ class OrderItem(models.Model):
     )
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
-    state = models.CharField(max_length=50, default="pending", blank=True)
+    state = models.CharField(max_length=50, default="pending", blank=True, choices=ORDER_STATE_CHOICES)
 
     def __str__(self):
         return str(self.id)
@@ -41,7 +46,7 @@ class PrintOrderItem(models.Model):
     print = models.ForeignKey(
         Print, on_delete=models.CASCADE, related_name="print_order_items"
     )
-    state = models.CharField(max_length=50, default="pending", blank=True)
+    state = models.CharField(max_length=50, default="pending", blank=True, choices=ORDER_STATE_CHOICES)
     color = models.ForeignKey(
         PrintMaterialColor, on_delete=models.CASCADE, related_name="print_order_items"
     )

@@ -27,6 +27,17 @@ class CreateUserForm(DefaultModelForm):
         help_text=_("Enter the same password as before, for verification."),
         required=False,
     )
+    role = forms.ModelChoiceField(
+        widget=forms.Select(
+            attrs={
+                "class": "select2bs4 select2-hidden-accessible",
+                "style": "width: 100%;",
+            }
+        ),
+        label="Rol",
+        required=True,
+        queryset=Role.objects.all(),
+    )
 
     class Meta:
         model = User

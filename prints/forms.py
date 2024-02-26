@@ -38,7 +38,12 @@ class PrintMaterialForm(DefaultModelForm):
 class PrintUpdateForm(DefaultModelForm):
     material = forms.ModelChoiceField(
         queryset=PrintMaterial.objects.all(),
-        widget=forms.Select(attrs={"class": "form-control"}),
+        widget=forms.Select(
+            attrs={
+                "class": "select2bs4 select2-hidden-accessible",
+                "style": "width: 100%;",
+            }
+        ),
         label="Material",
         required=True,
         help_text="Material de impresión",
