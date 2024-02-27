@@ -7,3 +7,13 @@ ORDER_STATE_CHOICES = (
     ("canceled", "Cancelada"),
     ("paid", "Pagada"),
 )
+
+ORDER_STATE_STYLES_DICT = {
+    "pending": "secondary",
+    "confirmed": "warning",
+    "in_progress": "info",
+    "completed": "primary",
+    "delivered": "primary",
+    "canceled": "danger",
+    "paid": "success",
+}

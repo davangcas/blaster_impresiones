@@ -16,8 +16,12 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context["active_section"] = "dashboard"
         context["clients_count"] = Client.objects.all().count()
         context["products_count"] = Product.objects.all().count()
-        context["completed_orders_count"] = Order.objects.filter(state="completed").count()
-        context["pending_orders_count"] = Order.objects.exclude(state="completed").count()
+        context["completed_orders_count"] = Order.objects.filter(
+            state__in=("completed", "paid", "delivered")
+        ).count()
+        context["pending_orders_count"] = Order.objects.exclude(
+            state__in=("completed", "paid", "delivered")
+        ).count()
         return context
 
 

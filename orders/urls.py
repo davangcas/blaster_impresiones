@@ -1,6 +1,20 @@
 from django.urls import path
 
-from orders.views import OrderListView, OrderCreateView, OrderUpdateView, OrderDeleteView
+from orders.views import (
+    OrderCreateView,
+    OrderDeleteView,
+    OrderItemCreateView,
+    OrderItemDeleteView,
+    OrderItemListView,
+    OrderItemUpdateView,
+    OrderListView,
+    OrderUpdateView,
+    PrintOrderItemListView,
+    PrintOrderItemUpdateView,
+    PrintOrderItemChangeStateView,
+    OrderChangeStateRedirectView,
+    PrintOrderItemDetailView,
+)
 
 app_name = "orders"
 urlpatterns = [
@@ -8,4 +22,41 @@ urlpatterns = [
     path("create/", OrderCreateView.as_view(), name="create"),
     path("update/<int:pk>/", OrderUpdateView.as_view(), name="update"),
     path("delete/<int:pk>/", OrderDeleteView.as_view(), name="delete"),
+    path("items/<int:pk>/", OrderItemListView.as_view(), name="items"),
+    path("items/create/<int:pk>/", OrderItemCreateView.as_view(), name="items_create"),
+    path(
+        "items/update/<int:pk>/",
+        OrderItemUpdateView.as_view(),
+        name="items_update",
+    ),
+    path(
+        "items/delete/<int:pk>/",
+        OrderItemDeleteView.as_view(),
+        name="items_delete",
+    ),
+    path(
+        "print_order_items/<int:pk>/",
+        PrintOrderItemListView.as_view(),
+        name="print_order_items",
+    ),
+    path(
+        "print_order_items/update/<int:pk>/",
+        PrintOrderItemUpdateView.as_view(),
+        name="print_order_items_update",
+    ),
+    path(
+        "print_order_items/change_state/<int:pk>/",
+        PrintOrderItemChangeStateView.as_view(),
+        name="print_order_items_change_state",
+    ),
+    path(
+        "change-state/<int:pk>/",
+        OrderChangeStateRedirectView.as_view(),
+        name="change_state",
+    ),
+    path(
+        "print_order_items/detail/<int:pk>/",
+        PrintOrderItemDetailView.as_view(),
+        name="print_order_items_detail",
+    ),
 ]

@@ -78,7 +78,7 @@ class PrintModelCommonForm(DefaultModelForm):
         widget=forms.NumberInput(attrs={"class": "form-control"}),
         label="Cantidad",
         required=True,
-        help_text="Cantidad de modelos de impresión",
+        help_text="Cantidad de veces que el modelo esta presente en la impresión",
         initial=1,
     )
 
@@ -140,7 +140,6 @@ class PrintMaterialColorUpdateForm(DefaultModelForm):
         )
         self.fields["remaining"].initial = 1000
         self.fields["remaining"].widget.attrs["min"] = 0
-        self.fields["remaining"].widget.attrs["step"] = 1000
 
     class Meta:
         model = PrintMaterialColor
