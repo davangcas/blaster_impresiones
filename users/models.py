@@ -35,3 +35,11 @@ class User(AbstractUser):
     role = models.ForeignKey(
         Role, on_delete=models.SET_NULL, related_name="users", null=True, blank=True
     )
+    salary = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    account = models.ForeignKey(
+        "financials.Account",
+        on_delete=models.SET_NULL,
+        related_name="users",
+        null=True,
+        blank=True,
+    )

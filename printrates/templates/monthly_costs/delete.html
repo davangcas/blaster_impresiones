@@ -1,0 +1,6 @@
+{% extends 'core/delete.html' %}
+{% load static %}
+
+{% block delete_message %}
+    ¿Está seguro de querer eliminar el costo mensual <b>{{ object.name }}</b> de <b>${{ object.cost }}</b>?
+{% endblock %}

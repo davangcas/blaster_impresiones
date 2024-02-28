@@ -1,0 +1,10 @@
+{% extends 'core/form.html' %}
+{% load static crispy_forms_tags %}
+
+{% block form %}
+    {% crispy form %}
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/validations/users/form-validation.js' %}"></script>
+{% endblock %}

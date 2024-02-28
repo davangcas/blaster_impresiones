@@ -7,6 +7,7 @@ class Product(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to="products/images/", blank=True, null=True)
     stock = models.IntegerField()
+    link = models.URLField(blank=True, null=True)
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

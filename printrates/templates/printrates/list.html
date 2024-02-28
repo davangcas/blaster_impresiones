@@ -1,0 +1,121 @@
+{% extends 'core/list.html' %}
+
+{% block custom_list_card_buttons %}
+    <a href="#" class="btn btn-success">
+        <i class="fas fa-magic"></i> Generar valor automaticamente
+    </a>
+{% endblock %}
+
+{% block table_headers %}
+    <th>Fecha de creacion</th>
+    <th>Precio de impresion por hora</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block next_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Costos Mensuales</h3>
+                    <div class="card-tools">
+                        <a href="{% url 'printrates:monthly_costs_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table id="monthly-costs-table" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Monto</th>
+                                <th>Ultima actualizacion</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block table_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "created_at" },
+                    { data: "rate" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'printrates:update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'printrates:delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+
+            CommonDataTable.init({
+                table_id: "#monthly-costs-table",
+                source_url: "{% url 'printrates:monthly_costs' %}",
+                columns: [
+                    { data: "name" },
+                    { data: "cost" },
+                    { data: "updated_at" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'printrates:monthly_costs_update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'printrates:monthly_costs_delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+        });
+    </script>
+{% endblock %}

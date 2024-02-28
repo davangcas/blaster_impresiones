@@ -28,10 +28,14 @@ class ProductEditForm(DefaultModelForm):
         self.fields["stock"].initial = 0
         self.fields["description"].label = "Descripción"
         self.fields["name"].label = "Nombre"
+        self.fields["link"].label = "Enlace"
+        self.fields["link"].required = False
+        self.fields["link"].help_text = "Enlace a la página de los modelos del producto"
+        self.fields["link"].widget.attrs["placeholder"] = "(opcional)"
 
     class Meta:
         model = Product
-        fields = ("name", "price", "description", "image", "stock", "available")
+        fields = ("name", "price", "link", "description", "image", "stock", "available")
 
 
 class ProductCreateForm(ProductEditForm):

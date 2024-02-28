@@ -26,6 +26,13 @@
                                 Visible al publico <span class="float-right badge bg-info">{% if product.available %}Si{% else %}No{% endif %}</span>
                             </a>
                         </li>
+                        {% if product.link %}
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                    <a href="{{ product.link }}" target="_blank"><span class="float-right badge bg-secondary">Descargar modelos desde origen</span></a>
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
