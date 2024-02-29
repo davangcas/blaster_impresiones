@@ -21,6 +21,9 @@ LOCAL_APPS = [
     "products",
     "dashboard",
     "landing",
+    "orders",
+    "financials",
+    "printrates",
 ]
 
 THIRD_APPS = [
@@ -119,3 +122,6 @@ AUTH_USER_MODEL = "users.User"
 # crispy forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.app",
+]

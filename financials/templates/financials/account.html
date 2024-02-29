@@ -1,0 +1,23 @@
+{% extends 'core/list.html' %}
+
+{% block table_headers %}
+    <th>Fecha</th>
+    <th>Monto</th>
+    <th>Cuenta</th>
+{% endblock %}
+
+{% block table_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "date" },
+                    { data: "amount" },
+                    { data: "account" },
+                ],
+            });
+        });
+    </script>
+{% endblock %}

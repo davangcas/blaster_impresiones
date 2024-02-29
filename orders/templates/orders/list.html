@@ -1,0 +1,75 @@
+{% extends 'core/list.html' %}
+{% load static %}
+
+{% block table_headers %}
+    <th>ID</th>
+    <th>Fecha de creacion</th>
+    <th>Cliente</th>
+    <th>Estado</th>
+    <th>Total</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block table_scripts %}
+    <script src="{% static 'js/orders/change-state.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "id" },
+                    { data: "created" },
+                    { data: "client" },
+                    { data: "state" },
+                    { data: "total" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'orders:update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'orders:delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let items_url = `{% url 'orders:items' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let item_create_url = `{% url 'orders:items_create' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let action_url = `{% url 'orders:change_state' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let change_state_content = getChangeOrderStateButton(action_url, row.state_code);
+                            let add_item_button = getAddOrderItemButton(item_create_url, row.state_code);
+
+                            return `
+                                ${change_state_content}
+                                ${add_item_button}
+                                <a href="${items_url}" class="btn btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+        });
+    </script>
+{% endblock %}

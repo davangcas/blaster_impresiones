@@ -1,0 +1,58 @@
+{% load crispy_forms_field %}
+
+<div id="div_{{ field.auto_id }}" class="{% if not field|is_checkbox %}form-group{% if 'form-horizontal' in form_class %} row{% endif %}{% else %}{%if use_custom_control%}{% if tag != 'td' %}custom-control {%endif%} custom-checkbox{% else %}form-check{% endif %}{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+    {% if field.label and not field|is_checkbox and form_show_labels %}
+        {# not field|is_radioselect in row below can be removed once Django 3.2 is no longer supported #}    
+        <label {% if field.id_for_label and not field|is_radioselect %}for="{{ field.id_for_label }}" {% endif %}class="{% if 'form-horizontal' in form_class %}col-form-label {% endif %}{{ label_class }}{% if field.field.required %} requiredField{% endif %}">
+            {{ field.label }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+        </label>
+    {% endif %}
+
+    <div{% if field_class %} class="{{ field_class }} input-group"{% endif %}>
+        {% if field.errors %}
+            {% crispy_field field 'class' 'form-control is-invalid' %}
+        {% else %}
+            {% crispy_field field 'class' 'form-control' %}
+        {% endif %}
+
+        <div class="input-group-prepend">
+            <span class="input-group-text">
+                <i class="fas fa-percentage"></i>
+            </span>
+        </div>
+
+        {% if help_text_inline and not error_text_inline %}
+            {% if field.help_text %}
+                {% if help_text_inline %}
+                    <span id="hint_{{ field.auto_id }}" class="text-muted input-group">{{ field.help_text|safe }}</span>
+                {% else %}
+                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted input-group">{{ field.help_text|safe }}</small>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if error_text_inline %}
+            {% if form_show_errors and field.errors %}
+                {% for error in field.errors %}
+                    <span id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback input-group"><strong>{{ error }}</strong></span>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            {% if form_show_errors and field.errors %}
+                {% for error in field.errors %}
+                    <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback input-group"><strong>{{ error }}</strong></p>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if not help_text_inline %}
+            {% if field.help_text %}
+                {% if help_text_inline %}
+                    <span id="hint_{{ field.auto_id }}" class="text-muted input-group">{{ field.help_text|safe }}</span>
+                {% else %}
+                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted input-group">{{ field.help_text|safe }}</small>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

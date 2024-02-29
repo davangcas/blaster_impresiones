@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from core.forms import DefaultModelForm
+from core.fields import CustomPriceDecimalField
 from users.models import Role, User
 
 
@@ -27,6 +28,25 @@ class CreateUserForm(DefaultModelForm):
         help_text=_("Enter the same password as before, for verification."),
         required=False,
     )
+    role = forms.ModelChoiceField(
+        widget=forms.Select(
+            attrs={
+                "class": "select2bs4 select2-hidden-accessible",
+                "style": "width: 100%;",
+            }
+        ),
+        label="Rol",
+        required=True,
+        queryset=Role.objects.all(),
+    )
+    salary = CustomPriceDecimalField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Salario",
+        required=True,
+        max_digits=15,
+        decimal_places=2,
+        initial=0,
+    )
 
     class Meta:
         model = User
@@ -36,6 +56,7 @@ class CreateUserForm(DefaultModelForm):
             "last_name",
             "email",
             "role",
+            "salary",
             "is_active",
         )
 

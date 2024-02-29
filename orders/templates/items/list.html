@@ -1,0 +1,99 @@
+{% extends 'core/list.html' %}
+
+{% block previous_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Orden Nº {{ order.id }}</h3>
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Total <span class="float-right badge bg-success">${{ order.get_total_cost }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Cliente <span class="float-right badge bg-primary">{{ order.client }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Estado <span class="float-right badge bg-{{ order.get_state_style }}">{{ order.get_state_display }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block table_headers %}
+    <th>Producto</th>
+    <th>Cantidad</th>
+    <th>Estado</th>
+    <th>Sub-total</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block list_footer %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <a class="btn btn-outline-secondary" href="{% url 'orders:list' %}"><i class="fas fa-caret-left"></i> Volver</a>
+        </div>
+    </div>
+{% endblock%}
+
+{% block table_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "product" },
+                    { data: "quantity" },
+                    { data: "state" },
+                    { data: "total" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'orders:items_update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'orders:items_delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let detail_url = `{% url 'orders:print_order_items' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${detail_url}" class="btn btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+        });
+    </script>
+{% endblock %}

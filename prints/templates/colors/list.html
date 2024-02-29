@@ -1,0 +1,55 @@
+{% extends 'core/list.html' %}
+
+{% block table_headers %}
+    <th>Color</th>
+    <th>Disponible</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block list_footer %}
+    <div class="row">
+        <div class="col-12 text-center">
+            <a class="btn btn-outline-secondary" href="{% url 'prints:materials' %}"><i class="fas fa-caret-left"></i> Volver</a>
+        </div>
+    </div>
+{% endblock%}
+
+{% block table_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "color" },
+                    { data: "remaining" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'prints:colors_update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'prints:colors_delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+        });
+    </script>
+{% endblock %}

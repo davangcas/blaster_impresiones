@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils.translation import activate
 from simple_history.models import HistoricalRecords
 
@@ -37,16 +35,11 @@ class User(AbstractUser):
     role = models.ForeignKey(
         Role, on_delete=models.SET_NULL, related_name="users", null=True, blank=True
     )
-
-
-@receiver(post_save, sender=User)
-def user_post_save(sender, instance, created, **kwargs):
-    instance.user_permissions.clear()
-    instance.user_permissions.add(*instance.role.permissions.all())
-
-
-@receiver(post_save, sender=Role)
-def role_post_save(sender, instance, created, **kwargs):
-    for user in instance.users.all():
-        user.user_permissions.clear()
-        user.user_permissions.add(*instance.permissions.all())
+    salary = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    account = models.ForeignKey(
+        "financials.Account",
+        on_delete=models.SET_NULL,
+        related_name="users",
+        null=True,
+        blank=True,
+    )

@@ -24,9 +24,9 @@
         {% if help_text_inline and not error_text_inline %}
             {% if field.help_text %}
                 {% if help_text_inline %}
-                    <span id="hint_{{ field.auto_id }}" class="text-muted">{{ field.help_text|safe }}</span>
+                    <span id="hint_{{ field.auto_id }}" class="text-muted input-group">{{ field.help_text|safe }}</span>
                 {% else %}
-                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted">{{ field.help_text|safe }}</small>
+                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted input-group">{{ field.help_text|safe }}</small>
                 {% endif %}
             {% endif %}
         {% endif %}
@@ -34,13 +34,13 @@
         {% if error_text_inline %}
             {% if form_show_errors and field.errors %}
                 {% for error in field.errors %}
-                    <span id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback"><strong>{{ error }}</strong></span>
+                    <span id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback input-group"><strong>{{ error }}</strong></span>
                 {% endfor %}
             {% endif %}
         {% else %}
             {% if form_show_errors and field.errors %}
                 {% for error in field.errors %}
-                    <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback"><strong>{{ error }}</strong></p>
+                    <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback input-group"><strong>{{ error }}</strong></p>
                 {% endfor %}
             {% endif %}
         {% endif %}
@@ -48,9 +48,9 @@
         {% if not help_text_inline %}
             {% if field.help_text %}
                 {% if help_text_inline %}
-                    <span id="hint_{{ field.auto_id }}" class="text-muted">{{ field.help_text|safe }}</span>
+                    <span id="hint_{{ field.auto_id }}" class="text-muted input-group">{{ field.help_text|safe }}</span>
                 {% else %}
-                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted">{{ field.help_text|safe }}</small>
+                    <small id="hint_{{ field.auto_id }}" class="form-text text-muted input-group">{{ field.help_text|safe }}</small>
                 {% endif %}
             {% endif %}
         {% endif %}

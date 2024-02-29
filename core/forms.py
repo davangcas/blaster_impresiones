@@ -9,6 +9,8 @@ from core.fields import (
     CustomPriceFieldLayout,
     CustomSelectMultiple,
     CustomTimeField,
+    CustomPercentageField,
+    CustomPercentageFieldLayout,
 )
 
 
@@ -30,6 +32,8 @@ class DefaultModelForm(ModelForm):
                 fields.append(CustomSelectMultiple(field_name))
             elif isinstance(field, CustomPriceDecimalField):
                 fields.append(CustomPriceFieldLayout(field_name))
+            elif isinstance(field, CustomPercentageField):
+                fields.append(CustomPercentageFieldLayout(field_name))
             else:
                 fields.append(field_name)
 

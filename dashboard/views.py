@@ -2,6 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
+from clients.models import Client
+from products.models import Product
+from orders.models import Order
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -11,6 +14,14 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Dashboard"
         context["active_section"] = "dashboard"
+        context["clients_count"] = Client.objects.all().count()
+        context["products_count"] = Product.objects.all().count()
+        context["completed_orders_count"] = Order.objects.filter(
+            state__in=("completed", "paid", "delivered")
+        ).count()
+        context["pending_orders_count"] = Order.objects.exclude(
+            state__in=("completed", "paid", "delivered")
+        ).count()
         return context
 
 

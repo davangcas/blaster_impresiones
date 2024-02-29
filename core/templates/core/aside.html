@@ -37,6 +37,24 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{% url 'orders:list' %}" class="nav-link" selection="orders">
+                        <i class="nav-icon fas fa-clipboard-list"></i>
+                        <p>Pedidos</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'prints:materials' %}" class="nav-link" selection="materials">
+                        <i class="nav-icon fas fa-ring"></i>
+                        <p>Materiales</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'financials:account' %}" class="nav-link" selection="financials">
+                        <i class="nav-icon fas fa-cash-register"></i>
+                        <p>Caja</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{% url 'users:list' %}" class="nav-link" selection="users">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>Usuarios</p>
@@ -46,6 +64,12 @@
                     <a href="{% url 'users:roles' %}" class="nav-link" selection="roles">
                         <i class="nav-icon fas fa-user-tag"></i>
                         <p>Roles</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'printrates:list' %}" class="nav-link" selection="configuration">
+                        <i class="nav-icon fas fa-cogs"></i>
+                        <p>Configuracion</p>
                     </a>
                 </li>
             </ul>
