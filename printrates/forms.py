@@ -1,7 +1,7 @@
 from core.forms import DefaultModelForm
-from printrates.models import MonthlyCost, PrintRate
+from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
 from django import forms
-from core.fields import CustomPriceDecimalField
+from core.fields import CustomPriceDecimalField, CustomPercentageField
 
 
 class PrintRateForm(DefaultModelForm):
@@ -14,6 +14,7 @@ class PrintRateForm(DefaultModelForm):
         initial=0,
         help_text="Precio por hora de impresión",
     )
+
     class Meta:
         model = PrintRate
         fields = ["rate"]
@@ -38,3 +39,46 @@ class MonthlyCostForm(DefaultModelForm):
         super().__init__(*args, **kwargs)
         self.fields["name"].label = "Nombre"
         self.fields["description"].label = "Descripción"
+
+
+class PrintRateVariablesForm(DefaultModelForm):
+    failure_percentage = CustomPercentageField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Porcentaje de fallo",
+        required=True,
+        initial=0,
+        help_text="Porcentaje de fallo de impresión",
+    )
+    maintenance_cost = CustomPriceDecimalField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Costo de mantenimiento",
+        required=True,
+        max_digits=15,
+        decimal_places=2,
+        initial=0,
+        help_text="Costo de mantenimiento de impresora",
+    )
+    minutes_spent_per_print = forms.DecimalField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Minutos por impresión",
+        required=True,
+        initial=0,
+        help_text="Minutos promedio por impresión para mantenimiento de impresora",
+    )
+    extra_percentage = CustomPercentageField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Porcentaje extra",
+        required=True,
+        initial=0,
+        help_text="Porcentaje extra para cubrir gastos",
+    )
+
+    class Meta:
+        model = PrintRateVariables
+        fields = [
+            "failure_percentage",
+            "maintenance_cost",
+            "minutes_spent_per_print",
+            "extra_percentage",
+            "available_printers",
+        ]

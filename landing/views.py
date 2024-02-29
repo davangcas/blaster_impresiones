@@ -10,5 +10,5 @@ class IndexView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Home"
         context["active_section"] = "home"
-        context["products"] = Product.objects.all()
+        context["products"] = Product.objects.filter(available=True, image__isnull=False)
         return context

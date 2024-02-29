@@ -1,0 +1,7 @@
+{% extends 'core/delete.html' %}
+{% load static %}
+
+{% block delete_message %}
+    ¿Está seguro de querer eliminar las variables con ID <b>${{ object.id }}</b>?<br>
+    Tenga en cuenta que si no existen variables, automaticamente se crearan con valores por defecto.
+{% endblock %}

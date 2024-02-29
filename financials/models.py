@@ -27,6 +27,24 @@ class Account(models.Model):
         )
         return assets - liabilities
 
+    @classmethod
+    def calculate_income(cls):
+        return (
+            cls.objects.filter(account_type="income").aggregate(
+                total=models.Sum("balance")
+            )["total"]
+            or 0
+        )
+
+    @classmethod
+    def calculate_expense(cls):
+        return (
+            cls.objects.filter(account_type="expense").aggregate(
+                total=models.Sum("balance")
+            )["total"]
+            or 0
+        )
+
 
 class Transaction(models.Model):
     date = models.DateField()

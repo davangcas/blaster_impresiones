@@ -1,5 +1,5 @@
 from crispy_forms.layout import HTML, Div, Field, Layout, Submit
-from django.forms import DecimalField
+from django.forms import DecimalField, IntegerField
 
 
 class CommonLayout(Layout):
@@ -41,5 +41,13 @@ class CustomPriceFieldLayout(Field):
     template = "core/fields/custom_price_field.html"
 
 
+class CustomPercentageFieldLayout(Field):
+    template = "core/fields/custom_percentage_field.html"
+
+
 class CustomPriceDecimalField(DecimalField):
+    pass
+
+
+class CustomPercentageField(IntegerField):
     pass

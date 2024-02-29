@@ -1,11 +1,17 @@
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, RedirectView, UpdateView
 
 from core.mixins import CustomAdminViewMixin, PostListViewMixin
-from printrates.forms import MonthlyCostForm, PrintRateForm
-from printrates.models import MonthlyCost, PrintRate
-from printrates.serializers import PrintRateSerializer, MonthlyCostSerializer
+from printrates.forms import MonthlyCostForm, PrintRateForm, PrintRateVariablesForm
+from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
+from printrates.serializers import (
+    MonthlyCostSerializer,
+    PrintRateSerializer,
+    PrintRateVariablesSerializer,
+)
+from printrates.services import generate_print_rate
 
 
 class PrintRateListView(PostListViewMixin):
@@ -162,3 +168,93 @@ class MonthlyCostDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("printrates:list")
         context["active_section"] = "configuration"
         return context
+
+
+class PrintRateVariablesListView(PostListViewMixin):
+    model = PrintRateVariables
+    template_name = "variables/list.html"
+    permission_required = "printrates.view_printratevariables"
+    serializer_class = PrintRateVariablesSerializer
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Variables a considerar en el precio de impresión"
+        context["create_url"] = reverse_lazy("printrates:variables_create")
+        context["active_section"] = "configuration"
+        return context
+
+
+class PrintRateVariablesCreateView(CustomAdminViewMixin, CreateView):
+    model = PrintRateVariables
+    template_name = "variables/create.html"
+    success_url = reverse_lazy("printrates:list")
+    form_class = PrintRateVariablesForm
+    permission_required = "printrates.add_printratevariables"
+
+    def form_valid(self, form):
+        messages.success(self.request, "Variables creadas correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear las variables")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Crear variables a considerar en el precio de impresión"
+        context["cancel_url"] = reverse_lazy("printrates:list")
+        context["active_section"] = "configuration"
+        return context
+
+
+class PrintRateVariablesUpdateView(CustomAdminViewMixin, UpdateView):
+    model = PrintRateVariables
+    template_name = "variables/update.html"
+    success_url = reverse_lazy("printrates:list")
+    form_class = PrintRateVariablesForm
+    permission_required = "printrates.change_printratevariables"
+
+    def form_valid(self, form):
+        messages.success(self.request, "Variables actualizadas correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar las variables")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Editar variables a considerar en el precio de impresión"
+        context["cancel_url"] = reverse_lazy("printrates:list")
+        context["active_section"] = "configuration"
+        return context
+
+
+class PrintRateVariablesDeleteView(CustomAdminViewMixin, DeleteView):
+    model = PrintRateVariables
+    template_name = "variables/delete.html"
+    success_url = reverse_lazy("printrates:list")
+    permission_required = "printrates.delete_printratevariables"
+
+    def get_success_url(self):
+        messages.success(self.request, "Variables eliminadas correctamente")
+        return super().get_success_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Eliminar variables a considerar en el precio de impresión"
+        context["cancel_url"] = reverse_lazy("printrates:list")
+        context["active_section"] = "configuration"
+        return context
+
+
+class GenerateNewPrintRateView(CustomAdminViewMixin, RedirectView):
+    pattern_name = "printrates:list"
+    permission_required = "printrates.add_printrate"
+
+    def get_redirect_url(self, *args, **kwargs):
+        generate_print_rate()
+        messages.success(
+            self.request, "Nuevo valor de precio por hora generado correctamente"
+        )
+        return super().get_redirect_url(*args, **kwargs)

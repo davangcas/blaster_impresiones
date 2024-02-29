@@ -1,12 +1,13 @@
 {% extends 'core/list.html' %}
 
 {% block custom_list_card_buttons %}
-    <a href="#" class="btn btn-success">
+    <a href="{% url 'printrates:generate_new_rate' %}" class="btn btn-success">
         <i class="fas fa-magic"></i> Generar valor automaticamente
     </a>
 {% endblock %}
 
 {% block table_headers %}
+    <th>ID</th>
     <th>Fecha de creacion</th>
     <th>Precio de impresion por hora</th>
     <th>Acciones</th>
@@ -43,6 +44,40 @@
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Variables a considerar en el precio de la impresion</h3>
+                    <div class="card-tools">
+                        <a href="{% url 'printrates:variables_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table id="variables-table" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Fecha de creacion</th>
+                                <th>Porcentaje de fallos</th>
+                                <th>Costo de mantenimiento</th>
+                                <th>Minutos dedicados a cada impresion</th>
+                                <th>Porcentaje extra al valor final</th>
+                                <th>Impresoras disponibles</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer"></div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block table_scripts %}
@@ -52,6 +87,7 @@
                 table_id: "#main-table",
                 source_url: window.location.href,
                 columns: [
+                    { data: "id" },
                     { data: "created_at" },
                     { data: "rate" },
                     { data: "id" },
@@ -61,18 +97,11 @@
                         targets: [-1],
                         orderable: false,
                         render: function (data, type, row) {
-                            let update_url = `{% url 'printrates:update' 0 %}`.replace(
-                                "0",
-                                data
-                            );
                             let delete_url = `{% url 'printrates:delete' 0 %}`.replace(
                                 "0",
                                 data
                             );
                             return `
-                                <a href="${update_url}" class="btn btn-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
                                 <a href="${delete_url}" class="btn btn-danger">
                                     <i class="fas fa-trash"></i>
                                 </a>
@@ -101,6 +130,44 @@
                                 data
                             );
                             let delete_url = `{% url 'printrates:monthly_costs_delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+
+            CommonDataTable.init({
+                table_id: "#variables-table",
+                source_url: "{% url 'printrates:variables' %}",
+                columns: [
+                    { data: "created_at" },
+                    { data: "failure_percentage" },
+                    { data: "maintenance_cost" },
+                    { data: "minutes_spent_per_print" },
+                    { data: "extra_percentage" },
+                    { data: "available_printers" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'printrates:variables_update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'printrates:variables_delete' 0 %}`.replace(
                                 "0",
                                 data
                             );

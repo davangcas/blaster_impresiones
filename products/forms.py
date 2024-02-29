@@ -1,18 +1,10 @@
 from core.forms import DefaultModelForm
-from products.models import Product
+from products.models import Product, ExtraProductCost
 from django import forms
 from core.fields import CustomPriceDecimalField
 
 
 class ProductEditForm(DefaultModelForm):
-    price = CustomPriceDecimalField(
-        widget=forms.NumberInput(attrs={"class": "form-control"}),
-        label="Precio",
-        required=True,
-        max_digits=10,
-        decimal_places=2,
-        initial=0,
-    )
     available = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Disponible",
@@ -35,8 +27,36 @@ class ProductEditForm(DefaultModelForm):
 
     class Meta:
         model = Product
-        fields = ("name", "price", "link", "description", "image", "stock", "available")
+        fields = ("name", "link", "description", "image", "stock", "available")
 
 
 class ProductCreateForm(ProductEditForm):
     pass
+
+class ExtraProductCostUpdateForm(DefaultModelForm):
+    cost = CustomPriceDecimalField(
+        label="Costo",
+        help_text="Costo adicional del producto",
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+    )
+
+    class Meta:
+        model = ExtraProductCost
+        fields = ("name", "description", "cost")
+        labels = {
+            "name": "Nombre",
+            "description": "Descripción",
+        }
+
+
+class ExtraProductCostCreateForm(ExtraProductCostUpdateForm):
+    def __init__(self, *args, **kwargs):
+        self.product_id = kwargs.pop("product_id")
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.product_id = self.product_id
+        if commit:
+            instance.save()
+        return instance

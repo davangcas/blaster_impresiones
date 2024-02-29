@@ -29,12 +29,45 @@
                         {% if product.link %}
                             <li class="nav-item">
                                 <a href="#" class="nav-link" style="color: black; pointer-events: none;">
-                                    <a href="{{ product.link }}" target="_blank"><span class="float-right badge bg-secondary">Descargar modelos desde origen</span></a>
+                                    <a href="{{ product.link }}" target="_blank"><span class="float-right badge bg-secondary">Descargar modelos</span></a>
                                 </a>
                             </li>
                         {% endif %}
                     </ul>
                 </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block next_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Costos extra del producto</h3>
+                    <div class="card-tools">
+                        <a href="{% url 'products:extra_costs_create' product.id %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table id="extra-costs-table" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Monto</th>
+                                <th>Descripcion</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer"></div>
             </div>
         </div>
     </div>
@@ -92,6 +125,41 @@
                                 <a href="${detail_url}" class="btn btn-info">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                <a href="${update_url}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+
+            CommonDataTable.init({
+                table_id: "#extra-costs-table",
+                source_url: "{% url 'products:extra_costs' product.id %}",
+                columns: [
+                    { data: "name" },
+                    { data: "cost" },
+                    { data: "description" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let update_url = `{% url 'products:extra_costs_update' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            let delete_url = `{% url 'products:extra_costs_delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
                                 <a href="${update_url}" class="btn btn-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>
