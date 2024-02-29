@@ -15,7 +15,7 @@ def calculate_print_price(print_instance):
 
     print_rate_in_minutes = print_rate / 60
     print_time = (print_instance.hours * 60) + print_instance.minutes
-    current_price += print_time * print_rate_in_minutes
+    current_price += print_time * Decimal(print_rate_in_minutes)
 
     if print_rate_variables:
         current_price *= 1 + Decimal(print_rate_variables.failure_percentage).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP) / 100

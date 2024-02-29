@@ -72,6 +72,13 @@ class PrintRateVariablesForm(DefaultModelForm):
         initial=0,
         help_text="Porcentaje extra para cubrir gastos",
     )
+    available_printers = forms.IntegerField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Impresoras disponibles",
+        required=True,
+        initial=1,
+        help_text="Cantidad de impresoras disponibles",
+    )
 
     class Meta:
         model = PrintRateVariables

@@ -28,6 +28,8 @@ def generate_print_rate():
 
 
 def update_print_rate():
-    print_rate = PrintRate.objects.order_by("-created_at").first()
-    print_rate.rate = obtain_print_rate()
-    print_rate.save()
+    print_rate = PrintRate.objects.all().order_by("-created_at").first()
+
+    if print_rate:
+        print_rate.rate = obtain_print_rate()
+        print_rate.save()
