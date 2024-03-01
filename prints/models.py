@@ -44,6 +44,10 @@ class Print(models.Model):
     hours = models.PositiveSmallIntegerField()
     minutes = models.PositiveSmallIntegerField()
     grams = models.PositiveSmallIntegerField()
+    layer_height = models.DecimalField(max_digits=2, decimal_places=2, default=0.2, blank=True)
+    infill = models.PositiveSmallIntegerField(default=20, blank=True)
+    nozzle = models.DecimalField(max_digits=2, decimal_places=1, default=0.4, blank=True)
+    speed = models.PositiveSmallIntegerField(default=40, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
     g_code = models.FileField(upload_to="print_gcode/", blank=True, null=True)
 
