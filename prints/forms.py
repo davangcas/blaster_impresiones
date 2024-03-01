@@ -55,6 +55,14 @@ class PrintUpdateForm(DefaultModelForm):
         self.fields["hours"].label = "Horas"
         self.fields["minutes"].label = "Minutos"
         self.fields["grams"].label = "Gramos"
+        self.fields["layer_height"].label = "Altura de capa"
+        self.fields["layer_height"].help_text = "Altura de capa en milímetros"
+        self.fields["infill"].label = "Relleno"
+        self.fields["infill"].help_text = "Porcentaje de relleno"
+        self.fields["nozzle"].label = "Diámetro de boquilla"
+        self.fields["nozzle"].help_text = "Diámetro de la boquilla en milímetros"
+        self.fields["speed"].label = "Velocidad de impresión"
+        self.fields["speed"].help_text = "Velocidad de impresión en mm/s"
 
     class Meta:
         model = Print
