@@ -8,6 +8,7 @@ from django.views.generic import (
     RedirectView,
     UpdateView,
 )
+import ast
 
 from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from orders.forms import (
@@ -262,6 +263,8 @@ class PrintOrderItemUpdateView(CustomAdminViewMixin, UpdateView):
 class PrintOrderItemChangeStateView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         instance = PrintOrderItem.objects.get(id=kwargs.get("pk"))
+        next_step = ast.literal_eval(self.request.GET.get("next_step", "True"))
+        state = instance.get_next_state()
         return_url = reverse_lazy(
             "orders:print_order_items", kwargs={"pk": instance.order_item_id}
         )
@@ -270,7 +273,10 @@ class PrintOrderItemChangeStateView(RedirectView):
             messages.error(self.request, "Primero debes seleccionar un color")
             return return_url
 
-        instance.state = instance.get_next_state()
+        if not next_step:
+            state = instance.get_previous_state()
+
+        instance.state = state
         instance.save()
         messages.success(self.request, "Estado del item de impresion actualizado")
         return return_url

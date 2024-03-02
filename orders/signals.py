@@ -55,7 +55,7 @@ def generate_print_order_item(sender, instance, **kwargs):
         instance.product.stock += instance.quantity
         instance.product.save()
 
-    elif instance.state == "pending" and instance.order.state == "completed":
+    elif instance.state == "pending":
         instance.order.state = "pending"
         instance.order.save()
 
@@ -85,3 +85,7 @@ def update_print_order_item(sender, instance, **kwargs):
         instance.order_item.save()
         instance.color.remaining -= instance.print.grams
         instance.color.save()
+
+    elif instance.state == "pending":
+        instance.order_item.state = "pending"
+        instance.order_item.save()
