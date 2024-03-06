@@ -1,7 +1,7 @@
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
-from orders.models import OrderItem, PrintOrderItem, Order
+from orders.models import Order, OrderItem, PrintOrderItem
 
 
 @receiver(post_save, sender=Order)
@@ -66,6 +66,10 @@ def generate_print_order_item(sender, instance, **kwargs):
     elif instance.state == "delivered":
         instance.product.stock -= instance.quantity
         instance.product.save()
+        instance.print_order_items.all().update(state="delivered")
+
+    elif instance.state == "paid":
+        instance.print_order_items.all().update(state="paid")
 
 
 @receiver(post_save, sender=PrintOrderItem)
@@ -74,7 +78,7 @@ def update_print_order_item(sender, instance, **kwargs):
         all_order_items_completed = instance.order_item.print_order_items.filter(
             state="completed"
         ).count()
-        all_order_items = instance.order_item.print_order_items.count()
+        all_order_items = instance.order_item.print_order_items.all().count()
 
         if all_order_items_completed == all_order_items:
             instance.order_item.state = "completed"

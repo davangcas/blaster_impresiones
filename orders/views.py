@@ -1,3 +1,5 @@
+import ast
+
 from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse_lazy
@@ -8,7 +10,6 @@ from django.views.generic import (
     RedirectView,
     UpdateView,
 )
-import ast
 
 from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from orders.forms import (
@@ -120,10 +121,14 @@ class OrderItemListView(PostListViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        order = Order.objects.get(id=self.kwargs.get("pk"))
         context["title"] = "Items"
-        context["create_url"] = reverse_lazy(
-            "orders:items_create", kwargs={"pk": self.kwargs.get("pk")}
-        )
+
+        if order.state not in ("paid", "delivered"):
+            context["create_url"] = reverse_lazy(
+                "orders:items_create", kwargs={"pk": self.kwargs.get("pk")}
+            )
+
         context["active_section"] = "orders"
         context["order"] = Order.objects.get(id=self.kwargs.get("pk"))
         return context

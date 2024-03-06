@@ -38,22 +38,36 @@
                         targets: [-1],
                         orderable: false,
                         render: function (data, type, row) {
+                            let change_state_foward_content = "";
+                            let change_state_cancel_content = "";
+                            let update_content = "";
                             let update_url = "{% url 'orders:print_order_items_update' 0 %}".replace("0", data);
                             let change_state_url = "{% url 'orders:print_order_items_change_state' 0 %}".replace("0", data);
                             let detail_url = "{% url 'orders:print_order_items_detail' 0 %}".replace("0", data);
-                            return `
-                                <a href="${change_state_url}?next_step=True" class="btn btn-dark">
-                                    <i class="fas fa-step-forward"></i>
-                                </a>
-                                <a href="${change_state_url}?next_step=False" class="btn btn-danger">
-                                    <i class="fas fa-times-circle"></i>
-                                </a>
-                                <a href="${update_url}" class="btn btn-primary">
-                                    <i class="fas fa-tint"></i>
-                                </a>
+                            let detail_content = `
                                 <a href="${detail_url}" class="btn btn-info">
                                     <i class="fas fa-eye"></i>
-                                </a>
+                                </a>`;
+
+                            if (!["delivered", "paid"].includes(row.state_code)){
+                                change_state_foward_content = `
+                                    <a href="${change_state_url}?next_step=True" class="btn btn-dark">
+                                        <i class="fas fa-step-forward"></i>
+                                    </a>`;
+                                change_state_cancel_content = `
+                                    <a href="${change_state_url}?next_step=False" class="btn btn-danger">
+                                        <i class="fas fa-times-circle"></i>
+                                    </a>`;
+                                update_content = `
+                                    <a href="${update_url}" class="btn btn-primary">
+                                        <i class="fas fa-tint"></i>
+                                    </a>`;
+                            }
+                            return `
+                                ${change_state_foward_content}
+                                ${change_state_cancel_content}
+                                ${update_content}
+                                ${detail_content}
                             `;
                         },
                     },

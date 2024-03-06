@@ -57,4 +57,6 @@ class PrintOrderItemUpdateForm(DefaultModelForm):
         ] = "select2bs4 select2-hidden-accessible"
         self.fields["color"].widget.attrs["style"] = "width: 100%;"
         self.fields["color"].empty_label = "Seleccione un color"
-        self.fields["color"].queryset = self.instance.print.material.printmaterialcolor_set.all()
+        self.fields["color"].queryset = (
+            self.instance.print.material.printmaterialcolor_set.all()
+        )

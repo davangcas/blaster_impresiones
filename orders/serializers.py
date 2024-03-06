@@ -23,6 +23,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
     product = serializers.StringRelatedField()
     total = serializers.SerializerMethodField()
     state = serializers.CharField(source="get_state_display_with_style")
+    state_code = serializers.CharField(source="state")
 
     class Meta:
         model = OrderItem
@@ -36,6 +37,7 @@ class PrintOrderItemSerializer(serializers.ModelSerializer):
     order_item = OrderItemSerializer()
     print = PrintSerializer()
     state = serializers.CharField(source="get_state_display_with_style")
+    state_code = serializers.CharField(source="state")
     color = serializers.SerializerMethodField()
 
     class Meta:

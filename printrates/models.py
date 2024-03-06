@@ -28,7 +28,9 @@ class MonthlyCost(models.Model):
 
 class PrintRateVariables(models.Model):
     failure_percentage = models.PositiveSmallIntegerField(default=0)
-    maintenance_cost = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+    maintenance_cost = models.DecimalField(
+        max_digits=15, decimal_places=2, default=0.00
+    )
     minutes_spent_per_print = models.PositiveSmallIntegerField(default=0)
     extra_percentage = models.PositiveSmallIntegerField(default=0)
     available_printers = models.PositiveSmallIntegerField(default=1)
