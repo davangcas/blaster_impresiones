@@ -5,12 +5,12 @@ from django.forms.fields import DateField, TimeField
 from core.fields import (
     CommonLayout,
     CustomDateField,
+    CustomPercentageField,
+    CustomPercentageFieldLayout,
     CustomPriceDecimalField,
     CustomPriceFieldLayout,
     CustomSelectMultiple,
     CustomTimeField,
-    CustomPercentageField,
-    CustomPercentageFieldLayout,
 )
 
 

@@ -1,9 +1,9 @@
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from printrates.models import PrintRate, PrintRateVariables, MonthlyCost
-from prints.models import Print
+from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
 from printrates.services import update_print_rate
+from prints.models import Print
 
 
 @receiver(post_save, sender=PrintRate)

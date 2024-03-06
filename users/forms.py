@@ -4,8 +4,8 @@ from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from core.forms import DefaultModelForm
 from core.fields import CustomPriceDecimalField
+from core.forms import DefaultModelForm
 from users.models import Role, User
 
 

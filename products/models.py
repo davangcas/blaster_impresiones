@@ -17,7 +17,9 @@ class Product(models.Model):
 
 
 class ExtraProductCost(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="extra_costs")
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="extra_costs"
+    )
     cost = models.DecimalField(max_digits=10, decimal_places=2)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)

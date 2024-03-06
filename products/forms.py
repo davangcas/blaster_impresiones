@@ -1,10 +1,11 @@
-from core.forms import DefaultModelForm
-from products.models import Product, ExtraProductCost
 from django import forms
+
 from core.fields import CustomPriceDecimalField
+from core.forms import DefaultModelForm
+from products.models import ExtraProductCost, Product
 
 
-class ProductEditForm(DefaultModelForm):
+class ProductCreateEditForm(DefaultModelForm):
     available = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Disponible",
@@ -29,9 +30,6 @@ class ProductEditForm(DefaultModelForm):
         model = Product
         fields = ("name", "link", "description", "image", "stock", "available")
 
-
-class ProductCreateForm(ProductEditForm):
-    pass
 
 class ExtraProductCostUpdateForm(DefaultModelForm):
     cost = CustomPriceDecimalField(

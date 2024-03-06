@@ -4,13 +4,12 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 
 from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from products.forms import (
-    ProductCreateForm,
-    ProductEditForm,
-    ExtraProductCostUpdateForm,
     ExtraProductCostCreateForm,
+    ExtraProductCostUpdateForm,
+    ProductCreateEditForm,
 )
-from products.models import Product, ExtraProductCost
-from products.serializers import ProductSerializer, ExtraProductCostSerializer
+from products.models import ExtraProductCost, Product
+from products.serializers import ExtraProductCostSerializer, ProductSerializer
 
 
 class ProductListView(PostListViewMixin):
@@ -31,7 +30,7 @@ class ProductCreateView(CustomAdminViewMixin, CreateView):
     model = Product
     template_name = "products/create.html"
     success_url = reverse_lazy("products:list")
-    form_class = ProductCreateForm
+    form_class = ProductCreateEditForm
     permission_required = "products.add_product"
 
     def form_valid(self, form):
@@ -54,7 +53,7 @@ class ProductUpdateView(CustomAdminViewMixin, UpdateView):
     model = Product
     template_name = "products/update.html"
     success_url = reverse_lazy("products:list")
-    form_class = ProductEditForm
+    form_class = ProductCreateEditForm
     permission_required = "products.change_product"
 
     def form_valid(self, form):

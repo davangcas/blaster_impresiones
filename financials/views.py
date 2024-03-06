@@ -1,6 +1,6 @@
-from django.views.generic import TemplateView, ListView
+from django.views.generic import ListView
 
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import PostListViewMixin
 from financials.models import Account, Transaction
 from financials.serializers import TransactionSerializer
 

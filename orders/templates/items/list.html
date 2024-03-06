@@ -67,6 +67,9 @@
                         targets: [-1],
                         orderable: false,
                         render: function (data, type, row) {
+                            let update_content = "";
+                            let delete_content = "";
+
                             let update_url = `{% url 'orders:items_update' 0 %}`.replace(
                                 "0",
                                 data
@@ -79,16 +82,25 @@
                                 "0",
                                 data
                             );
-                            return `
+                            let detail_content = `
                                 <a href="${detail_url}" class="btn btn-info">
                                     <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="${update_url}" class="btn btn-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="${delete_url}" class="btn btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                                </a>`;
+
+                            if (!["delivered", "paid"].includes(row.state_code)){
+                                update_content = `
+                                    <a href="${update_url}" class="btn btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>`;
+                                delete_content = `
+                                    <a href="${delete_url}" class="btn btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>`;
+                            }
+                            return `
+                                ${detail_content}
+                                ${update_content}
+                                ${delete_content}
                             `;
                         },
                     },

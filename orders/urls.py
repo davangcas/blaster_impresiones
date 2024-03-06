@@ -1,6 +1,7 @@
 from django.urls import path
 
 from orders.views import (
+    OrderChangeStateRedirectView,
     OrderCreateView,
     OrderDeleteView,
     OrderItemCreateView,
@@ -9,11 +10,10 @@ from orders.views import (
     OrderItemUpdateView,
     OrderListView,
     OrderUpdateView,
+    PrintOrderItemChangeStateView,
+    PrintOrderItemDetailView,
     PrintOrderItemListView,
     PrintOrderItemUpdateView,
-    PrintOrderItemChangeStateView,
-    OrderChangeStateRedirectView,
-    PrintOrderItemDetailView,
 )
 
 app_name = "orders"

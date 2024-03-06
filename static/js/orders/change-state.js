@@ -14,7 +14,7 @@ const getChangeOrderStateButton = (url, state) => {
 };
 
 const getAddOrderItemButton = (url, state) => {
-    if (!["pending", "in_process", "completed"].includes(state)) {
+    if (["paid", "delivered"].includes(state)) {
         return "";
     }
 

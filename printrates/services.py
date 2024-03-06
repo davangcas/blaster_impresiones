@@ -1,7 +1,9 @@
-from printrates.models import PrintRate, MonthlyCost, PrintRateVariables
-from users.models import User
-from django.db.models import Sum
 from decimal import Decimal
+
+from django.db.models import Sum
+
+from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
+from users.models import User
 
 
 def obtain_print_rate():

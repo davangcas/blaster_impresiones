@@ -122,3 +122,10 @@ class PrintOrderItem(models.Model):
         if self.state == "in_progress":
             return "completed"
         return self.state
+
+    def get_previous_state(self):
+        if self.state == "in_progress":
+            return "pending"
+        if self.state == "completed":
+            return "completed"
+        return self.state

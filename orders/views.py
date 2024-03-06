@@ -1,3 +1,5 @@
+import ast
+
 from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse_lazy
@@ -119,10 +121,14 @@ class OrderItemListView(PostListViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        order = Order.objects.get(id=self.kwargs.get("pk"))
         context["title"] = "Items"
-        context["create_url"] = reverse_lazy(
-            "orders:items_create", kwargs={"pk": self.kwargs.get("pk")}
-        )
+
+        if order.state not in ("paid", "delivered"):
+            context["create_url"] = reverse_lazy(
+                "orders:items_create", kwargs={"pk": self.kwargs.get("pk")}
+            )
+
         context["active_section"] = "orders"
         context["order"] = Order.objects.get(id=self.kwargs.get("pk"))
         return context
@@ -262,6 +268,8 @@ class PrintOrderItemUpdateView(CustomAdminViewMixin, UpdateView):
 class PrintOrderItemChangeStateView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         instance = PrintOrderItem.objects.get(id=kwargs.get("pk"))
+        next_step = ast.literal_eval(self.request.GET.get("next_step", "True"))
+        state = instance.get_next_state()
         return_url = reverse_lazy(
             "orders:print_order_items", kwargs={"pk": instance.order_item_id}
         )
@@ -270,7 +278,10 @@ class PrintOrderItemChangeStateView(RedirectView):
             messages.error(self.request, "Primero debes seleccionar un color")
             return return_url
 
-        instance.state = instance.get_next_state()
+        if not next_step:
+            state = instance.get_previous_state()
+
+        instance.state = state
         instance.save()
         messages.success(self.request, "Estado del item de impresion actualizado")
         return return_url

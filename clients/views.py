@@ -1,11 +1,11 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, UpdateView
 
-from clients.forms import ClientCreateForm, ClientEditForm
+from clients.forms import ClientCreateEditForm
 from clients.models import Client
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from clients.serializers import ClientSerializer
+from core.mixins import CustomAdminViewMixin, PostListViewMixin
 
 
 class ClientListView(PostListViewMixin):
@@ -26,7 +26,7 @@ class ClientCreateView(CustomAdminViewMixin, CreateView):
     model = Client
     template_name = "clients/create.html"
     success_url = reverse_lazy("clients:list")
-    form_class = ClientCreateForm
+    form_class = ClientCreateEditForm
     permission_required = "clients.add_client"
 
     def form_valid(self, form):
@@ -49,7 +49,7 @@ class ClientUpdateView(CustomAdminViewMixin, UpdateView):
     model = Client
     template_name = "clients/update.html"
     success_url = reverse_lazy("clients:list")
-    form_class = ClientEditForm
+    form_class = ClientCreateEditForm
     permission_required = "clients.change_client"
 
     def form_valid(self, form):
