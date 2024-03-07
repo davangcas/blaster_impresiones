@@ -31,7 +31,6 @@
                         orderable: false,
                         render: function (data, type, row) {
                             let update_content = "";
-                            let delete_content = "";
                             let update_url = `{% url 'orders:update' 0 %}`.replace(
                                 "0",
                                 data
@@ -54,15 +53,15 @@
                             );
                             let change_state_content = getChangeOrderStateButton(action_url, row.state_code);
                             let add_item_button = getAddOrderItemButton(item_create_url, row.state_code);
+                            let delete_content = `
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>`;
 
                             if (!["paid", "delivered"].includes(row.state_code)){
                                 update_content = `
                                     <a href="${update_url}" class="btn btn-warning">
                                         <i class="fas fa-edit"></i>
-                                    </a>`;
-                                delete_content = `
-                                    <a href="${delete_url}" class="btn btn-danger">
-                                        <i class="fas fa-trash"></i>
                                     </a>`;
                             }
 

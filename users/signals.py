@@ -1,4 +1,5 @@
-from django.db.models.signals import post_delete, post_save
+from django.db import transaction
+from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 
 from financials.models import Account
@@ -8,15 +9,21 @@ from users.models import Role, User
 
 @receiver(post_save, sender=User)
 def user_post_save(sender, instance, created, **kwargs):
-    instance.user_permissions.clear()
-    instance.user_permissions.add(*instance.role.permissions.all())
+    current_permissions = list(instance.user_permissions.all())
+    new_permissions = list(instance.role.permissions.all())
     update_print_rate()
+
+    if created or set(new_permissions) != set(current_permissions):
+        instance.user_permissions.clear()
+        instance.user_permissions.add(*instance.role.permissions.all())
 
     if not instance.account:
         instance.account = Account.objects.create(
             name=instance.username, account_type="equity"
         )
-        instance.save()
+        if not hasattr(instance, "_saving"):
+            instance._saving = True
+            instance.save()
 
 
 @receiver(post_delete, sender=User)
@@ -24,8 +31,18 @@ def user_post_delete(sender, instance, **kwargs):
     update_print_rate()
 
 
-@receiver(post_save, sender=Role)
-def role_post_save(sender, instance, created, **kwargs):
-    for user in instance.users.all():
-        user.user_permissions.clear()
-        user.user_permissions.add(*instance.permissions.all())
+@receiver(m2m_changed, sender=Role.permissions.through)
+def role_permissions_changed(
+    sender, instance, action, reverse, model, pk_set, **kwargs
+):
+    if action in ("post_add", "post_remove", "post_clear"):
+        new_permissions = list(instance.permissions.all())
+
+        with transaction.atomic():
+            for user in instance.users.prefetch_related("user_permissions").all():
+                current_permissions = list(user.user_permissions.all())
+
+                if set(new_permissions) != set(current_permissions):
+                    user.user_permissions.clear()
+                    user.user_permissions.add(*new_permissions)
+                    user.save()
