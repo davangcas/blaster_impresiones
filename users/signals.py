@@ -2,7 +2,6 @@ from django.db import transaction
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 
-from financials.models import Account
 from printrates.services import update_print_rate
 from users.models import Role, User
 
@@ -11,19 +10,12 @@ from users.models import Role, User
 def user_post_save(sender, instance, created, **kwargs):
     current_permissions = list(instance.user_permissions.all())
     new_permissions = list(instance.role.permissions.all())
+    instance.accounts.all().update(name=instance.username)
     update_print_rate()
 
     if created or set(new_permissions) != set(current_permissions):
         instance.user_permissions.clear()
         instance.user_permissions.add(*instance.role.permissions.all())
-
-    if not instance.account:
-        instance.account = Account.objects.create(
-            name=instance.username, account_type="equity"
-        )
-        if not hasattr(instance, "_saving"):
-            instance._saving = True
-            instance.save()
 
 
 @receiver(post_delete, sender=User)

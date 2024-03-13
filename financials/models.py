@@ -1,67 +1,62 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from financials.choices import ACCOUNT_TYPES
+from users.models import User
 
 
 class Account(models.Model):
-    name = models.CharField(max_length=255)
-    account_type = models.CharField(max_length=255, choices=ACCOUNT_TYPES)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    account_type = models.CharField(max_length=15, choices=ACCOUNT_TYPES)
     balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="accounts", blank=True, null=True
+    )
+    historical = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return self.name or self.user.username
 
-    @classmethod
-    def calculate_equity(cls):
-        assets = (
-            cls.objects.filter(account_type="asset").aggregate(
-                total=models.Sum("balance")
-            )["total"]
-            or 0
-        )
-        liabilities = (
-            cls.objects.filter(account_type="liability").aggregate(
-                total=models.Sum("balance")
-            )["total"]
-            or 0
-        )
-        return assets - liabilities
-
-    @classmethod
-    def calculate_income(cls):
+    @property
+    def incomes(self):
         return (
-            cls.objects.filter(account_type="income").aggregate(
-                total=models.Sum("balance")
-            )["total"]
+            self.incoming_transactions.aggregate(models.Sum("amount"))["amount__sum"]
             or 0
         )
 
-    @classmethod
-    def calculate_expense(cls):
+    @property
+    def expenses(self):
         return (
-            cls.objects.filter(account_type="expense").aggregate(
-                total=models.Sum("balance")
-            )["total"]
+            self.outgoing_transactions.aggregate(models.Sum("amount"))["amount__sum"]
             or 0
         )
 
 
 class Transaction(models.Model):
-    date = models.DateField()
-    description = models.CharField(max_length=255)
-    amount = models.DecimalField(max_digits=15, decimal_places=2)
-    account = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name="transactions"
+    from_account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name="outgoing_transactions",
+        null=True,
+        blank=True,
     )
+    to_account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name="incoming_transactions",
+        null=True,
+        blank=True,
+    )
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    description = models.TextField(blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=True)
+    historical = HistoricalRecords()
 
     def __str__(self):
         return self.description
 
+    def get_from_account_name(self):
+        return self.from_account.name if self.from_account else "Fuentes Externas"
 
-class Sale(models.Model):
-    date = models.DateField()
-    amount = models.DecimalField(max_digits=15, decimal_places=2)
-    related_transaction = models.ManyToManyField(Transaction, related_name="sales")
-
-    def __str__(self):
-        return f"{self.date} - {self.amount}"
+    def get_to_account_name(self):
+        return self.to_account.name if self.to_account else "Fuentes Externas"

@@ -24,54 +24,78 @@
                         <p>Inicio</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{% url 'clients:list' %}" class="nav-link" selection="clients">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Clientes</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'products:list' %}" class="nav-link" selection="products">
-                        <i class="nav-icon fas fa-box"></i>
-                        <p>Productos</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'orders:list' %}" class="nav-link" selection="orders">
-                        <i class="nav-icon fas fa-clipboard-list"></i>
-                        <p>Pedidos</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'prints:materials' %}" class="nav-link" selection="materials">
-                        <i class="nav-icon fas fa-ring"></i>
-                        <p>Materiales</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'financials:account' %}" class="nav-link" selection="financials">
-                        <i class="nav-icon fas fa-cash-register"></i>
-                        <p>Caja</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'users:list' %}" class="nav-link" selection="users">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>Usuarios</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'users:roles' %}" class="nav-link" selection="roles">
-                        <i class="nav-icon fas fa-user-tag"></i>
-                        <p>Roles</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'printrates:list' %}" class="nav-link" selection="configuration">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>Configuracion</p>
-                    </a>
-                </li>
+                {% if perms.clients.view_client %}
+                    <li class="nav-item">
+                        <a href="{% url 'clients:list' %}" class="nav-link" selection="clients">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Clientes</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.products.view_product %}
+                    <li class="nav-item">
+                        <a href="{% url 'products:list' %}" class="nav-link" selection="products">
+                            <i class="nav-icon fas fa-box"></i>
+                            <p>Productos</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.orders.view_order %}
+                    <li class="nav-item">
+                        <a href="{% url 'orders:list' %}" class="nav-link" selection="orders">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>Pedidos</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.prints.view_printmaterial %}
+                    <li class="nav-item">
+                        <a href="{% url 'prints:materials' %}" class="nav-link" selection="materials">
+                            <i class="nav-icon fas fa-ring"></i>
+                            <p>Materiales</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.financials.view_account %}
+                    <li class="nav-item">
+                        <a href="{% url 'financials:account' %}" class="nav-link" selection="financials">
+                            <i class="nav-icon fas fa-university"></i>
+                            <p>Cuenta</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.financials.view_transaction %}
+                    <li class="nav-item">
+                        <a href="{% url 'financials:transactions' %}" class="nav-link" selection="transactions">
+                            <i class="nav-icon fas fa-hand-holding-usd"></i>
+                            <p>Transacciones</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.users.view_user %}
+                    <li class="nav-item">
+                        <a href="{% url 'users:list' %}" class="nav-link" selection="users">
+                            <i class="nav-icon fas fa-users-cog"></i>
+                            <p>Usuarios</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.users.view_role %}
+                    <li class="nav-item">
+                        <a href="{% url 'users:roles' %}" class="nav-link" selection="roles">
+                            <i class="nav-icon fas fa-user-tag"></i>
+                            <p>Roles</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.printrates.view_printrate %}
+                    <li class="nav-item">
+                        <a href="{% url 'printrates:list' %}" class="nav-link" selection="configuration">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>Configuracion</p>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </nav>
     </div>
