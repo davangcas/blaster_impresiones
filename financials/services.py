@@ -10,7 +10,7 @@ def distribute_payment(order_instance):
     sale_transaction = Transaction.objects.create(
         to_account=organization_account,
         amount=order_instance.get_total_cost(),
-        description=f"Venta de productos de la orden {order_instance.id}",
+        description=f"Venta de productos - {order_instance}",
     )
 
     total_salaries_amount = (
@@ -43,5 +43,5 @@ def distribute_payment(order_instance):
             from_account=organization_account,
             to_account=account,
             amount=salary_amount,
-            description=f"Pago de salario por orden {order_instance.id}",
+            description=f"Pago de salario - {order_instance}",
         )

@@ -7,6 +7,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     from_account = serializers.SerializerMethodField()
     to_account = serializers.SerializerMethodField()
     date = serializers.DateTimeField(format="%d/%m/%Y %H:%M")
+    amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Transaction
@@ -27,3 +28,6 @@ class TransactionSerializer(serializers.ModelSerializer):
             to_account = obj.to_account.name
 
         return to_account
+
+    def get_amount(self, obj):
+        return f"${obj.amount}"

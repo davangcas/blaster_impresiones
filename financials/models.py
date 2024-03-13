@@ -10,7 +10,7 @@ class Account(models.Model):
     account_type = models.CharField(max_length=15, choices=ACCOUNT_TYPES)
     balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="accounts", blank=True, null=True
+        User, on_delete=models.SET_NULL, related_name="accounts", blank=True, null=True
     )
     historical = HistoricalRecords()
 
