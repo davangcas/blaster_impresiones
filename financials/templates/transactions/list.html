@@ -1,0 +1,86 @@
+{% extends 'core/list.html' %}
+
+{% block previous_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Cuenta de Blaster</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Disponible</span>
+                                    <span class="info-box-number text-center text-muted mb-0">$ {{ account.balance }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Ingresos</span>
+                                    <span class="info-box-number text-center text-muted mb-0">$ {{ account.incomes }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Egresos</span>
+                                    <span class="info-box-number text-center text-muted mb-0">$ {{ account.expenses }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block table_headers %}
+    <th>Fecha</th>
+    <th>Concepto</th>
+    <th>Monto</th>
+    <th>Origen</th>
+    <th>Destino</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block table_scripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: window.location.href,
+                columns: [
+                    { data: "date" },
+                    { data: "description" },
+                    { data: "amount" },
+                    { data: "from_account" },
+                    { data: "to_account" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let delete_url = `{% url 'financials:transactions_delete' 0 %}`.replace(
+                                "0",
+                                data
+                            );
+                            return `
+                                <a href="${delete_url}" class="btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        },
+                    },
+                ],
+            });
+        });
+    </script>
+{% endblock %}

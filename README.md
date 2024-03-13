@@ -97,6 +97,37 @@ docker compose down --volumes
 python manage.py runserver
 ```
 
+## Crear un nuevo usuario
+- Para crear un nuevo usuario y poder ingresar al sitio administrativo se debe correr el siguiente script:
+
+```python
+from django.contrib.auth.models import Permission
+from users.models import Role, User
+
+username = input("Ingrese el username : ")
+password = input("Ingrese la contraseña : ")
+email = input("Ingrese el email : ")
+super_user_role = Role.objects.get_or_create(
+    name="Super Usuario",
+)
+super_user_role = super_user_role[0]
+super_user_role.permissions.add(*Permission.objects.all())
+super_user_role.save()
+super_user_role.refresh_from_db()
+
+user = User.objects.get_or_create(
+    username=username,
+    email=email,
+    first_name=username,
+    last_name=username,
+    role=super_user_role,
+)[0]
+user.set_password(password)
+user.save()
+print("Usuario generado correctamente")
+```
+
+
 ## Proceso de desarrollo
 
 - Se debe ubicar primeramente en la rama develop

@@ -1,5 +1,3 @@
-from typing import Any
-
 from django import forms
 
 from core.fields import CustomPriceDecimalField
@@ -153,7 +151,7 @@ class PrintMaterialColorUpdateForm(DefaultModelForm):
         model = PrintMaterialColor
         exclude = ("material",)
 
-    def clean_color(self) -> Any:
+    def clean_color(self):
         color = self.cleaned_data["color"]
         material = PrintMaterial.objects.get(id=self.material_id)
         filter_lookup = {"material": material, "color": color}

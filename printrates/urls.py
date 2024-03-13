@@ -1,21 +1,20 @@
 from django.urls import path
 
 from printrates.views import (
-    PrintRateListView,
-    PrintRateCreateView,
-    PrintRateUpdateView,
-    PrintRateDeleteView,
-    MonthlyCostListView,
-    MonthlyCostCreateView,
-    MonthlyCostUpdateView,
-    MonthlyCostDeleteView,
-    PrintRateVariablesListView,
-    PrintRateVariablesCreateView,
-    PrintRateVariablesUpdateView,
-    PrintRateVariablesDeleteView,
     GenerateNewPrintRateView,
+    MonthlyCostCreateView,
+    MonthlyCostDeleteView,
+    MonthlyCostListView,
+    MonthlyCostUpdateView,
+    PrintRateCreateView,
+    PrintRateDeleteView,
+    PrintRateListView,
+    PrintRateUpdateView,
+    PrintRateVariablesCreateView,
+    PrintRateVariablesDeleteView,
+    PrintRateVariablesListView,
+    PrintRateVariablesUpdateView,
 )
-
 
 app_name = "printrates"
 urlpatterns = [

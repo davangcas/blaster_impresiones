@@ -1,7 +1,8 @@
+from django import forms
+
+from core.fields import CustomPercentageField, CustomPriceDecimalField
 from core.forms import DefaultModelForm
 from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
-from django import forms
-from core.fields import CustomPriceDecimalField, CustomPercentageField
 
 
 class PrintRateForm(DefaultModelForm):

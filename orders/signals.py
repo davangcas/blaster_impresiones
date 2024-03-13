@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
+from financials.services import distribute_payment
 from orders.models import Order, OrderItem, PrintOrderItem
 
 
@@ -10,6 +11,9 @@ def update_order(sender, instance, **kwargs):
         for item in instance.items.all():
             item.state = instance.state
             item.save()
+
+    if instance.state == "paid":
+        distribute_payment(instance)
 
 
 @receiver(pre_save, sender=OrderItem)

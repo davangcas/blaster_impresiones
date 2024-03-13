@@ -33,6 +33,7 @@ THIRD_APPS = [
     "crispy_forms",
     "crispy_bootstrap4",
     "widget_tweaks",
+    "django_extensions",
 ]
 
 # Application definition

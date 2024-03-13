@@ -1,0 +1,6 @@
+{% extends 'core/delete.html' %}
+{% load static %}
+
+{% block delete_message %}
+    ¿Está seguro de querer eliminar la transaccion desde <b>{{ object.get_from_account_name }}</b> hacia <b>{{ object.get_to_account_name }}</b> ?
+{% endblock %}
