@@ -1,5 +1,45 @@
 {% extends 'core/list.html' %}
 
+{% block previous_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Precio de impresion por hora</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Actual</span>
+                                    <span class="info-box-number text-center text-muted mb-0">$ {{ current_printrate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Anterior</span>
+                                    <span class="info-box-number text-center text-muted mb-0">$ {{ previous_printrate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="info-box bg-light">
+                                <div class="info-box-content">
+                                    <span class="info-box-text text-center text-muted">Primero</span>
+                                    <span class="info-box-number text-center text-muted mb-0">$ {{ first_printrate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block custom_list_card_buttons %}
     <a href="{% url 'printrates:generate_new_rate' %}" class="btn btn-success">
         <i class="fas fa-magic"></i> Generar valor automaticamente

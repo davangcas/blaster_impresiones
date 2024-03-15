@@ -121,6 +121,7 @@ user = User.objects.get_or_create(
     first_name=username,
     last_name=username,
     role=super_user_role,
+    is_superuser=True,
 )[0]
 user.set_password(password)
 user.save()

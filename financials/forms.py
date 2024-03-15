@@ -27,13 +27,25 @@ class TransactionCreateEditForm(DefaultModelForm):
         ] = "select2bs4 select2-hidden-accessible"
         self.fields["from_account"].widget.attrs["style"] = "width: 100%;"
         self.fields["from_account"].empty_label = "Cuenta Externa"
+        self.fields["from_account"].queryset = self.fields[
+            "from_account"
+        ].queryset.filter(user__isnull=False, account_type="USER") | self.fields[
+            "from_account"
+        ].queryset.filter(
+            user__isnull=True, account_type="ORGANIZATION"
+        )
         self.fields["to_account"].label = "Cuenta Destino"
         self.fields["to_account"].widget.attrs[
             "class"
         ] = "select2bs4 select2-hidden-accessible"
         self.fields["to_account"].widget.attrs["style"] = "width: 100%;"
         self.fields["to_account"].empty_label = "Cuenta Externa"
-        self.fields["description"].label = "Descripción"
+        self.fields["to_account"].queryset = self.fields["to_account"].queryset.filter(
+            user__isnull=False, account_type="USER"
+        ) | self.fields["to_account"].queryset.filter(
+            user__isnull=True, account_type="ORGANIZATION"
+        )
+        self.fields["description"].label = "Concepto"
         self.fields["description"].required = True
 
     def clean_to_account(self):

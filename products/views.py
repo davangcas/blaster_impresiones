@@ -96,6 +96,9 @@ class ExtraProductCostListView(PostListViewMixin):
     permission_required = "products.view_extraproductcost"
     serializer_class = ExtraProductCostSerializer
 
+    def get_queryset(self):
+        return super().get_queryset().filter(product_id=self.kwargs.get("pk"))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Costos adicionales"

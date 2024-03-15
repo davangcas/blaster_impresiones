@@ -21,7 +21,25 @@ class PrintRateListView(PostListViewMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Precio de impresión por hora"
+        current_printrate_price = 0
+        previous_printrate_price = 0
+        first_printrate_price = 0
+
+        current_printrate = PrintRate.objects.order_by("-created_at").first()
+        previous_printrate = PrintRate.objects.order_by("-created_at")[1] if PrintRate.objects.count() > 1 else None
+        first_printrate = PrintRate.objects.order_by("created_at").first()
+
+        if current_printrate:
+            current_printrate_price = current_printrate.rate
+        if previous_printrate:
+            previous_printrate_price = previous_printrate.rate
+        if first_printrate:
+            first_printrate_price = first_printrate.rate
+
+        context["title"] = "Precios de impresión por hora - historial"
+        context["current_printrate"] = current_printrate_price
+        context["previous_printrate"] = previous_printrate_price
+        context["first_printrate"] = first_printrate_price
         context["create_url"] = reverse_lazy("printrates:create")
         context["active_section"] = "configuration"
         return context

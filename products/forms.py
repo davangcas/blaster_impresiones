@@ -10,7 +10,7 @@ class ProductCreateEditForm(DefaultModelForm):
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Disponible",
         required=False,
-        initial=True,
+        initial=False,
         help_text="Indica si el producto está disponible para la venta",
     )
 
@@ -22,9 +22,8 @@ class ProductCreateEditForm(DefaultModelForm):
         self.fields["description"].label = "Descripción"
         self.fields["name"].label = "Nombre"
         self.fields["link"].label = "Enlace"
-        self.fields["link"].required = False
+        self.fields["link"].required = True
         self.fields["link"].help_text = "Enlace a la página de los modelos del producto"
-        self.fields["link"].widget.attrs["placeholder"] = "(opcional)"
 
     class Meta:
         model = Product

@@ -6,6 +6,7 @@ from core.mixins import CustomAdminViewMixin, PostListViewMixin
 from financials.forms import TransactionCreateEditForm, TransactionCreateFromAccountForm
 from financials.models import Account, Transaction
 from financials.serializers import TransactionSerializer
+from financials.choices import ACCOUNT_TYPES
 
 
 class AccountDetailView(CustomAdminViewMixin, TemplateView):
@@ -17,10 +18,10 @@ class AccountDetailView(CustomAdminViewMixin, TemplateView):
         context["title"] = "Cuenta Personal"
         context["active_section"] = "financials"
         context["account"] = Account.objects.get_or_create(
-            user=self.request.user, name=self.request.user.username
+            user=self.request.user, name=self.request.user.username, account_type=ACCOUNT_TYPES[1][0]
         )[0]
         context["organization_account"] = Account.objects.get_or_create(
-            user=None, name="blaster"
+            user=None, name="blaster", account_type=ACCOUNT_TYPES[0][0]
         )[0]
         return context
 
