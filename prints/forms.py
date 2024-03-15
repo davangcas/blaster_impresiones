@@ -173,6 +173,10 @@ class PrintMaterialColorUpdateForm(DefaultModelForm):
 
 
 class PrintMaterialColorCreateForm(PrintMaterialColorUpdateForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["color"].initial = "Blanco"
+
     def save(self, *args, **kwargs):
         instance = super().save(commit=False)
         instance.material_id = self.material_id

@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 
-from printrates.services import update_print_rate
+from printrates.services import generate_print_rate
 from users.models import Role, User
 
 
@@ -11,7 +11,7 @@ def user_post_save(sender, instance, created, **kwargs):
     current_permissions = list(instance.user_permissions.all())
     new_permissions = list(instance.role.permissions.all())
     instance.accounts.all().update(name=instance.username)
-    update_print_rate()
+    generate_print_rate()
 
     if created or set(new_permissions) != set(current_permissions):
         instance.user_permissions.clear()
@@ -20,7 +20,7 @@ def user_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=User)
 def user_post_delete(sender, instance, **kwargs):
-    update_print_rate()
+    generate_print_rate()
 
 
 @receiver(m2m_changed, sender=Role.permissions.through)
