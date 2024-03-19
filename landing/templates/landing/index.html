@@ -1,1 +1,7 @@
-{% extends 'landing/base.html' %}
+{% extends 'landing/base/home.html' %}
+
+{% block content %}
+    {% include 'landing/slider.html' %}
+    {% include 'landing/choose.html' %}
+    {% include 'landing/last_products.html' %}
+{% endblock %}

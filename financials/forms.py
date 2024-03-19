@@ -49,10 +49,14 @@ class TransactionCreateEditForm(DefaultModelForm):
         self.fields["description"].required = True
 
     def clean_to_account(self):
-        if self.cleaned_data["from_account"] == self.cleaned_data["to_account"]:
+        from_account = self.cleaned_data.get("from_account")
+        to_account = self.cleaned_data.get("to_account")
+
+        if from_account == to_account:
             raise forms.ValidationError(
                 "La cuenta origen y la cuenta destino no pueden ser iguales"
             )
+
         return self.cleaned_data["to_account"]
 
 
@@ -61,21 +65,12 @@ class TransactionCreateFromAccountForm(TransactionCreateEditForm):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-    def clean(self):
-        cleaned_data = super().clean()
-        from_account = cleaned_data.get("from_account")
-        to_account = cleaned_data.get("to_account")
-        proceed_with_validation = False
+    def clean_from_account(self):
+        from_account = self.cleaned_data["from_account"]
 
-        if from_account and from_account.user == self.user:
-            proceed_with_validation = True
-
-        if to_account and to_account.user == self.user:
-            proceed_with_validation = True
-
-        if not proceed_with_validation:
+        if not from_account or from_account.user != self.user:
             raise forms.ValidationError(
-                "No puedes realizar transacciones entre cuentas de otros usuarios"
+                "No puedes realizar transacciones desde cuentas que no te pertenecen"
             )
 
-        return cleaned_data
+        return from_account

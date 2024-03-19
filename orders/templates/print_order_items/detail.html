@@ -6,6 +6,7 @@
     <th>Escala Y</th>
     <th>Escala Z</th>
     <th>Cantidad</th>
+    <th>Acciones</th>
 {% endblock %}
 
 {% block list_footer %}
@@ -28,6 +29,26 @@
                     { data: "y_scale" },
                     { data: "z_scale" },
                     { data: "quantity" },
+                    { data: "id" },
+                ],
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                        render: function (data, type, row) {
+                            let model_file = "-";
+
+                            if (row.print_model_file){
+                                model_file = `<a href="${row.print_model_file}" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-download"></i>
+                                </a>`;
+                            }
+
+                            return `
+                                ${model_file}
+                            `;
+                        },
+                    },
                 ],
             });
         });

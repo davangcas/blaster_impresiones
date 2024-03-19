@@ -113,6 +113,7 @@
                         targets: [-1],
                         orderable: false,
                         render: function (data, type, row) {
+                            let g_code_content = "";
                             let update_url = `{% url 'prints:update' 0 %}`.replace(
                                 "0",
                                 data
@@ -125,6 +126,15 @@
                                 "0",
                                 data
                             );
+
+                            if (row.g_code){
+                                g_code_content = `
+                                    <a href="${row.g_code}" target="_blank" class="btn btn-primary">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                `
+                            }
+
                             return `
                                 <a href="${detail_url}" class="btn btn-info">
                                     <i class="fas fa-eye"></i>
@@ -135,6 +145,7 @@
                                 <a href="${delete_url}" class="btn btn-danger">
                                     <i class="fas fa-trash"></i>
                                 </a>
+                                ${g_code_content}
                             `;
                         },
                     },
