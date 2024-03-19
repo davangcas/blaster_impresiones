@@ -36,6 +36,7 @@ class PrintModelRelationSerializer(serializers.ModelSerializer):
     y_scale = serializers.SerializerMethodField()
     z_scale = serializers.SerializerMethodField()
     print_model_id = serializers.SerializerMethodField()
+    print_model_file = serializers.SerializerMethodField()
 
     class Meta:
         model = PrintModelRelation
@@ -53,6 +54,9 @@ class PrintModelRelationSerializer(serializers.ModelSerializer):
 
     def get_print_model_id(self, obj):
         return obj.print_model.id
+
+    def get_print_model_file(self, obj):
+        return obj.print_model.file.url
 
 
 class PrintMaterialColorSerializer(serializers.ModelSerializer):

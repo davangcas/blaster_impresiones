@@ -1,0 +1,77 @@
+{% load static %}
+
+<header id="default_header" class="header_style_1">
+    <div class="header_top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="full">
+                        <div class="topbar-left">
+                            <ul class="list-inline">
+                                <li> <span class="topbar-label"><i class="fa  fa-home"></i></span> <span class="topbar-hightlight">La Rioja - La Rioja - Argentina</span> </li>
+                                <li> <span class="topbar-label"><i class="fa fa-envelope-o"></i></span> <span class="topbar-hightlight"><a href="mailto:blasterimpresiones3d@gmail.com">blasterimpresiones3d@gmail.com</a></span> </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 right_section_header_top">
+                    <div class="float-left">
+                        <div class="social_icon">
+                            <ul class="list-inline">
+                                <li><a class="fa fa-facebook" href="https://www.facebook.com/BasterImpresiones3D" title="Facebook" target="_blank"></a></li>
+                                <li><a class="fa fa-instagram" href="https://www.instagram.com/blaster_impresiones3d/" title="Instagram" target="_blank"></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header_bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                    <div class="logo"> <a href="{% url 'dashboard:index' %}"><img src="{% static 'img/blaster-logo.webp' %}" alt="logo" style="border-radius: 2%;" /></a> </div>
+                </div>
+                <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                    <div class="menu_side">
+                        <div id="navbar_menu">
+                            <ul class="first-ul">
+                                <li>
+                                    <a class="active" href="{% url 'landing:index' %}">Home</a>
+                                </li>
+                                <li>
+                                    <a href="#">Servicios</a>
+                                    <ul>
+                                        <li><a href="#">Impresión 3D</a></li>
+                                        <li><a href="#">Modelado de piezas para imprimir</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Catálogo</a>
+                                    <ul>
+                                        <li><a href="#">Todos los productos</a></li>
+                                        <li><a href="#">Últimas Novedades</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Páginas recomendadas</a>
+                                    <ul>
+                                        <li><a href="https://www.thingiverse.com/" target="_blank">Thingiverse</a></li>
+                                        <li><a href="https://cults3d.com/#" target="_blank">Cults</a></li>
+                                        <li><a href="https://www.myminifactory.com/es/" target="_blank">MyMiniFactory</a></li>
+                                        <li><a href="https://grabcad.com/library" target="_blank">GrabCAD</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Acerca de</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

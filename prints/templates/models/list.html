@@ -74,6 +74,7 @@
                         targets: [-1],
                         orderable: false,
                         render: function (data, type, row) {
+                            let model_file = "";
                             let update_url = `{% url 'prints:models_update' 0 %}`.replace(
                                 "0",
                                 row.print_model_id
@@ -82,6 +83,11 @@
                                 "0",
                                 row.print_model_id
                             );
+                            if (row.print_model_file){
+                                model_file = `<a href="${row.print_model_file}" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-download"></i>
+                                </a>`;
+                            }
                             return `
                                 <a href="${update_url}" class="btn btn-warning">
                                     <i class="fas fa-edit"></i>
@@ -89,6 +95,7 @@
                                 <a href="${delete_url}" class="btn btn-danger">
                                     <i class="fas fa-trash"></i>
                                 </a>
+                                ${model_file}
                             `;
                         },
                     },

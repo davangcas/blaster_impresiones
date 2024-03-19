@@ -1,0 +1,40 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <!-- basic -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- mobile metas -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <!-- site metas -->
+        <title>{{ title }}</title>
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="author" content="Ángel David Castro">
+
+        {% include 'landing/base/css.html' %}
+
+        {% block css %}
+        {% endblock %}
+    </head>
+
+    <body id="default_theme" class="it_service">
+        <div class="bg_load">
+            <img class="loader_animation" src="{% static 'img/blaster-logo.webp' %}" alt="#" />
+        </div>
+        {% include 'landing/base/header.html' %}
+
+        {% block content %}
+        {% endblock %}
+
+        {% include 'landing/base/footer.html' %}
+
+        {% include 'landing/base/scripts.html' %}
+
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>
