@@ -39,7 +39,7 @@
                         <div id="navbar_menu">
                             <ul class="first-ul">
                                 <li>
-                                    <a class="active" href="{% url 'landing:index' %}">Home</a>
+                                    <a href="{% url 'landing:index' %}" selection="home">Home</a>
                                 </li>
                                 <li>
                                     <a href="#">Servicios</a>
@@ -65,7 +65,7 @@
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="#">Acerca de</a>
+                                    <a href="{% url 'landing:about' %}" selection="about">Acerca de</a>
                                 </li>
                             </ul>
                         </div>

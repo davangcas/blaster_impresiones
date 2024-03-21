@@ -31,13 +31,13 @@ a.btn.dark_gray_bt:focus,
 .pagination>.active>span:focus,
 .pagination>.active>span:hover,
 .icon_feature {
-	background: #1289A7;
+	background: #039ee3;
     background-size: 100% 100%;
     border: none;
 }
 
 .theme_bg {
-	background: #1289A7;
+	background: #039ee3;
 }
 
 #navbar_menu > ul > li a.active,
@@ -49,12 +49,12 @@ footer p a:hover,footer p a:focus,
 footer ul.social_icons li a:hover,
 footer ul.social_icons li a:focus,
 .breadcrumb li a {
-    color: #1289A7;
+    color: #039ee3;
 }
 
 .btn.sqaure_bt {
     border-radius: 0;
-    background: #1289A7;
+    background: #039ee3;
 }
 
 .btn.sqaure_bt span {
@@ -67,11 +67,11 @@ footer ul.social_icons li a:focus,
 footer h2::after,
 .footer_mail-section .field button.button_custom,
 .cprt,.contact_us_section {
-	background: #1289A7;
+	background: #039ee3;
 }
 
 .tp-caption.tp-shape.tp-shapewrapper.tp-resizeme.rs-parallaxlevel-0 {
-    background: #1289A7 !important;
+    background: #039ee3 !important;
 }
 
 a.btn.main_bt,
@@ -125,7 +125,7 @@ hr.dottad_border,
 .pagination>.active>span:hover,
 .comment_section,
 .boder_dottat_small {
-	border-color: #1289A7;
+	border-color: #039ee3;
 }
 
 
@@ -192,7 +192,7 @@ a.btn.white_btn:hover {
 }
 
 .tp-bannertimer {
-    background: #1289A7 !important;
+    background: #039ee3 !important;
 }
 
 .tp-caption.tp-shape.tp-shapewrapper.rs-parallaxlevel-0 {

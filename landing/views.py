@@ -12,5 +12,15 @@ class IndexView(TemplateView):
         context["active_section"] = "home"
         context["products"] = Product.objects.filter(
             available=True, image__isnull=False
-        )
+        ).order_by("-id")[:10]
+        return context
+
+
+class AboutView(TemplateView):
+    template_name = "landing/about.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Acerca de nosotros"
+        context["active_section"] = "about"
         return context
