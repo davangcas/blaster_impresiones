@@ -42,18 +42,14 @@
                                     <a href="{% url 'landing:index' %}" selection="home">Home</a>
                                 </li>
                                 <li>
-                                    <a href="#">Servicios</a>
+                                    <a href="#" selection="services">Servicios</a>
                                     <ul>
-                                        <li><a href="#">Impresión 3D</a></li>
-                                        <li><a href="#">Modelado de piezas para imprimir</a></li>
+                                        <li><a href="{% url 'landing:print_service' %}">Impresión 3D</a></li>
+                                        <li><a href="{% url 'landing:modeling_service' %}">Modelado de piezas para imprimir</a></li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="#">Catálogo</a>
-                                    <ul>
-                                        <li><a href="#">Todos los productos</a></li>
-                                        <li><a href="#">Últimas Novedades</a></li>
-                                    </ul>
+                                    <a href="{% url 'landing:index' %}" selection="products">Productos</a>
                                 </li>
                                 <li>
                                     <a href="#">Páginas recomendadas</a>

@@ -1,0 +1,63 @@
+{% extends 'landing/base/home.html' %}
+{% load static %}
+
+{% block content %}
+    <div id="inner_banner" class="section inner_banner_section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="full">
+                        <div class="title-holder">
+                            <div class="title-holder-cell text-left">
+                                <h1 class="page-title">
+                                    Modelado de piezas 3D
+                                </h1>
+                                <ol class="breadcrumb">
+                                    <li>
+                                        <a href="{% url 'landing:index' %}"
+                                            >Servicios</a
+                                        >
+                                    </li>
+                                    <li class="active">Modelado de piezas 3D</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section padding_layout_1 service_list">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 service_blog margin_bottom_50">
+                    <div class="full">
+                        <div class="service_img">
+                            <img
+                                class="img-responsive"
+                                src="{% static 'img/blaster-modeling-service-v2.webp' %}"
+                                alt="Modelado 3D"
+                            />
+                        </div>
+                        <div class="service_cont">
+                            <h3 class="service_head">Servicio de Modelado 3D</h3>
+                            <p>
+                                En Blaster Impresiones, nos especializamos en el arte del modelado 3D, ofreciendo soluciones integrales tanto en modelado paramétrico como no paramétrico. Nuestro servicio está diseñado para convertir tus ideas en modelos tridimensionales de alta calidad, aptos para una variedad de aplicaciones incluyendo prototipos, piezas de ingeniería, figuras para coleccionistas, y mucho más.<br /><br />
+                                Con tecnología de vanguardia y un equipo de diseñadores expertos, Blaster Impresiones es tu aliado perfecto para transformar conceptos en realidades tangibles. Ya sea que necesites una pieza específica para un proyecto de ingeniería, o desees dar vida a tus personajes favoritos, contamos con la experiencia y la capacidad para satisfacer tus necesidades.<br /><br />
+                                Nos enorgullece utilizar solo las mejores herramientas y software en el mercado, asegurando resultados de máxima precisión y calidad. Además, nuestro proceso de trabajo garantiza una comunicación constante con nuestros clientes, para asegurar que el resultado final cumpla con sus expectativas al 100%.
+                            </p>
+                            <div class="bt_cont">
+                                <a
+                                    class="btn sqaure_bt"
+                                    href="#"
+                                    >Contáctanos</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
