@@ -29,6 +29,14 @@ class ProductCreateEditForm(DefaultModelForm):
         model = Product
         fields = ("name", "link", "description", "image", "stock", "available")
 
+    def clean_available(self):
+        available = self.cleaned_data["available"]
+        if available and not self.cleaned_data.get("image"):
+            raise forms.ValidationError(
+                "Para marcar un producto como disponible, debe tener una imagen asociada."
+            )
+        return available
+
 
 class ExtraProductCostUpdateForm(DefaultModelForm):
     cost = CustomPriceDecimalField(

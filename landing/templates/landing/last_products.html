@@ -11,6 +11,13 @@
             </div>
         </div>
         <div class="row">
+            {% if not products %}
+                <div class="col-md-12">
+                    <div class="alert alert-warning text-center" role="alert">
+                        No hay impresiones para mostrar
+                    </div>
+                </div>
+            {% endif %}
             {% for product in products %}
                 <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 margin_bottom_30_all">
                     <div class="product_list">
@@ -31,6 +38,13 @@
                     </div>
                 </div>
             {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-md-12 payment-bt">
+                <div class="center">
+                    <a class="btn sqaure_bt" href="{% url 'landing:products' %}"> Ver todo </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
