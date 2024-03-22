@@ -124,5 +124,6 @@ AUTH_USER_MODEL = "users.User"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.ngrok-free.app",
+    "https://www.blasterimpresiones.com",
+    "https://blasterimpresiones.com",
 ]

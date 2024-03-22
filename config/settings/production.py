@@ -8,7 +8,10 @@ from config.settings.base import *
 load_dotenv(Path.joinpath(BASE_DIR, ".env"))
 DEBUG = ast.literal_eval(os.environ.get("DEBUG", "False"))
 SECRET_KEY = os.environ.get("SECRET_KEY", "default")
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "https://www.blasterimpresiones.com",
+    "https://blasterimpresiones.com",
+]
 
 DATABASES = {
     "default": {
