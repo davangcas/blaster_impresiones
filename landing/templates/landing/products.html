@@ -1,0 +1,76 @@
+{% extends 'landing/base/home.html' %}
+{% load static %}
+
+{% block content %}
+    <div id="inner_banner" class="section inner_banner_section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="full">
+                        <div class="title-holder">
+                            <div class="title-holder-cell text-left">
+                                <h1 class="page-title">Productos</h1>
+                                <ol class="breadcrumb">
+                                    <li>
+                                        <a href="{% url 'landing:index' %}">Home</a>
+                                    </li>
+                                    <li class="active">Productos</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section padding_layout_1 product_list_main">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="row" id="products_div"></div>
+                    <div class="row">
+                        <div class="col-md-12 payment-bt">
+                            <div class="center">
+                                <button class="btn sqaure_bt" id="load-more-products">Cargar más</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="side_bar">
+                        <div class="side_bar_blog">
+                            <h4>Buscar</h4>
+                            <div class="side_bar_search">
+                                <div class="input-group stylish-input-group">
+                                    <input class="form-control" placeholder="Buscar producto" type="text" id="search">
+                                    <span class="input-group-addon">
+                                        <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/landing/load_products.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            loadProducts(1, "{% url 'landing:products' %}", "{% url 'landing:product_detail' 0 %}");
+
+            $('#load-more-products').click(function () {
+                loadProducts(Number($("#load-more-products").attr("data-page")), "{% url 'landing:products' %}", "{% url 'landing:product_detail' 0 %}");
+            });
+
+            $('#search').on('input', function () {
+                $("#products_div").empty();
+                loadProducts(1, "{% url 'landing:products' %}", "{% url 'landing:product_detail' 0 %}");
+            });
+        });
+    </script>
+{% endblock %}

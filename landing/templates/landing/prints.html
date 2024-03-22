@@ -1,0 +1,62 @@
+{% extends 'landing/base/home.html' %}
+{% load static %}
+
+{% block content %}
+    <div id="inner_banner" class="section inner_banner_section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="full">
+                        <div class="title-holder">
+                            <div class="title-holder-cell text-left">
+                                <h1 class="page-title">Servicio de impresión 3D</h1>
+                                <ol class="breadcrumb">
+                                    <li>
+                                        <a href="{% url 'landing:index' %}"
+                                            >Servicios</a
+                                        >
+                                    </li>
+                                    <li class="active">Servicio de impresión 3D</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section padding_layout_1 service_list">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 service_blog margin_bottom_50">
+                    <div class="full">
+                        <div class="service_img">
+                            <img
+                                class="img-responsive"
+                                src="{% static 'img/blaster-print-service.webp' %}"
+                                alt="Impresión 3D"
+                            />
+                        </div>
+                        <div class="service_cont">
+                            <h3 class="service_head">Servicio de Impresión 3D</h3>
+                            <p>
+                                En Blaster Impresiones, llevamos la vanguardia de la impresión 3D a tu alcance. Desde la ciudad de La Rioja, Argentina, extendemos nuestros servicios de impresión 3D a toda la provincia y el país. Utilizamos tecnología de punta para materializar tus ideas y proyectos con la máxima calidad y precisión.<br /><br />
+                                Ya sea para prototipos, piezas de ingeniería, arte, modelos educativos o decoración, nuestro equipo de expertos está listo para asesorarte y brindarte la mejor solución. Nuestro servicio personalizado se adapta a tus necesidades específicas, garantizando resultados que superan las expectativas.<br /><br />
+                                Contamos con una amplia gama de materiales y colores, permitiéndote elegir la mejor opción para tu proyecto. Además, nuestro compromiso con la excelencia nos impulsa a estar constantemente actualizados en las últimas tendencias y avances tecnológicos en el ámbito de la impresión 3D.<br /><br />
+                                En Blaster Impresiones, nos enorgullecemos de nuestro trabajo y nos esforzamos por ofrecer un servicio de calidad, con tiempos de entrega rápidos y a precios competitivos. Confía en nosotros para llevar tus ideas a la realidad tridimensional.
+                            </p>
+                            <div class="bt_cont">
+                                <a
+                                    class="btn sqaure_bt"
+                                    href="#"
+                                    >Contáctanos</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

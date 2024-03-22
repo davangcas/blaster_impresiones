@@ -10,16 +10,16 @@ services:
     depends_on:
       - postgres
     environment:
-      - DEBUG=True
-      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DEBUG=${DEBUG}
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
 
   postgres:
     image: postgres:15.3
     ports:
       - "5431:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=blaster_impresiones
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - ./postgres_data:/var/lib/postgresql/data

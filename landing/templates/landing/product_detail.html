@@ -1,0 +1,109 @@
+{% extends 'landing/base/home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'lib/landing/css/hizoom.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div id="inner_banner" class="section inner_banner_section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="full">
+                        <div class="title-holder">
+                            <div class="title-holder-cell text-left">
+                                <h1 class="page-title">{{ object.name }}</h1>
+                                <ol class="breadcrumb">
+                                    <li>
+                                        <a href="{% url 'landing:products' %}"
+                                            >Productos</a
+                                        >
+                                    </li>
+                                    <li class="active">{{ object.name }}</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section padding_layout_1 product_detail">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="product_detail_feature_img hizoom hi2">
+                            <div class='hizoom hi2'><img src="{{ object.image.url }}" alt="#" /></div>
+                        </div>
+                        <div
+                            class="col-xl-6 col-lg-12 col-md-12 product_detail_side detail_style1"
+                        >
+                            <div class="product-heading">
+                                <h2>{{ object.name }}</h2>
+                            </div>
+                            <div class="product-detail-side">
+                                <span class="new-price">${{ object.price }}</span>
+                                <span class="rating">
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                            <div class="detail-contant">
+                                <p>
+                                    {{ object.description }}<br />
+                                    <span class="stock">{{ object.stock }} en stock</span>
+                                </p>
+                            </div>
+                            <div class="share-post">
+                                <a href="#" class="share-text">Compartir</a>
+                                <ul class="social_icons">
+                                    <li>
+                                        <a href="#"
+                                            ><i
+                                                class="fa fa-facebook"
+                                                aria-hidden="true"
+                                            ></i
+                                        ></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"
+                                            ><i
+                                                class="fa fa-instagram"
+                                                aria-hidden="true"
+                                            ></i
+                                        ></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 payment-bt">
+                    <div class="center">
+                        <a class="btn sqaure_bt" href="{% url 'landing:products' %}">Volver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'lib/landing/js/hizoom.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.hi2').hiZoom({
+                width: 400,
+                position: 'right'
+            });
+        });
+    </script>
+{% endblock %}

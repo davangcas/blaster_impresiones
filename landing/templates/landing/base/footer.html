@@ -18,10 +18,10 @@
                             <h2>Otros links</h2>
                         </div>
                         <ul class="footer-menu">
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Sobre nosotros</a></li>
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Términos y condiciones</a></li>
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Noticias</a></li>
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Contáctanos</a></li>
+                            <li><a href="{% url 'landing:about' %}"><i class="fa fa-angle-right"></i> Sobre nosotros</a></li>
+                            <li><a href="{% url 'landing:terms_and_conditions' %}"><i class="fa fa-angle-right"></i> Términos y condiciones</a></li>
+                            <li><a href="{% url 'landing:contact' %}"><i class="fa fa-angle-right"></i> Contáctanos</a></li>
+                            <li><a href="#"><i class="fa fa-angle-right"></i> Noticias (Próximamente)</a></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -29,10 +29,10 @@
                             <h2>Servicios</h2>
                         </div>
                         <ul class="footer-menu">
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Impresion 3D</a></li>
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Modelado 3D</a></li>
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Soporte Técnico en Impresoras 3D</a></li>
-                            <li><a href="#"><i class="fa fa-angle-right"></i> Venta de Impresoras 3D (Proximamente)</a></li>
+                            <li><a href="{% url 'landing:print_service' %}"><i class="fa fa-angle-right"></i> Impresion 3D</a></li>
+                            <li><a href="{% url 'landing:modeling_service' %}"><i class="fa fa-angle-right"></i> Modelado 3D</a></li>
+                            <li><a href="#"><i class="fa fa-angle-right"></i> Soporte Técnico en Impresoras 3D (Próximamente)</a></li>
+                            <li><a href="#"><i class="fa fa-angle-right"></i> Venta de Impresoras 3D (Próximamente)</a></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -40,7 +40,7 @@
                             <h2>Contáctanos</h2>
                         </div>
                         <p>Argentina - La Rioja - Capital<br>
-                        <span style="font-size:18px;"><a href="tel:+5493804784424">+549 380 4784424</a></span></p>
+                        <span style="font-size:18px;"><a href="tel:+543804784424">+54 380 4784424</a></span></p>
                         <div class="footer_mail-section">
                             <form>
                                 <fieldset>
