@@ -11,6 +11,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "default")
 ALLOWED_HOSTS = [
     "https://www.blasterimpresiones.com",
     "https://blasterimpresiones.com",
+    "blasterimpresiones.com",
 ]
 
 DATABASES = {
