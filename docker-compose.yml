@@ -11,8 +11,8 @@ services:
       - .:/app
       - static_volume:/app/staticfiles
     environment:
-      - DEBUG=False
-      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DEBUG=${DEBUG}
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
 
   postgres:
     image: postgres:15.3
@@ -21,7 +21,7 @@ services:
       - POSTGRES_PASSWORD=password1
       - POSTGRES_DB=db1
     volumes:
-      - postgres_data1:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   nginx:
     image: nginx:alpine
@@ -32,5 +32,5 @@ services:
       - web
 
 volumes:
-  postgres_data1:
+  postgres_data:
   static_volume:
