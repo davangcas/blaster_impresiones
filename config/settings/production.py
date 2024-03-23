@@ -9,8 +9,7 @@ load_dotenv(Path.joinpath(BASE_DIR, ".env"))
 DEBUG = False
 SECRET_KEY = os.environ.get("SECRET_KEY", "default")
 ALLOWED_HOSTS = [
-    "https://www.blasterimpresiones.com",
-    "https://blasterimpresiones.com",
+    "www.blasterimpresiones.com",
     "blasterimpresiones.com",
 ]
 
