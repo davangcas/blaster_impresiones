@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
     depends_on:
       - postgres
     volumes:
@@ -21,9 +19,9 @@ services:
   postgres:
     image: postgres:15.3
     environment:
-      - POSTGRES_USER=usuario1
-      - POSTGRES_PASSWORD=password1
-      - POSTGRES_DB=db1
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
