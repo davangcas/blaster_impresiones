@@ -10,7 +10,7 @@ services:
       - static_volume:/app/staticfiles
     environment:
       - DEBUG=False
-      - DJANGO_SETTINGS_MODULE=proyecto1.settings
+      - DJANGO_SETTINGS_MODULE=config.settings.production
 
   postgres:
     image: postgres:15.3
