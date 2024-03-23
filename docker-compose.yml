@@ -13,17 +13,19 @@ services:
     environment:
       - DEBUG=${DEBUG}
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+    networks:
+      - app_network
 
   postgres:
     image: postgres:15.3
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=usuario1
       - POSTGRES_PASSWORD=password1
       - POSTGRES_DB=db1
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
 
   nginx:
     image: nginx:alpine
@@ -32,7 +34,12 @@ services:
       - static_volume:/usr/share/nginx/html/static
     depends_on:
       - web
+    networks:
+      - app_network
 
 volumes:
   postgres_data:
   static_volume:
+
+networks:
+  app_network:
