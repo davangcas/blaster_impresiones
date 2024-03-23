@@ -6,7 +6,7 @@ from config.logging import *
 from config.settings.base import *
 
 load_dotenv(Path.joinpath(BASE_DIR, ".env"))
-DEBUG = True
+DEBUG = False
 SECRET_KEY = os.environ.get("SECRET_KEY", "default")
 ALLOWED_HOSTS = [
     "www.blasterimpresiones.com",

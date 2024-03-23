@@ -4,19 +4,12 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-RUN apk update \
-    && apk add --no-cache \
-    gcc \
-    musl-dev \
-    postgresql-dev \
-    python3-dev \
-    libffi-dev \
-    && pip install --upgrade pip
+RUN apk update && apk add --no-cache gcc musl-dev postgresql-dev libffi-dev
 
 COPY ./requirements.txt /app/requirements.txt
 
-RUN pip install -r requirements.txt --no-cache-dir
+RUN pip install --upgrade pip && pip install -r requirements.txt --no-cache-dir
 
-COPY ./ ./
+COPY . /app/
 
 CMD ["sh", "app_init.sh"]
