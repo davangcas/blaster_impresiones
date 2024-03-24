@@ -1,3 +1,4 @@
+import ast
 from dotenv import load_dotenv
 
 from config.logging import *
@@ -6,11 +7,7 @@ from config.settings.base import *
 load_dotenv(Path.joinpath(BASE_DIR, ".env"))
 DEBUG = False
 SECRET_KEY = os.environ.get("SECRET_KEY", "default")
-ALLOWED_HOSTS = [
-    "www.blasterimpresiones.com",
-    "blasterimpresiones.com",
-    "77.37.41.100",
-]
+ALLOWED_HOSTS = ast.literal_eval(os.environ.get("ALLOWED_HOSTS", "['*']"))
 
 DATABASES = {
     "default": {
@@ -26,6 +23,4 @@ DATABASES = {
 # Static files (CSS, JavaScript, images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [Path.joinpath(BASE_DIR, "static")]
 STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
