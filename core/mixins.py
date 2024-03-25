@@ -10,6 +10,10 @@ class CustomAdminViewMixin(LoginRequiredMixin, PermissionRequiredMixin):
         if not self.has_permission():
             messages.error(request, "No posee los permisos para realizar la accion")
             return HttpResponseRedirect(reverse_lazy("dashboard:login"))
+
+        if not request.user.is_active:
+            return HttpResponseRedirect(reverse_lazy("dashboard:login"))
+
         return super().dispatch(request, *args, **kwargs)
 
 
