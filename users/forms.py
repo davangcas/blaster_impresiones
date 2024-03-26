@@ -1,15 +1,16 @@
 from django import forms
 from django.contrib.auth import password_validation
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from core.fields import CustomPriceDecimalField
-from core.forms import DefaultModelForm
+from core.forms import DefaultForm, DefaultModelForm
 from users.models import Role, User
 
 
-class CreateUserForm(DefaultModelForm):
+class CreateEditUserForm(DefaultModelForm):
     password1 = forms.CharField(
         label=_("Password"),
         strip=False,
@@ -97,11 +98,11 @@ class CreateUserForm(DefaultModelForm):
         return user
 
 
-class UpdateUserForm(CreateUserForm):
+class ChangePasswordForm(DefaultForm, PasswordChangeForm):
     pass
 
 
-class CreateRoleForm(DefaultModelForm):
+class CreateEditRoleForm(DefaultModelForm):
     name = forms.CharField(
         widget=forms.TextInput(attrs={"class": "form-control"}),
         label="Nombre",
@@ -120,16 +121,6 @@ class CreateRoleForm(DefaultModelForm):
         help_text="Permisos que posee el rol",
         queryset=Permission.objects.all(),
     )
-
-    class Meta:
-        model = Role
-        fields = (
-            "name",
-            "permissions",
-        )
-
-
-class UpdateRoleForm(CreateRoleForm):
 
     class Meta:
         model = Role

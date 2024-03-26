@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from django.forms import ModelForm, ModelMultipleChoiceField
+from django.forms import Form, ModelForm, ModelMultipleChoiceField
 from django.forms.fields import DateField, TimeField
 
 from core.fields import (
@@ -14,7 +14,7 @@ from core.fields import (
 )
 
 
-class DefaultModelForm(ModelForm):
+class DefaultForm(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -38,3 +38,7 @@ class DefaultModelForm(ModelForm):
                 fields.append(field_name)
 
         self.helper.layout = CommonLayout(*tuple(fields))
+
+
+class DefaultModelForm(DefaultForm, ModelForm):
+    pass
