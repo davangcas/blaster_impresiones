@@ -56,6 +56,11 @@ class PrintModelRelationSerializer(serializers.ModelSerializer):
         return obj.print_model.id
 
     def get_print_model_file(self, obj):
+        file = obj.print_model.file
+
+        if not file:
+            return None
+
         return obj.print_model.file.url
 
 
