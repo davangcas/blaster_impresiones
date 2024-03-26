@@ -1,9 +1,10 @@
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, FormView, UpdateView
 
 from core.mixins import CustomAdminViewMixin, PostListViewMixin
-from users.forms import CreateRoleForm, CreateUserForm, UpdateRoleForm, UpdateUserForm
+from users.forms import ChangePasswordForm, CreateEditRoleForm, CreateEditUserForm
 from users.models import Role, User
 from users.serializers import RoleSerializer, UserSerializer
 
@@ -27,7 +28,7 @@ class UserListView(PostListViewMixin):
 
 class UserCreateView(CustomAdminViewMixin, CreateView):
     model = User
-    form_class = CreateUserForm
+    form_class = CreateEditUserForm
     template_name = "users/create.html"
     success_url = reverse_lazy("users:list")
     permission_required = "users.add_user"
@@ -50,7 +51,7 @@ class UserCreateView(CustomAdminViewMixin, CreateView):
 
 class UserUpdateView(CustomAdminViewMixin, UpdateView):
     model = User
-    form_class = UpdateUserForm
+    form_class = CreateEditUserForm
     template_name = "users/update.html"
     success_url = reverse_lazy("users:list")
     permission_required = "users.change_user"
@@ -89,6 +90,35 @@ class UserDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
+class ChangePasswordView(CustomAdminViewMixin, FormView):
+    form_class = ChangePasswordForm
+    template_name = "users/change_password.html"
+    success_url = reverse_lazy("users:list")
+    permission_required = "users.change_user"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "Contraseña actualizada correctamente")
+        update_session_auth_hash(self.request, form.user)
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar la contraseña")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Cambiar contraseña"
+        context["cancel_url"] = reverse_lazy("users:list")
+        context["active_section"] = "users"
+        return context
+
+
 class RoleListView(PostListViewMixin):
     model = Role
     template_name = "roles/list.html"
@@ -105,7 +135,7 @@ class RoleListView(PostListViewMixin):
 
 class RoleCreateView(CustomAdminViewMixin, CreateView):
     model = Role
-    form_class = CreateRoleForm
+    form_class = CreateEditRoleForm
     template_name = "roles/create.html"
     success_url = reverse_lazy("users:roles")
     permission_required = "users.add_role"
@@ -128,7 +158,7 @@ class RoleCreateView(CustomAdminViewMixin, CreateView):
 
 class RoleUpdateView(CustomAdminViewMixin, UpdateView):
     model = Role
-    form_class = UpdateRoleForm
+    form_class = CreateEditRoleForm
     template_name = "roles/update.html"
     success_url = reverse_lazy("users:roles")
     permission_required = "users.change_role"
