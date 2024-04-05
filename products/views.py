@@ -33,6 +33,9 @@ class ProductCreateView(CustomAdminViewMixin, CreateView):
     form_class = ProductCreateEditForm
     permission_required = "products.add_product"
 
+    def get_success_url(self):
+        return reverse_lazy("prints:list", kwargs={"pk": self.object.pk})
+
     def form_valid(self, form):
         messages.success(self.request, "Producto creado correctamente")
         return super().form_valid(form)
