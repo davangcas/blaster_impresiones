@@ -76,6 +76,17 @@ class PrintCreateForm(PrintUpdateForm):
         instance = super().save(commit=False)
         instance.product_id = self.product_id
         instance.save()
+        model_instance = PrintModel.objects.create(
+            name="Único",
+            x_scale=100,
+            y_scale=100,
+            z_scale=100,
+        )
+        PrintModelRelation.objects.create(
+            print_model=model_instance,
+            print=instance,
+            quantity=1
+        )
         return instance
 
 

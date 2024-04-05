@@ -1,5 +1,49 @@
 {% extends 'core/list.html' %}
 
+{% block previous_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Configuraciones necesarias para la impresion</h3>
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Altura de capa <span class="float-right badge bg-primary">{{ object.print.layer_height }} mm</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Relleno <span class="float-right badge bg-warning">{{ object.print.infill }} %</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Boquilla <span class="float-right badge bg-danger">{{ object.print.nozzle }} mm</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" style="color: black; pointer-events: none;">
+                                Velocidad de impresion <span class="float-right badge bg-secondary">{{ object.print.speed }} mm/s</span>
+                            </a>
+                        </li>
+                        <li class="nav-item"></li>
+                    </ul>
+                    <div class="row mt-2">
+                        <div class="col-12 text-center">
+                            <a href="{{ object.print.product.link }}" target="_blank" class="btn btn-primary"><i class="fas fa-download"></i> Descargar archivos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block table_headers %}
     <th>Nombre</th>
     <th>Escala X</th>

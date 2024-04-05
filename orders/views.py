@@ -305,7 +305,7 @@ class PrintOrderItemDetailView(CustomAdminViewMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Detalles de la impresion"
+        context["title"] = "Modelos de la impresion"
         context["active_section"] = "orders"
         context["order_item_id"] = self.get_object().order_item_id
         return context

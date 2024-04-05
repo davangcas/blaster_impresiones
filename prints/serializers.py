@@ -19,6 +19,7 @@ class PrintSerializer(serializers.ModelSerializer):
     material = serializers.StringRelatedField()
     product = serializers.StringRelatedField()
     price = serializers.SerializerMethodField()
+    available_colors = serializers.SerializerMethodField()
 
     class Meta:
         model = Print
@@ -27,6 +28,12 @@ class PrintSerializer(serializers.ModelSerializer):
 
     def get_price(self, obj):
         return f"${obj.price}"
+
+    def get_available_colors(self, obj):
+        available_colors = PrintMaterialColor.objects.filter(
+            material=obj.material, remaining__gte=obj.grams
+        ).values_list("color", flat=True)
+        return ", ".join(available_colors) or "Sin color disponible"
 
 
 class PrintModelRelationSerializer(serializers.ModelSerializer):
