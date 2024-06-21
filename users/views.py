@@ -167,8 +167,8 @@ class RoleDatatableView(CustomDatatablesJsonMixin):
         if column == "permissions":
             return row.get_permission_names()
         if column == "actions":
-            update_url = reverse_lazy("clients:update", kwargs={"pk": row.id})
-            delete_url = reverse_lazy("clients:delete", kwargs={"pk": row.id})
+            update_url = reverse_lazy("users:roles_update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("users:roles_delete", kwargs={"pk": row.id})
             return f"""
                 <a href="{update_url}" class="btn btn-warning">
                     <i class="fas fa-edit"></i>
