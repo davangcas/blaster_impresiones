@@ -383,7 +383,9 @@ class PrintOrderItemModelsDatatableView(CustomDatatablesJsonMixin):
     ]
 
     def get_initial_queryset(self):
-        return self.model.objects.all()
+        return super().get_initial_queryset().filter(
+            print_id=self.kwargs.get("pk")
+        )
 
     def render_column(self, row, column):
         if column == "actions":
