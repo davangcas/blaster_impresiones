@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
     <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
     <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+
+    {% block table_styles %}
+    {% endblock %}
 {% endblock %}
 
 {% block content %}
@@ -19,23 +22,43 @@
                     <div class="card-tools">
                         {% block custom_list_card_buttons %}{% endblock %}
                         {% if create_url %}
-                            <a href="{{ create_url }}" class="btn btn-primary">
+                            <a href="{{ create_url }}" class="btn btn-primary m-1">
                                 <i class="fas fa-plus"></i> Agregar
                             </a>
                         {% endif %}
+                        {% block modal_info %}{% endblock %}
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <table id="main-table" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                {% block table_headers %}
-                                {% endblock %}
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    {% block previous_card_content %}
+                    {% endblock %}
+
+                    {% block table_filters %}
+                    {% endblock %}
+
+                    {% block previous_table_content %}
+                    {% endblock %}
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <table id="main-table" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        {% block table_headers %}
+                                        {% endblock %}
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% block next_table_content %}
+                    {% endblock %}
+
+                    {% block next_card_content %}
+                    {% endblock %}
                 </div>
 
                 <div class="card-footer">
@@ -63,5 +86,28 @@
     <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
     <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
     <script src="{% static 'js/datatables/common/datatables.js' %}"></script>
+
+    {% block table_buttons_script %}
+        <script src="{% static 'js/datatables/common/default-buttons.js' %}"></script>
+    {% endblock %}
+
+    <script>
+        $(document).ready(function(){
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: "{{ json_view_url }}",
+                columnDefs: [
+                    {
+                        targets: [-1],
+                        orderable: false,
+                    },
+                ],
+                buttonsConfig: buttons_config,
+                initComplete: function(){
+                    initDatatableComplete();
+                },
+            });
+        })
+    </script>
     {% block table_scripts %}{% endblock %}
 {% endblock %}

@@ -1,8 +1,17 @@
 from django.contrib import messages
+from django.contrib.postgres.aggregates import StringAgg
+from django.db.models import CharField, OuterRef, Subquery, Value
+from django.db.models.functions import Coalesce
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    TemplateView,
+    UpdateView,
+)
 
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 from prints.forms import (
     PrintCreateForm,
     PrintMaterialColorCreateForm,
@@ -19,27 +28,47 @@ from prints.models import (
     PrintModel,
     PrintModelRelation,
 )
-from prints.serializers import (
-    PrintMaterialColorSerializer,
-    PrintMaterialSerializer,
-    PrintModelRelationSerializer,
-    PrintSerializer,
-)
 from products.models import Product
 
 
-class PrintMaterialListView(PostListViewMixin):
+class PrintMaterialListView(CustomAdminViewMixin, TemplateView):
     model = PrintMaterial
     template_name = "materials/list.html"
     permission_required = "prints.view_printmaterial"
-    serializer_class = PrintMaterialSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Materiales de impresión"
         context["create_url"] = reverse_lazy("prints:materials_create")
         context["active_section"] = "materials"
+        context["json_view_url"] = reverse_lazy("prints:materials_json")
         return context
+
+
+class PrintMaterialDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "prints.view_printmaterial"
+    model = PrintMaterial
+    columns = ["name", "price", "actions"]
+
+    def render_column(self, row, column):
+        if column == "price":
+            return f"${row.price}"
+        if column == "actions":
+            colors_url = reverse_lazy("prints:colors", kwargs={"pk": row.id})
+            update_url = reverse_lazy("prints:materials_update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("prints:materials_delete", kwargs={"pk": row.id})
+            return f"""
+                <a href="{colors_url}" class="btn btn-primary">
+                    <i class="fas fa-tint"></i>
+                </a>
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class PrintMaterialCreateView(CustomAdminViewMixin, CreateView):
@@ -108,24 +137,94 @@ class PrintMaterialDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class PrintListView(PostListViewMixin):
+class PrintListView(CustomAdminViewMixin, TemplateView):
     model = Print
     template_name = "prints/list.html"
     permission_required = "prints.view_print"
-    serializer_class = PrintSerializer
 
     def get_queryset(self):
         return Print.objects.filter(product__id=self.kwargs.get("pk"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["product"] = Product.objects.get(id=self.kwargs.get("pk"))
+        product = Product.objects.get(id=self.kwargs.get("pk"))
+        context["product"] = product
         context["title"] = "Impresiones necesarias"
         context["create_url"] = reverse_lazy(
             "prints:create", kwargs={"pk": self.kwargs.get("pk")}
         )
         context["active_section"] = "products"
+        context["json_view_url"] = reverse_lazy(
+            "prints:json", kwargs={"pk": product.id}
+        )
         return context
+
+
+class PrintDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "prints.view_print"
+    model = Print
+    columns = [
+        "hours",
+        "minutes",
+        "grams",
+        "material.name",
+        "available_colors",
+        "price",
+        "actions",
+    ]
+
+    def get_initial_queryset(self):
+        queryset = (
+            super().get_initial_queryset().filter(product__id=self.kwargs.get("pk"))
+        )
+
+        available_colors_subquery = (
+            PrintMaterialColor.objects.filter(
+                material=OuterRef("material"), remaining__gte=OuterRef("grams")
+            )
+            .values("material")
+            .annotate(color_list=StringAgg("color", delimiter=", "))
+            .values("color_list")
+        )
+
+        queryset = queryset.annotate(
+            available_colors=Coalesce(
+                Subquery(available_colors_subquery, output_field=CharField()),
+                Value("Sin color disponible"),
+                output_field=CharField(),
+            )
+        )
+        return queryset
+
+    def render_column(self, row, column):
+        if column == "price":
+            return f"${row.price}"
+        if column == "actions":
+            g_code_content = ""
+            detail_url = reverse_lazy("prints:models", kwargs={"pk": row.id})
+            update_url = reverse_lazy("prints:update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("prints:delete", kwargs={"pk": row.id})
+
+            if row.g_code:
+                g_code_content = f"""
+                    <a href="{row.g_code.url}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                    </a>
+                """
+
+            return f"""
+                <a href="{detail_url}" class="btn btn-info">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+                {g_code_content}
+            """
+        return super().render_column(row, column)
 
 
 class PrintCreateView(CustomAdminViewMixin, CreateView):
@@ -214,24 +313,71 @@ class PrintDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class PrintModelListView(PostListViewMixin):
-    model = PrintModelRelation
+class PrintModelListView(CustomAdminViewMixin, DetailView):
+    model = Print
     template_name = "models/list.html"
     permission_required = "prints.view_printmodelrelation"
-    serializer_class = PrintModelRelationSerializer
-
-    def get_queryset(self):
-        return PrintModelRelation.objects.filter(print__id=self.kwargs.get("pk"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["print"] = Print.objects.get(id=self.kwargs.get("pk"))
         context["title"] = "Modelos de la impresión"
         context["create_url"] = reverse_lazy(
             "prints:models_create", kwargs={"pk": self.kwargs.get("pk")}
         )
         context["active_section"] = "products"
+        context["json_view_url"] = reverse_lazy(
+            "prints:models_json", kwargs={"pk": self.kwargs.get("pk")}
+        )
         return context
+
+
+class PrintModelRelationDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "prints.view_printmodelrelation"
+    model = PrintModelRelation
+    columns = [
+        "print_model.name",
+        "print_model.x_scale",
+        "print_model.y_scale",
+        "print_model.z_scale",
+        "quantity",
+        "actions",
+    ]
+
+    def get_initial_queryset(self):
+        return (
+            super()
+            .get_initial_queryset()
+            .select_related("print_model")
+            .filter(print__id=self.kwargs.get("pk"))
+        )
+
+    def render_column(self, row, column):
+        if column == "actions":
+            model_filte_content = ""
+            update_url = reverse_lazy(
+                "prints:models_update", kwargs={"pk": row.print_model.id}
+            )
+            delete_url = reverse_lazy(
+                "prints:models_delete", kwargs={"pk": row.print_model.id}
+            )
+
+            if row.print_model.file:
+                model_filte_content = f"""
+                    <a href="{row.print_model.file.url}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                    </a>
+                """
+
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+                {model_filte_content}
+            """
+        return super().render_column(row, column)
 
 
 class PrintModelCreateView(CustomAdminViewMixin, CreateView):
@@ -320,24 +466,46 @@ class PrintModelDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class PrintMaterialColorListView(PostListViewMixin):
-    model = PrintMaterialColor
+class PrintMaterialColorListView(CustomAdminViewMixin, DetailView):
+    model = PrintMaterial
     template_name = "colors/list.html"
     permission_required = "prints.view_printmaterialcolor"
-    serializer_class = PrintMaterialColorSerializer
-
-    def get_queryset(self):
-        return PrintMaterialColor.objects.filter(material__id=self.kwargs.get("pk"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        material = PrintMaterial.objects.get(id=self.kwargs.get("pk"))
-        context["title"] = f"Colores disponibles - {material.name}"
+        instance = self.get_object()
+        context["title"] = f"Colores disponibles - {instance.name}"
         context["create_url"] = reverse_lazy(
             "prints:colors_create", kwargs={"pk": self.kwargs.get("pk")}
         )
         context["active_section"] = "materials"
+        context["json_view_url"] = reverse_lazy(
+            "prints:colors_json", kwargs={"pk": instance.id}
+        )
         return context
+
+
+class PrintMaterialColorDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "prints.view_printmaterialcolor"
+    model = PrintMaterialColor
+    columns = ["color", "remaining", "actions"]
+
+    def get_initial_queryset(self):
+        return super().get_initial_queryset().filter(material__id=self.kwargs.get("pk"))
+
+    def render_column(self, row, column):
+        if column == "actions":
+            update_url = reverse_lazy("prints:colors_update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("prints:colors_delete", kwargs={"pk": row.id})
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class PrintMaterialColorCreateView(CustomAdminViewMixin, CreateView):

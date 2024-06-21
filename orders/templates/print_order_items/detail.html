@@ -56,45 +56,7 @@
 {% block list_footer %}
     <div class="row">
         <div class="col-12 text-center">
-            <a class="btn btn-outline-secondary" href="{% url 'orders:print_order_items' order_item_id %}"><i class="fas fa-caret-left"></i> Volver</a>
+            <a class="btn btn-outline-secondary" href="{% url 'orders:print_order_items' object.order_item_id %}"><i class="fas fa-caret-left"></i> Volver</a>
         </div>
     </div>
 {% endblock%}
-
-{% block table_scripts %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            CommonDataTable.init({
-                table_id: "#main-table",
-                source_url: window.location.href,
-                columns: [
-                    { data: "print_model" },
-                    { data: "x_scale" },
-                    { data: "y_scale" },
-                    { data: "z_scale" },
-                    { data: "quantity" },
-                    { data: "id" },
-                ],
-                columnDefs: [
-                    {
-                        targets: [-1],
-                        orderable: false,
-                        render: function (data, type, row) {
-                            let model_file = "-";
-
-                            if (row.print_model_file){
-                                model_file = `<a href="${row.print_model_file}" class="btn btn-primary" target="_blank">
-                                    <i class="fas fa-download"></i>
-                                </a>`;
-                            }
-
-                            return `
-                                ${model_file}
-                            `;
-                        },
-                    },
-                ],
-            });
-        });
-    </script>
-{% endblock %}

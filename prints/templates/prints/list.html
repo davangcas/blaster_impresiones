@@ -124,94 +124,14 @@
 {% block table_scripts %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            CommonDataTable.init({
-                table_id: "#main-table",
-                source_url: window.location.href,
-                columns: [
-                    { data: "hours" },
-                    { data: "minutes" },
-                    { data: "grams" },
-                    { data: "material" },
-                    { data: "available_colors" },
-                    { data: "price" },
-                    { data: "id" },
-                ],
-                columnDefs: [
-                    {
-                        targets: [-1],
-                        orderable: false,
-                        render: function (data, type, row) {
-                            let g_code_content = "";
-                            let update_url = `{% url 'prints:update' 0 %}`.replace(
-                                "0",
-                                data
-                            );
-                            let delete_url = `{% url 'prints:delete' 0 %}`.replace(
-                                "0",
-                                data
-                            );
-                            let detail_url = `{% url 'prints:models' 0 %}`.replace(
-                                "0",
-                                data
-                            );
-
-                            if (row.g_code){
-                                g_code_content = `
-                                    <a href="${row.g_code}" target="_blank" class="btn btn-primary">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                `
-                            }
-
-                            return `
-                                <a href="${detail_url}" class="btn btn-info">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="${update_url}" class="btn btn-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="${delete_url}" class="btn btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                                ${g_code_content}
-                            `;
-                        },
-                    },
-                ],
-            });
-
             if ("{{ perms.products.view_extraproductcost }}" == "True"){
                 CommonDataTable.init({
                     table_id: "#extra-costs-table",
-                    source_url: "{% url 'products:extra_costs' product.id %}",
-                    columns: [
-                        { data: "name" },
-                        { data: "cost" },
-                        { data: "description" },
-                        { data: "id" },
-                    ],
+                    source_url: "{% url 'products:extra_costs_json' product.id %}",
                     columnDefs: [
                         {
                             targets: [-1],
                             orderable: false,
-                            render: function (data, type, row) {
-                                let update_url = `{% url 'products:extra_costs_update' 0 %}`.replace(
-                                    "0",
-                                    data
-                                );
-                                let delete_url = `{% url 'products:extra_costs_delete' 0 %}`.replace(
-                                    "0",
-                                    data
-                                );
-                                return `
-                                    <a href="${update_url}" class="btn btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="${delete_url}" class="btn btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
-                                `;
-                            },
                         },
                     ],
                 });

@@ -3,14 +3,17 @@ from django.urls import path
 from printrates.views import (
     GenerateNewPrintRateView,
     MonthlyCostCreateView,
+    MonthlyCostDatatableView,
     MonthlyCostDeleteView,
     MonthlyCostListView,
     MonthlyCostUpdateView,
     PrintRateCreateView,
+    PrintRateDatatableView,
     PrintRateDeleteView,
     PrintRateListView,
     PrintRateUpdateView,
     PrintRateVariablesCreateView,
+    PrintRateVariablesDatatableView,
     PrintRateVariablesDeleteView,
     PrintRateVariablesListView,
     PrintRateVariablesUpdateView,
@@ -19,10 +22,16 @@ from printrates.views import (
 app_name = "printrates"
 urlpatterns = [
     path("", PrintRateListView.as_view(), name="list"),
+    path("json/", PrintRateDatatableView.as_view(), name="json"),
     path("create/", PrintRateCreateView.as_view(), name="create"),
     path("update/<int:pk>/", PrintRateUpdateView.as_view(), name="update"),
     path("delete/<int:pk>/", PrintRateDeleteView.as_view(), name="delete"),
     path("monthly-costs/", MonthlyCostListView.as_view(), name="monthly_costs"),
+    path(
+        "monthly-costs/json/",
+        MonthlyCostDatatableView.as_view(),
+        name="monthly_costs_json",
+    ),
     path(
         "monthly-costs/create/",
         MonthlyCostCreateView.as_view(),
@@ -42,6 +51,11 @@ urlpatterns = [
         "variables/",
         PrintRateVariablesListView.as_view(),
         name="variables",
+    ),
+    path(
+        "variables/json/",
+        PrintRateVariablesDatatableView.as_view(),
+        name="variables_json",
     ),
     path(
         "variables/create/",

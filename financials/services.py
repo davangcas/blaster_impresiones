@@ -1,13 +1,15 @@
 from django.db.models import Sum
 
-from financials.models import Account, Transaction
 from financials.choices import ACCOUNT_TYPES
+from financials.models import Account, Transaction
 from printrates.models import MonthlyCost
 from users.models import User
 
 
 def distribute_payment(order_instance):
-    organization_account = Account.objects.get_or_create(user=None, name="blaster", account_type=ACCOUNT_TYPES[0][0])[0]
+    organization_account = Account.objects.get_or_create(
+        user=None, name="blaster", account_type=ACCOUNT_TYPES[0][0]
+    )[0]
     sale_transaction = Transaction.objects.create(
         to_account=organization_account,
         amount=order_instance.get_total_cost(),
@@ -29,7 +31,9 @@ def distribute_payment(order_instance):
         )
 
     for user in User.objects.filter(is_active=True):
-        account = Account.objects.get_or_create(user=user, name=user.username, account_type=ACCOUNT_TYPES[1][0])[0]
+        account = Account.objects.get_or_create(
+            user=user, name=user.username, account_type=ACCOUNT_TYPES[1][0]
+        )[0]
         salary_percentage = 0
 
         if total_salaries_amount > 0:

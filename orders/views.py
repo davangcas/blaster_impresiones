@@ -1,17 +1,18 @@
 import ast
 
 from django.contrib import messages
-from django.http import JsonResponse
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (
     CreateView,
     DeleteView,
     DetailView,
     RedirectView,
+    TemplateView,
     UpdateView,
 )
 
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 from orders.forms import (
     OrderCreateEditForm,
     OrderItemCreateForm,
@@ -19,19 +20,18 @@ from orders.forms import (
     PrintOrderItemUpdateForm,
 )
 from orders.models import Order, OrderItem, PrintOrderItem
-from orders.serializers import (
-    OrderItemSerializer,
-    OrderSerializer,
-    PrintOrderItemSerializer,
+from orders.services import (
+    get_order_buttons,
+    get_order_item_buttons,
+    get_print_order_item_buttons,
 )
-from prints.serializers import PrintModelRelationSerializer
+from prints.models import PrintModelRelation
 
 
-class OrderListView(PostListViewMixin):
+class OrderListView(CustomAdminViewMixin, TemplateView):
     model = Order
     template_name = "orders/list.html"
     permission_required = "orders.view_order"
-    serializer_class = OrderSerializer
 
     def get_queryset(self):
         return Order.objects.all().select_related("client").order_by("-created")
@@ -41,7 +41,27 @@ class OrderListView(PostListViewMixin):
         context["title"] = "Pedidos"
         context["create_url"] = reverse_lazy("orders:create")
         context["active_section"] = "orders"
+        context["json_view_url"] = reverse_lazy("orders:json")
         return context
+
+
+class OrderDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "orders.view_order"
+    model = Order
+    columns = ["id", "created", "client", "state", "total", "actions"]
+
+    def render_column(self, row, column):
+        if column == "client":
+            return row.client.full_name
+        if column == "created":
+            return timezone.localtime(row.created).strftime("%d/%m/%Y %H:%M")
+        if column == "state":
+            return row.get_state_display_with_style()
+        if column == "total":
+            return f"${row.get_total_cost()}"
+        if column == "actions":
+            return get_order_buttons(row)
+        return super().render_column(row, column)
 
 
 class OrderCreateView(CustomAdminViewMixin, CreateView):
@@ -108,30 +128,43 @@ class OrderDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class OrderItemListView(PostListViewMixin):
-    model = OrderItem
+class OrderItemListView(CustomAdminViewMixin, DetailView):
+    model = Order
     template_name = "items/list.html"
     permission_required = "orders.view_orderitem"
-    serializer_class = OrderItemSerializer
-
-    def get_queryset(self):
-        return OrderItem.objects.filter(order_id=self.kwargs.get("pk")).select_related(
-            "product"
-        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        order = Order.objects.get(id=self.kwargs.get("pk"))
         context["title"] = "Items"
 
-        if order.state not in ("paid", "delivered"):
+        if self.get_object().state not in ("paid", "delivered"):
             context["create_url"] = reverse_lazy(
                 "orders:items_create", kwargs={"pk": self.kwargs.get("pk")}
             )
 
         context["active_section"] = "orders"
-        context["order"] = Order.objects.get(id=self.kwargs.get("pk"))
+        context["json_view_url"] = reverse_lazy(
+            "orders:items_json", kwargs={"pk": self.kwargs.get("pk")}
+        )
         return context
+
+
+class OrderItemDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "orders.view_orderitem"
+    model = OrderItem
+    columns = ["product.name", "quantity", "state", "total", "actions"]
+
+    def get_initial_queryset(self):
+        return super().get_initial_queryset().filter(order_id=self.kwargs.get("pk"))
+
+    def render_column(self, row, column):
+        if column == "state":
+            return row.get_state_display_with_style()
+        if column == "total":
+            return f"${row.get_cost()}"
+        if column == "actions":
+            return get_order_item_buttons(row)
+        return super().render_column(row, column)
 
 
 class OrderItemCreateView(CustomAdminViewMixin, CreateView):
@@ -210,23 +243,47 @@ class OrderItemDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class PrintOrderItemListView(PostListViewMixin):
-    model = PrintOrderItem
+class PrintOrderItemListView(CustomAdminViewMixin, DetailView):
+    model = OrderItem
     template_name = "print_order_items/list.html"
     permission_required = "orders.view_printorderitem"
-    serializer_class = PrintOrderItemSerializer
-
-    def get_queryset(self):
-        return PrintOrderItem.objects.filter(
-            order_item_id=self.kwargs.get("pk")
-        ).select_related("print")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Impresiones"
         context["active_section"] = "orders"
-        context["order_item"] = OrderItem.objects.get(id=self.kwargs.get("pk"))
+        context["json_view_url"] = reverse_lazy(
+            "orders:print_order_items_json", kwargs={"pk": self.kwargs.get("pk")}
+        )
         return context
+
+
+class PrintOrderItemDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "orders.view_printorderitem"
+    model = PrintOrderItem
+    columns = [
+        "print.hours",
+        "print.minutes",
+        "print.grams",
+        "print.material.name",
+        "color",
+        "state",
+        "actions",
+    ]
+
+    def get_initial_queryset(self):
+        return (
+            super().get_initial_queryset().filter(order_item_id=self.kwargs.get("pk"))
+        )
+
+    def render_column(self, row, column):
+        if column == "color":
+            return row.color.color if row.color else "-"
+        if column == "state":
+            return row.get_state_display_with_style()
+        if column == "actions":
+            return get_print_order_item_buttons(row)
+        return super().render_column(row, column)
 
 
 class PrintOrderItemUpdateView(CustomAdminViewMixin, UpdateView):
@@ -301,17 +358,40 @@ class PrintOrderItemDetailView(CustomAdminViewMixin, DetailView):
     model = PrintOrderItem
     template_name = "print_order_items/detail.html"
     permission_required = "orders.view_printorderitem"
-    serializer_class = PrintModelRelationSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Modelos de la impresion"
         context["active_section"] = "orders"
-        context["order_item_id"] = self.get_object().order_item_id
+        context["json_view_url"] = reverse_lazy(
+            "orders:print_order_items_models_json",
+            kwargs={"pk": self.get_object().print.pk},
+        )
         return context
 
-    def post(self, request, *args, **kwargs):
-        self.object_list = self.get_object().print.printmodelrelation_set.all()
-        data = self.serializer_class(self.object_list, many=True).data
-        response = JsonResponse({"data": data}, safe=False)
-        return response
+
+class PrintOrderItemModelsDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "orders.view_printorderitem"
+    model = PrintModelRelation
+    columns = [
+        "print_model.name",
+        "print_model.x_scale",
+        "print_model.y_scale",
+        "print_model.z_scale",
+        "quantity",
+        "actions",
+    ]
+
+    def get_initial_queryset(self):
+        return self.model.objects.all()
+
+    def render_column(self, row, column):
+        if column == "actions":
+            if not row.print_model.file:
+                return "-"
+            return f"""
+                <a href="{row.print_model.file.url}" class="btn btn-primary" target="_blank">
+                    <i class="fas fa-download"></i>
+                </a>
+            """
+        return super().render_column(row, column)

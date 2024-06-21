@@ -1,29 +1,54 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 from products.forms import (
     ExtraProductCostCreateForm,
     ExtraProductCostUpdateForm,
     ProductCreateEditForm,
 )
 from products.models import ExtraProductCost, Product
-from products.serializers import ExtraProductCostSerializer, ProductSerializer
 
 
-class ProductListView(PostListViewMixin):
+class ProductListView(CustomAdminViewMixin, TemplateView):
     model = Product
     template_name = "products/list.html"
     permission_required = "products.view_product"
-    serializer_class = ProductSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Productos"
         context["create_url"] = reverse_lazy("products:create")
         context["active_section"] = "products"
+        context["json_view_url"] = reverse_lazy("products:json")
         return context
+
+
+class ProductDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "products.view_product"
+    model = Product
+    columns = ["id", "name", "price", "stock", "actions"]
+
+    def render_column(self, row, column):
+        if column == "price":
+            return f"${row.price}"
+        if column == "actions":
+            update_url = reverse_lazy("products:update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("products:delete", kwargs={"pk": row.id})
+            detail_url = reverse_lazy("prints:list", kwargs={"pk": row.id})
+            return f"""
+                <a href="{detail_url}" class="btn btn-info">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class ProductCreateView(CustomAdminViewMixin, CreateView):
@@ -93,11 +118,10 @@ class ProductDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class ExtraProductCostListView(PostListViewMixin):
+class ExtraProductCostListView(CustomAdminViewMixin, TemplateView):
     model = ExtraProductCost
     template_name = "extra_costs/list.html"
     permission_required = "products.view_extraproductcost"
-    serializer_class = ExtraProductCostSerializer
 
     def get_queryset(self):
         return super().get_queryset().filter(product_id=self.kwargs.get("pk"))
@@ -108,6 +132,36 @@ class ExtraProductCostListView(PostListViewMixin):
         context["create_url"] = reverse_lazy("products:extra_costs_create")
         context["active_section"] = "products"
         return context
+
+
+class ExtraProductCostDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "products.view_extraproductcost"
+    model = ExtraProductCost
+    columns = ["name", "cost", "description", "actions"]
+
+    def get_initial_queryset(self):
+        return super().get_initial_queryset().filter(product_id=self.kwargs.get("pk"))
+
+    def render_column(self, row, column):
+        if column == "cost":
+            return f"${row.cost}"
+        if column == "actions":
+            update_url = reverse_lazy(
+                "products:extra_costs_update", kwargs={"pk": row.id}
+            )
+            delete_url = reverse_lazy(
+                "products:extra_costs_delete", kwargs={"pk": row.id}
+            )
+
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class ExtraProductCostCreateView(CustomAdminViewMixin, CreateView):

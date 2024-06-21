@@ -2,19 +2,23 @@ from django.urls import path
 
 from prints.views import (
     PrintCreateView,
+    PrintDatatableView,
     PrintDeleteView,
     PrintListView,
     PrintMaterialColorCreateView,
+    PrintMaterialColorDatatableView,
     PrintMaterialColorDeleteView,
     PrintMaterialColorListView,
     PrintMaterialColorUpdateView,
     PrintMaterialCreateView,
+    PrintMaterialDatatableView,
     PrintMaterialDeleteView,
     PrintMaterialListView,
     PrintMaterialUpdateView,
     PrintModelCreateView,
     PrintModelDeleteView,
     PrintModelListView,
+    PrintModelRelationDatatableView,
     PrintModelUpdateView,
     PrintUpdateView,
 )
@@ -22,6 +26,11 @@ from prints.views import (
 app_name = "prints"
 urlpatterns = [
     path("materials/", PrintMaterialListView.as_view(), name="materials"),
+    path(
+        "materials/json/",
+        PrintMaterialDatatableView.as_view(),
+        name="materials_json",
+    ),
     path(
         "materials/create/", PrintMaterialCreateView.as_view(), name="materials_create"
     ),
@@ -36,6 +45,7 @@ urlpatterns = [
         name="materials_delete",
     ),
     path("product-detail/<int:pk>/", PrintListView.as_view(), name="list"),
+    path("product-detail/json/<int:pk>/", PrintDatatableView.as_view(), name="json"),
     path("product-detail/<int:pk>/create/", PrintCreateView.as_view(), name="create"),
     path("delete/<int:pk>/", PrintDeleteView.as_view(), name="delete"),
     path("update/<int:pk>/", PrintUpdateView.as_view(), name="update"),
@@ -43,6 +53,11 @@ urlpatterns = [
         "models-relation/<int:pk>/",
         PrintModelListView.as_view(),
         name="models",
+    ),
+    path(
+        "models-relation/json/<int:pk>/",
+        PrintModelRelationDatatableView.as_view(),
+        name="models_json",
     ),
     path(
         "models/create/<int:pk>/",
@@ -60,6 +75,11 @@ urlpatterns = [
         name="models_delete",
     ),
     path("colors/<int:pk>/", PrintMaterialColorListView.as_view(), name="colors"),
+    path(
+        "colors/json/<int:pk>/",
+        PrintMaterialColorDatatableView.as_view(),
+        name="colors_json",
+    ),
     path(
         "colors/create/<int:pk>/",
         PrintMaterialColorCreateView.as_view(),
