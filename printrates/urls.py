@@ -5,7 +5,6 @@ from printrates.views import (
     MonthlyCostCreateView,
     MonthlyCostDatatableView,
     MonthlyCostDeleteView,
-    MonthlyCostListView,
     MonthlyCostUpdateView,
     PrintRateCreateView,
     PrintRateDatatableView,
@@ -15,7 +14,6 @@ from printrates.views import (
     PrintRateVariablesCreateView,
     PrintRateVariablesDatatableView,
     PrintRateVariablesDeleteView,
-    PrintRateVariablesListView,
     PrintRateVariablesUpdateView,
 )
 
@@ -26,7 +24,6 @@ urlpatterns = [
     path("create/", PrintRateCreateView.as_view(), name="create"),
     path("update/<int:pk>/", PrintRateUpdateView.as_view(), name="update"),
     path("delete/<int:pk>/", PrintRateDeleteView.as_view(), name="delete"),
-    path("monthly-costs/", MonthlyCostListView.as_view(), name="monthly_costs"),
     path(
         "monthly-costs/json/",
         MonthlyCostDatatableView.as_view(),
@@ -46,11 +43,6 @@ urlpatterns = [
         "monthly-costs/delete/<int:pk>/",
         MonthlyCostDeleteView.as_view(),
         name="monthly_costs_delete",
-    ),
-    path(
-        "variables/",
-        PrintRateVariablesListView.as_view(),
-        name="variables",
     ),
     path(
         "variables/json/",

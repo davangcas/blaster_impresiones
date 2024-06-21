@@ -135,21 +135,8 @@ class PrintRateDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class MonthlyCostListView(CustomAdminViewMixin, TemplateView):
-    model = MonthlyCost
-    template_name = "monthly_costs/list.html"
-    permission_required = "printrates.view_monthlycost"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Costos mensuales"
-        context["create_url"] = reverse_lazy("printrates:monthly_costs_create")
-        context["active_section"] = "configuration"
-        return context
-
-
 class MonthlyCostDatatableView(CustomDatatablesJsonMixin):
-    permission_required = "printrates.view_printrate"
+    permission_required = "printrates.view_monthlycost"
     model = MonthlyCost
     columns = ["name", "cost", "updated_at", "actions"]
 
@@ -236,19 +223,6 @@ class MonthlyCostDeleteView(CustomAdminViewMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Eliminar costo mensual"
         context["cancel_url"] = reverse_lazy("printrates:list")
-        context["active_section"] = "configuration"
-        return context
-
-
-class PrintRateVariablesListView(CustomAdminViewMixin, TemplateView):
-    model = PrintRateVariables
-    template_name = "variables/list.html"
-    permission_required = "printrates.view_printratevariables"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Variables a considerar en el precio de impresión"
-        context["create_url"] = reverse_lazy("printrates:variables_create")
         context["active_section"] = "configuration"
         return context
 

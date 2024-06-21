@@ -33,9 +33,6 @@ class OrderListView(CustomAdminViewMixin, TemplateView):
     template_name = "orders/list.html"
     permission_required = "orders.view_order"
 
-    def get_queryset(self):
-        return Order.objects.all().select_related("client").order_by("-created")
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Pedidos"
@@ -49,6 +46,9 @@ class OrderDatatableView(CustomDatatablesJsonMixin):
     permission_required = "orders.view_order"
     model = Order
     columns = ["id", "created", "client", "state", "total", "actions"]
+
+    def get_initial_queryset(self):
+        return super().get_initial_queryset().select_related("client")
 
     def render_column(self, row, column):
         if column == "client":
