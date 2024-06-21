@@ -1,0 +1,26 @@
+{% extends 'core/list.html' %}
+
+{% block table_styles %}
+    {% include 'core/form_styles.html' %}
+{% endblock %}
+
+{% block table_filters %}
+    {% block filter_inputs %}
+    {% endblock %}
+
+    <div class="row mt-2">
+        <div class="col-6">
+            <button type="button" id="filter-button" class="btn btn-outline-primary btn-block"><i class="fas fa-filter"></i> Filtrar</button>
+        </div>
+        <div class="col-6">
+            <button type="button" id="clean-filters-button" class="btn btn-outline-danger btn-block"><i class="fas fa-times-circle"></i> Limpiar</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block table_scripts %}
+    {% include 'core/form_scripts.html' %}
+
+    {% block filter_scripts %}
+    {% endblock %}
+{% endblock %}

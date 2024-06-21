@@ -83,9 +83,7 @@ class PrintCreateForm(PrintUpdateForm):
             z_scale=100,
         )
         PrintModelRelation.objects.create(
-            print_model=model_instance,
-            print=instance,
-            quantity=1
+            print_model=model_instance, print=instance, quantity=1
         )
         return instance
 

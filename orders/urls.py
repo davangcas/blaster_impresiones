@@ -3,26 +3,32 @@ from django.urls import path
 from orders.views import (
     OrderChangeStateRedirectView,
     OrderCreateView,
+    OrderDatatableView,
     OrderDeleteView,
     OrderItemCreateView,
+    OrderItemDatatableView,
     OrderItemDeleteView,
     OrderItemListView,
     OrderItemUpdateView,
     OrderListView,
     OrderUpdateView,
     PrintOrderItemChangeStateView,
+    PrintOrderItemDatatableView,
     PrintOrderItemDetailView,
     PrintOrderItemListView,
+    PrintOrderItemModelsDatatableView,
     PrintOrderItemUpdateView,
 )
 
 app_name = "orders"
 urlpatterns = [
     path("", OrderListView.as_view(), name="list"),
+    path("json/", OrderDatatableView.as_view(), name="json"),
     path("create/", OrderCreateView.as_view(), name="create"),
     path("update/<int:pk>/", OrderUpdateView.as_view(), name="update"),
     path("delete/<int:pk>/", OrderDeleteView.as_view(), name="delete"),
     path("items/<int:pk>/", OrderItemListView.as_view(), name="items"),
+    path("items/json/<int:pk>/", OrderItemDatatableView.as_view(), name="items_json"),
     path("items/create/<int:pk>/", OrderItemCreateView.as_view(), name="items_create"),
     path(
         "items/update/<int:pk>/",
@@ -38,6 +44,11 @@ urlpatterns = [
         "print_order_items/<int:pk>/",
         PrintOrderItemListView.as_view(),
         name="print_order_items",
+    ),
+    path(
+        "print_order_items/json/<int:pk>/",
+        PrintOrderItemDatatableView.as_view(),
+        name="print_order_items_json",
     ),
     path(
         "print_order_items/update/<int:pk>/",
@@ -58,5 +69,10 @@ urlpatterns = [
         "print_order_items/detail/<int:pk>/",
         PrintOrderItemDetailView.as_view(),
         name="print_order_items_detail",
+    ),
+    path(
+        "print_order_items/models/json/<int:pk>/",
+        PrintOrderItemModelsDatatableView.as_view(),
+        name="print_order_items_models_json",
     ),
 ]

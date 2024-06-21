@@ -1,10 +1,11 @@
 from crispy_forms.helper import FormHelper
 from django.forms import Form, ModelForm, ModelMultipleChoiceField
-from django.forms.fields import DateField, TimeField
+from django.forms.fields import DateField, TimeField, DateTimeField
 
 from core.fields import (
     CommonLayout,
     CustomDateField,
+    CustomDateTimeField,
     CustomPercentageField,
     CustomPercentageFieldLayout,
     CustomPriceDecimalField,
@@ -26,6 +27,8 @@ class DefaultForm(Form):
         for field_name, field in self.fields.items():
             if isinstance(field, DateField):
                 fields.append(CustomDateField(field_name))
+            elif isinstance(field, DateTimeField):
+                fields.append(CustomDateTimeField(field_name))
             elif isinstance(field, TimeField):
                 fields.append(CustomTimeField(field_name))
             elif isinstance(field, ModelMultipleChoiceField):

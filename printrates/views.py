@@ -1,23 +1,24 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, RedirectView, UpdateView
+from django.utils import timezone
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    RedirectView,
+    TemplateView,
+    UpdateView,
+)
 
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 from printrates.forms import MonthlyCostForm, PrintRateForm, PrintRateVariablesForm
 from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
-from printrates.serializers import (
-    MonthlyCostSerializer,
-    PrintRateSerializer,
-    PrintRateVariablesSerializer,
-)
 from printrates.services import generate_print_rate
 
 
-class PrintRateListView(PostListViewMixin):
+class PrintRateListView(CustomAdminViewMixin, TemplateView):
     model = PrintRate
     template_name = "printrates/list.html"
     permission_required = "printrates.view_printrate"
-    serializer_class = PrintRateSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,7 +27,11 @@ class PrintRateListView(PostListViewMixin):
         first_printrate_price = 0
 
         current_printrate = PrintRate.objects.order_by("-created_at").first()
-        previous_printrate = PrintRate.objects.order_by("-created_at")[1] if PrintRate.objects.count() > 1 else None
+        previous_printrate = (
+            PrintRate.objects.order_by("-created_at")[1]
+            if PrintRate.objects.count() > 1
+            else None
+        )
         first_printrate = PrintRate.objects.order_by("created_at").first()
 
         if current_printrate:
@@ -42,7 +47,28 @@ class PrintRateListView(PostListViewMixin):
         context["first_printrate"] = first_printrate_price
         context["create_url"] = reverse_lazy("printrates:create")
         context["active_section"] = "configuration"
+        context["json_view_url"] = reverse_lazy("printrates:json")
         return context
+
+
+class PrintRateDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "printrates.view_printrate"
+    model = PrintRate
+    columns = ["id", "created_at", "rate", "actions"]
+
+    def render_column(self, row, column):
+        if column == "created_at":
+            return timezone.localtime(row.created_at).strftime("%d/%m/%Y %H:%M")
+        if column == "rate":
+            return f"${row.rate}"
+        if column == "actions":
+            delete_url = reverse_lazy("printrates:delete", kwargs={"pk": row.pk})
+            return f"""
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class PrintRateCreateView(CustomAdminViewMixin, CreateView):
@@ -109,18 +135,32 @@ class PrintRateDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class MonthlyCostListView(PostListViewMixin):
-    model = MonthlyCost
-    template_name = "monthly_costs/list.html"
+class MonthlyCostDatatableView(CustomDatatablesJsonMixin):
     permission_required = "printrates.view_monthlycost"
-    serializer_class = MonthlyCostSerializer
+    model = MonthlyCost
+    columns = ["name", "cost", "updated_at", "actions"]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Costos mensuales"
-        context["create_url"] = reverse_lazy("printrates:monthly_costs_create")
-        context["active_section"] = "configuration"
-        return context
+    def render_column(self, row, column):
+        if column == "updated_at":
+            return timezone.localtime(row.updated_at).strftime("%d/%m/%Y %H:%M")
+        if column == "cost":
+            return f"${row.cost}"
+        if column == "actions":
+            update_url = reverse_lazy(
+                "printrates:monthly_costs_update", kwargs={"pk": row.pk}
+            )
+            delete_url = reverse_lazy(
+                "printrates:monthly_costs_delete", kwargs={"pk": row.pk}
+            )
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class MonthlyCostCreateView(CustomAdminViewMixin, CreateView):
@@ -187,18 +227,44 @@ class MonthlyCostDeleteView(CustomAdminViewMixin, DeleteView):
         return context
 
 
-class PrintRateVariablesListView(PostListViewMixin):
-    model = PrintRateVariables
-    template_name = "variables/list.html"
+class PrintRateVariablesDatatableView(CustomDatatablesJsonMixin):
     permission_required = "printrates.view_printratevariables"
-    serializer_class = PrintRateVariablesSerializer
+    model = PrintRateVariables
+    columns = [
+        "created_at",
+        "failure_percentage",
+        "maintenance_cost",
+        "minutes_spent_per_print",
+        "extra_percentage",
+        "available_printers",
+        "actions",
+    ]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Variables a considerar en el precio de impresión"
-        context["create_url"] = reverse_lazy("printrates:variables_create")
-        context["active_section"] = "configuration"
-        return context
+    def render_column(self, row, column):
+        if column == "created_at":
+            return timezone.localtime(row.created_at).strftime("%d/%m/%Y %H:%M")
+        if column == "failure_percentage":
+            return f"{row.failure_percentage}%"
+        if column == "extra_percentage":
+            return f"{row.extra_percentage}%"
+        if column == "maintenance_cost":
+            return f"${row.maintenance_cost}"
+        if column == "actions":
+            update_url = reverse_lazy(
+                "printrates:variables_update", kwargs={"pk": row.pk}
+            )
+            delete_url = reverse_lazy(
+                "printrates:variables_delete", kwargs={"pk": row.pk}
+            )
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class PrintRateVariablesCreateView(CustomAdminViewMixin, CreateView):

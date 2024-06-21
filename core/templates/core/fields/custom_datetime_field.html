@@ -1,0 +1,34 @@
+{% load crispy_forms_field %}
+
+<div class="form-group row" id="div_{{ field.auto_id }}">
+    <label class="col-form-label col-sm-3 col-form-label text-right {% if field.field.required %} requiredField{% endif %}" for="{{ field.id_for_label }}">{{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}</label>
+    <div class="col-sm-8">
+        <div class="input-group datetime" id="{{ field.auto_id }}" data-target-input="nearest">
+            {% if field.errors %}
+                {% crispy_field field 'class' 'datetime form-control datetimepicker-input is-invalid' 'data-target' field.auto_id 'placeholder' 'dd/mm/yyyy' %}
+            {% else %}
+                {% crispy_field field 'class' 'datetime form-control datetimepicker-input' 'data-target' field.auto_id 'placeholder' 'dd/mm/yyyy' %}
+            {% endif %}
+
+            <div class="input-group-append" data-target="#{{ field.auto_id }}" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+
+            {% if error_text_inline %}
+                {% if form_show_errors and field.errors %}
+                    {% for error in field.errors %}
+                        <span id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback"><strong>{{ error }}</strong></span>
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                {% if form_show_errors and field.errors %}
+                    {% for error in field.errors %}
+                        <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="invalid-feedback"><strong>{{ error }}</strong></p>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+
+        </div>
+        <small id="hint_id_{{ field.name }}" class="form-text text-muted">{{ field.help_text }}</small>
+    </div>
+</div>

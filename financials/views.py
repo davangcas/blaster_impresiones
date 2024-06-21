@@ -1,12 +1,12 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from financials.choices import ACCOUNT_TYPES
 from financials.forms import TransactionCreateEditForm, TransactionCreateFromAccountForm
 from financials.models import Account, Transaction
-from financials.serializers import TransactionSerializer
-from financials.choices import ACCOUNT_TYPES
 
 
 class AccountDetailView(CustomAdminViewMixin, TemplateView):
@@ -18,7 +18,9 @@ class AccountDetailView(CustomAdminViewMixin, TemplateView):
         context["title"] = "Cuenta Personal"
         context["active_section"] = "financials"
         context["account"] = Account.objects.get_or_create(
-            user=self.request.user, name=self.request.user.username, account_type=ACCOUNT_TYPES[1][0]
+            user=self.request.user,
+            name=self.request.user.username,
+            account_type=ACCOUNT_TYPES[1][0],
         )[0]
         context["organization_account"] = Account.objects.get_or_create(
             user=None, name="blaster", account_type=ACCOUNT_TYPES[0][0]
@@ -26,11 +28,51 @@ class AccountDetailView(CustomAdminViewMixin, TemplateView):
         return context
 
 
-class TransactionListView(PostListViewMixin):
+class TransactionListView(CustomAdminViewMixin, TemplateView):
     template_name = "transactions/list.html"
     permission_required = "financials.view_transaction"
     model = Transaction
-    serializer_class = TransactionSerializer
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Transacciones"
+        context["active_section"] = "transactions"
+        context["create_url"] = reverse_lazy("financials:transactions_create")
+        context["account"] = Account.objects.get_or_create(user=None, name="blaster")[0]
+        context["json_view_url"] = reverse_lazy("financials:transactions_json")
+        return context
+
+
+class TransactionDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "financials.view_transaction"
+    model = Transaction
+
+    def get_columns(self):
+        from_personal_account = self.request.GET.get("from_personal_account")
+        table_columns = [
+            "date",
+            "description",
+            "amount",
+            "from_account",
+            "to_account",
+            "actions",
+        ]
+
+        if from_personal_account:
+            table_columns.remove("actions")
+
+        return table_columns
+
+    def get_initial_queryset(self):
+        initial_queryset = super().get_initial_queryset()
+        from_personal_account = self.request.GET.get("from_personal_account")
+
+        if from_personal_account:
+            initial_queryset = initial_queryset.filter(
+                from_account__user=self.request.user
+            ) | initial_queryset.filter(to_account__user=self.request.user)
+
+        return initial_queryset
 
     def get_permission_required(self):
         permissions = super().get_permission_required()
@@ -42,24 +84,25 @@ class TransactionListView(PostListViewMixin):
             ]
         return permissions
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        from_personal_account = self.request.GET.get("from_personal_account")
-
-        if from_personal_account:
-            queryset = queryset.filter(
-                from_account__user=self.request.user
-            ) | queryset.filter(to_account__user=self.request.user)
-
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Transacciones"
-        context["active_section"] = "transactions"
-        context["create_url"] = reverse_lazy("financials:transactions_create")
-        context["account"] = Account.objects.get_or_create(user=None, name="blaster")[0]
-        return context
+    def render_column(self, row, column):
+        if column == "date":
+            return timezone.localtime(row.date).strftime("%d/%m/%Y %H:%M")
+        if column == "from_account":
+            return row.from_account.name if row.from_account else "Fuentes Externas"
+        if column == "to_account":
+            return row.to_account.name if row.to_account else "Fuentes Externas"
+        if column == "amount":
+            return f"${row.amount}"
+        if column == "actions":
+            delete_url = reverse_lazy(
+                "financials:transactions_delete", kwargs={"pk": row.id}
+            )
+            return f"""
+                <a href="{delete_url}" class="btn btn-danger m-1">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class TransactionCreateView(CustomAdminViewMixin, CreateView):

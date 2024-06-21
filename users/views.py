@@ -1,19 +1,23 @@
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, FormView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    FormView,
+    TemplateView,
+    UpdateView,
+)
 
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 from users.forms import ChangePasswordForm, CreateEditRoleForm, CreateEditUserForm
 from users.models import Role, User
-from users.serializers import RoleSerializer, UserSerializer
 
 
-class UserListView(PostListViewMixin):
+class UserListView(CustomAdminViewMixin, TemplateView):
     model = User
     template_name = "users/list.html"
     permission_required = "users.view_user"
-    serializer_class = UserSerializer
 
     def get_queryset(self):
         return super().get_queryset().select_related("role")
@@ -23,7 +27,28 @@ class UserListView(PostListViewMixin):
         context["title"] = "Usuarios"
         context["create_url"] = reverse_lazy("users:create")
         context["active_section"] = "users"
+        context["json_view_url"] = reverse_lazy("users:json")
         return context
+
+
+class UserDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "users.view_user"
+    model = User
+    columns = ["username", "email", "first_name", "last_name", "role.name", "actions"]
+
+    def render_column(self, row, column):
+        if column == "actions":
+            update_url = reverse_lazy("users:update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("users:delete", kwargs={"pk": row.id})
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class UserCreateView(CustomAdminViewMixin, CreateView):
@@ -119,18 +144,40 @@ class ChangePasswordView(CustomAdminViewMixin, FormView):
         return context
 
 
-class RoleListView(PostListViewMixin):
+class RoleListView(CustomAdminViewMixin, TemplateView):
     model = Role
     template_name = "roles/list.html"
     permission_required = "users.view_role"
-    serializer_class = RoleSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Roles"
         context["create_url"] = reverse_lazy("users:roles_create")
         context["active_section"] = "roles"
+        context["json_view_url"] = reverse_lazy("users:roles_json")
         return context
+
+
+class RoleDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "users.view_role"
+    model = Role
+    columns = ["name", "permissions", "actions"]
+
+    def render_column(self, row, column):
+        if column == "permissions":
+            return row.get_permission_names()
+        if column == "actions":
+            update_url = reverse_lazy("clients:update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("clients:delete", kwargs={"pk": row.id})
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class RoleCreateView(CustomAdminViewMixin, CreateView):

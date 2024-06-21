@@ -1,25 +1,46 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
 from clients.forms import ClientCreateEditForm
 from clients.models import Client
-from clients.serializers import ClientSerializer
-from core.mixins import CustomAdminViewMixin, PostListViewMixin
+from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 
 
-class ClientListView(PostListViewMixin):
+class ClientListView(CustomAdminViewMixin, TemplateView):
     model = Client
     template_name = "clients/list.html"
     permission_required = "clients.view_client"
-    serializer_class = ClientSerializer
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Clientes"
         context["create_url"] = reverse_lazy("clients:create")
         context["active_section"] = "clients"
+        context["json_view_url"] = reverse_lazy("clients:json")
         return context
+
+
+class ClientDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "clients.view_client"
+    model = Client
+    columns = ["first_name", "last_name", "email", "phone_number", "actions"]
+
+    def render_column(self, row, column):
+        if column == "email":
+            return row.email or "No posee email registrado"
+        if column == "actions":
+            update_url = reverse_lazy("clients:update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("clients:delete", kwargs={"pk": row.id})
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
 
 
 class ClientCreateView(CustomAdminViewMixin, CreateView):

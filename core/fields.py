@@ -5,16 +5,18 @@ from django.forms import DecimalField, IntegerField
 class CommonLayout(Layout):
     def __init__(self, *fields, **kwargs):
         creation_layout = Div(
+            Div(css_id="previous-form-content", css_class="row"),
             *fields,
+            Div(css_id="next-form-content", css_class="row"),
             css_class="card-body",
         )
         footer_div = Div(
             Div(
                 Div(
                     HTML(
-                        "<a class='btn btn-outline-secondary' href='{{ cancel_url }}'>Cancelar</a>"
+                        "<a class='btn btn-outline-secondary m-1' href='{{ cancel_url }}' id='cancel-button' >Cancelar</a>"
                     ),
-                    Submit("submit", "Guardar", css_class="btn-primary"),
+                    Submit("submit", "Guardar", css_class="btn-primary m-1"),
                     css_class="col-12 text-center",
                 ),
                 css_class="row",
@@ -27,6 +29,10 @@ class CommonLayout(Layout):
 
 class CustomDateField(Field):
     template = "core/fields/custom_date_field.html"
+
+
+class CustomDateTimeField(Field):
+    template = "core/fields/custom_datetime_field.html"
 
 
 class CustomTimeField(Field):

@@ -48,39 +48,3 @@
     <th>Destino</th>
     <th>Acciones</th>
 {% endblock %}
-
-{% block table_scripts %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            CommonDataTable.init({
-                table_id: "#main-table",
-                source_url: window.location.href,
-                columns: [
-                    { data: "date" },
-                    { data: "description" },
-                    { data: "amount" },
-                    { data: "from_account" },
-                    { data: "to_account" },
-                    { data: "id" },
-                ],
-                columnDefs: [
-                    {
-                        targets: [-1],
-                        orderable: false,
-                        render: function (data, type, row) {
-                            let delete_url = `{% url 'financials:transactions_delete' 0 %}`.replace(
-                                "0",
-                                data
-                            );
-                            return `
-                                <a href="${delete_url}" class="btn btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            `;
-                        },
-                    },
-                ],
-            });
-        });
-    </script>
-{% endblock %}
