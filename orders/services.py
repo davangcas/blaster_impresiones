@@ -10,7 +10,7 @@ def get_order_state_button(order):
     if order.state not in ("completed", "delivered"):
         return ""
 
-    url = reverse_lazy("orders:items", kwargs={"pk": order.pk})
+    url = reverse_lazy("orders:change_state", kwargs={"pk": order.pk})
 
     return f"""
         <a href="{url}" class="btn btn-success">
