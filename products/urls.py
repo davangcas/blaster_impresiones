@@ -11,6 +11,12 @@ from products.views import (
     ProductDeleteView,
     ProductListView,
     ProductUpdateView,
+    CategoryListView,
+    CategoryCreateView,
+    CategoryUpdateView,
+    CategoryDeleteView,
+    CategoryDatatableView,
+    CategoryGetOptionsView,
 )
 
 app_name = "products"
@@ -43,4 +49,14 @@ urlpatterns = [
         ExtraProductCostDeleteView.as_view(),
         name="extra_costs_delete",
     ),
+    path("categories/", CategoryListView.as_view(), name="categories"),
+    path("categories/json/", CategoryDatatableView.as_view(), name="categories_json"),
+    path("categories/create/", CategoryCreateView.as_view(), name="categories_create"),
+    path(
+        "categories/update/<int:pk>/", CategoryUpdateView.as_view(), name="categories_update"
+    ),
+    path(
+        "categories/delete/<int:pk>/", CategoryDeleteView.as_view(), name="categories_delete"
+    ),
+    path("categories/options/", CategoryGetOptionsView.as_view(), name="categories_options"),
 ]

@@ -1,7 +1,87 @@
-{% extends 'core/list.html' %}
+{% extends 'core/body.html' %}
+{% load static %}
 
-{% block table_headers %}
-    <th>Nombre</th>
-    <th>Permisos</th>
-    <th>Acciones</th>
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+
+    {% block table_styles %}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">{{ title }}</h3>
+                    <div class="card-tools">
+                        {% block custom_list_card_buttons %}{% endblock %}
+                        {% if create_url %}
+                            <a href="{{ create_url }}" class="btn btn-primary m-1">
+                                <i class="fas fa-plus"></i> Agregar
+                            </a>
+                        {% endif %}
+                        <button type="button" class="btn bg-maroon m-1" data-toggle="modal" data-target="#info-modal">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <table id="main-table" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Permisos</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content_modals %}
+    {% include 'roles/modals/info_list.html' %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+    <script src="{% static 'js/datatables/common/datatables.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            CommonDataTable.init({
+                table_id: "#main-table",
+                source_url: "{{ json_view_url }}",
+                columnDefs: [
+                    {
+                        targets: [-1, -2],
+                        orderable: false,
+                    },
+                ],
+            });
+        })
+    </script>
 {% endblock %}

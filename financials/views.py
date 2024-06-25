@@ -53,8 +53,8 @@ class TransactionDatatableView(CustomDatatablesJsonMixin):
             "date",
             "description",
             "amount",
-            "from_account",
-            "to_account",
+            "from_account.name",
+            "to_account.name",
             "actions",
         ]
 
@@ -87,9 +87,9 @@ class TransactionDatatableView(CustomDatatablesJsonMixin):
     def render_column(self, row, column):
         if column == "date":
             return timezone.localtime(row.date).strftime("%d/%m/%Y %H:%M")
-        if column == "from_account":
+        if column == "from_account.name":
             return row.from_account.name if row.from_account else "Fuentes Externas"
-        if column == "to_account":
+        if column == "to_account.name":
             return row.to_account.name if row.to_account else "Fuentes Externas"
         if column == "amount":
             return f"${row.amount}"

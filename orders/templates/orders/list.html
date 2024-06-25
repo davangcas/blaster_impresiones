@@ -1,5 +1,26 @@
-{% extends 'core/list.html' %}
+{% extends 'core/list_with_filters.html' %}
 {% load static %}
+
+{% block filter_inputs %}
+    <div class="row">
+        <div class="col-6">
+            <div class="input-group date mt-2" id="start_date" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input table-filter" data-target="#start_date" name="created__gte" placeholder="Fecha inicio">
+                <div class="input-group-append" data-target="#start_date" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group date mt-2" id="end_date" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input table-filter" data-target="#end_date" name="created__lte" placeholder="Fecha fin">
+                <div class="input-group-append" data-target="#end_date" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
 {% block table_headers %}
     <th>ID</th>

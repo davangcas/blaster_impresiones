@@ -161,10 +161,10 @@ class RoleListView(CustomAdminViewMixin, TemplateView):
 class RoleDatatableView(CustomDatatablesJsonMixin):
     permission_required = "users.view_role"
     model = Role
-    columns = ["name", "permissions", "actions"]
+    columns = ["name", "permissions__name", "actions"]
 
     def render_column(self, row, column):
-        if column == "permissions":
+        if column == "permissions__name":
             return row.get_permission_names()
         if column == "actions":
             update_url = reverse_lazy("users:roles_update", kwargs={"pk": row.id})

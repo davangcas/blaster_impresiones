@@ -1,154 +1,36 @@
 {% extends 'core/body.html' %}
-{% load static crispy_forms_tags %}
+{% load static %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/daterangepicker/daterangepicker.css' %}">
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/select2/css/select2.min.css' %}">
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.2.0/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css' %}">
-
-    {% block extra_styles %}
-    {% endblock %}
+    {% include 'core/form_styles.html' %}
+    {% block extra_styles %}{% endblock %}
 {% endblock %}
 
 {% block content %}
+    {% block previous_content %}{% endblock %}
+
     <div class="row">
         <div class="col-12">
             <div class="card card-primary">
                 <div class="card-header">
-                    <h5>{{ title }}</h5>
+                    <div class="card-title">
+                        <h5>{{ title }}</h5>
+                    </div>
+                    <div class="card-tools">
+                        {% block modal_info %}{% endblock %}
+                    </div>
                 </div>
                 <div class="card-body">
-                    {% block form %}
-                    {% endblock %}
+                    {% block form %}{% endblock %}
                 </div>
             </div>
         </div>
     </div>
+
+    {% block next_content %}{% endblock %}
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/select2/js/select2.full.min.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/moment/moment-with-locales.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/inputmask/jquery.inputmask.min.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/daterangepicker/daterangepicker.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/jquery-validation/jquery.validate.min.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/jquery-validation/additional-methods.min.js' %}"></script>
-    <script src="{% static 'lib/adminlte-3.2.0/plugins/jquery-validation/localization/messages_es.js' %}"></script>
-    <script src="{% static 'js/validations/common/form-validation.js' %}"></script>
-    <script>
-        (function () {
-            let currentLang = "es-us",
-                snippets = [];
-
-            function createSnippets() {
-                let i;
-
-                moment.locale(currentLang);
-
-                for (i = 0; i < snippets.length; i++) {
-                    snippets[i].render();
-                }
-            }
-
-            function updateSnippets() {
-                let i;
-
-                moment.locale(currentLang);
-
-                for (i = 0; i < snippets.length; i++) {
-                    snippets[i].update();
-                }
-            }
-
-            function spaces(length) {
-                let out = "";
-                while (out.length < length) {
-                    out += " ";
-                }
-                return out;
-            }
-
-            function Snippet(el) {
-                let longest = 0,
-                    i,
-                    text = (this.text = el.text().trim().split("\n")),
-                    html = (this.html = el.html().trim().split("\n")),
-                    evals = (this.evals = []);
-
-                this.el = el;
-
-                for (i = 0; i < text.length; i++) {
-                    longest = Math.max(text[i].length, longest);
-                    evals[i] = new Function("return " + text[i]);
-                }
-
-                for (i = 0; i < text.length; i++) {
-                    html[i] += spaces(longest - text[i].length);
-                }
-            }
-
-            Snippet.prototype.render = function () {
-                let output = [],
-                    i;
-
-                for (i = 0; i < this.html.length; i++) {
-                    output[i] = this.html[i];
-                    output[i] += '<span class="comment"> // ';
-                    output[i] += this.evals[i]();
-                    output[i] += "</span>";
-                }
-
-                this.el.html(output.join("\n"));
-            };
-
-            Snippet.prototype.update = function () {
-                let i,
-                    comments = [];
-
-                if (!this.comments) {
-                    for (i = 0; i < this.el[0].childNodes.length; i++) {
-                        if ("comment" === this.el[0].childNodes[i].className) {
-                            comments.push($(this.el[0].childNodes[i]));
-                        }
-                    }
-                    this.comments = comments;
-                }
-
-                for (i = 0; i < this.comments.length; i++) {
-                    this.comments[i].text(" // " + this.evals[i]());
-                }
-            };
-
-            createSnippets();
-            updateSnippets();
-        })();
-    </script>
-    <script>
-        $(function(){
-            $('.select2').select2();
-            $('.select2bs4').select2({
-                theme: 'bootstrap4',
-            });
-            $('.date').datetimepicker({
-                format:'DD/MM/YYYY',
-            });
-            $('.timepicker').datetimepicker({
-                format: 'HH:mm',
-                timePickerIncrement: 30,
-            });
-            $(".select-all-options").on("click", function() {
-                let selectId = $(this).attr("id").replace("select_all_", "");
-                $(`#${selectId} option`).prop("selected", $(this).prop("checked"));
-                $(`#${selectId}`).trigger("change");
-            });
-        });
-    </script>
-
-    {% block extra_scripts %}
-    {% endblock %}
+    {% include 'core/form_scripts.html' %}
+    {% block extra_scripts %}{% endblock %}
 {% endblock %}
