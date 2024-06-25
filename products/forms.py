@@ -2,10 +2,23 @@ from django import forms
 
 from core.fields import CustomPriceDecimalField
 from core.forms import DefaultModelForm
-from products.models import ExtraProductCost, Product
+from products.models import ExtraProductCost, Product, Category
 
 
 class ProductCreateEditForm(DefaultModelForm):
+    categories = forms.ModelMultipleChoiceField(
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "select2bs4 select2-hidden-accessible select-all",
+                "style": "width: 100%;",
+                "data-placeholder": "(Opcional)",
+            }
+        ),
+        label="Categorias",
+        required=False,
+        queryset=Category.objects.all(),
+    )
+
     available = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "form-check-input"}),
         label="Disponible",
@@ -27,7 +40,7 @@ class ProductCreateEditForm(DefaultModelForm):
 
     class Meta:
         model = Product
-        fields = ("name", "link", "description", "image", "stock", "available")
+        fields = ("name", "link", "description", "categories", "image", "stock", "available")
 
     def clean_available(self):
         available = self.cleaned_data["available"]
@@ -65,3 +78,13 @@ class ExtraProductCostCreateForm(ExtraProductCostUpdateForm):
         if commit:
             instance.save()
         return instance
+
+
+class CategoryCreateEditForm(DefaultModelForm):
+    class Meta:
+        model = Category
+        fields = ("name", "description")
+        labels = {
+            "name": "Nombre",
+            "description": "Descripción",
+        }

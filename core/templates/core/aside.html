@@ -34,10 +34,30 @@
                 {% endif %}
                 {% if perms.products.view_product %}
                     <li class="nav-item">
-                        <a href="{% url 'products:list' %}" class="nav-link" selection="products">
-                            <i class="nav-icon fas fa-box"></i>
-                            <p>Productos</p>
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-boxes"></i>
+                            <p>Artículos
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
                         </a>
+                        <ul class="nav nav-treeview">
+                            {% if perms.products.view_product %}
+                                <li class="nav-item">
+                                    <a href="{% url 'products:categories' %}" class="nav-link" selection="categories">
+                                        <i class="nav-icon fas fa-tags"></i>
+                                        <p>Categorías</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if perms.products.view_product %}
+                                <li class="nav-item">
+                                    <a href="{% url 'products:list' %}" class="nav-link" selection="products">
+                                        <i class="nav-icon fas fa-box"></i>
+                                        <p>Productos</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
                     </li>
                 {% endif %}
                 {% if perms.orders.view_order %}

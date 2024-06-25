@@ -1,14 +1,16 @@
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
+from django.http import JsonResponse
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 from products.forms import (
     ExtraProductCostCreateForm,
     ExtraProductCostUpdateForm,
     ProductCreateEditForm,
+    CategoryCreateEditForm,
 )
-from products.models import ExtraProductCost, Product
+from products.models import ExtraProductCost, Product, Category
 
 
 class ProductListView(CustomAdminViewMixin, TemplateView):
@@ -240,3 +242,123 @@ class ExtraProductCostDeleteView(CustomAdminViewMixin, DeleteView):
         )
         context["active_section"] = "products"
         return context
+
+
+class CategoryListView(CustomAdminViewMixin, TemplateView):
+    model = Category
+    template_name = "categories/list.html"
+    permission_required = "products.view_category"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Categorías"
+        context["create_url"] = reverse_lazy("products:categories_create")
+        context["active_section"] = "categories"
+        context["json_view_url"] = reverse_lazy("products:categories_json")
+        return context
+
+
+class CategoryDatatableView(CustomDatatablesJsonMixin):
+    permission_required = "products.view_category"
+    model = Category
+    columns = ["name", "description", "actions"]
+
+    def render_column(self, row, column):
+        if column == "actions":
+            update_url = reverse_lazy("products:categories_update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("products:categories_delete", kwargs={"pk": row.id})
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
+
+
+class CategoryCreateView(CustomAdminViewMixin, CreateView):
+    model = Category
+    template_name = "categories/create.html"
+    success_url = reverse_lazy("products:categories")
+    form_class = CategoryCreateEditForm
+    permission_required = "products.add_category"
+
+    def form_valid(self, form):
+        messages.success(self.request, "Categoría creada correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear la categoría")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Crear categoría"
+        context["cancel_url"] = reverse_lazy("products:categories")
+        context["active_section"] = "categories"
+        return context
+
+
+class CategoryUpdateView(CustomAdminViewMixin, UpdateView):
+    model = Category
+    template_name = "categories/update.html"
+    success_url = reverse_lazy("products:categories")
+    form_class = CategoryCreateEditForm
+    permission_required = "products.change_category"
+
+    def form_valid(self, form):
+        messages.success(self.request, "Categoría actualizada correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar la categoría")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Editar categoría"
+        context["cancel_url"] = reverse_lazy("products:categories")
+        context["active_section"] = "categories"
+        return context
+
+
+class CategoryDeleteView(CustomAdminViewMixin, DeleteView):
+    model = Category
+    template_name = "categories/delete.html"
+    success_url = reverse_lazy("products:categories")
+    permission_required = "products.delete_category"
+
+    def get_success_url(self):
+        messages.success(self.request, "Categoría eliminada correctamente")
+        return super().get_success_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Eliminar categoría"
+        context["cancel_url"] = reverse_lazy("products:categories")
+        context["active_section"] = "categories"
+        return context
+
+
+class CategoryGetOptionsView(CustomAdminViewMixin, TemplateView):
+    permission_required = "products.view_product"
+
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get("q")
+        filter_lookup = {}
+
+        if search:
+            filter_lookup["name__icontains"] = search
+
+        categories = Category.objects.filter(**filter_lookup).values_list("id", "name")
+        results = [{"id": id, "text": name} for id, name in categories]
+        return JsonResponse(
+            data={
+                "results": results,
+                "pagination": {
+                    "more": False,
+                },
+            }
+        )

@@ -1,4 +1,30 @@
-{% extends 'core/list.html' %}
+{% extends 'core/list_with_filters.html' %}
+
+{% block filter_inputs %}
+    <div class="row">
+        <div class="col-6">
+            <input type="number" class="form-control table-filter mt-2" placeholder="Precio min" name="price__gte">
+        </div>
+        <div class="col-6">
+            <input type="number" class="form-control table-filter mt-2" placeholder="Precio máx" name="price__lte">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <input type="number" class="form-control table-filter mt-2" placeholder="Stock min" name="stock__gte">
+        </div>
+        <div class="col-6">
+            <input type="number" class="form-control table-filter mt-2" placeholder="Stock máx" name="stock__lte">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 mt-2">
+            <select class="form-control select2bs4 table-filter" id="categories-select" style="width: 100%;" name="categories__id">
+                <option></option>
+            </select>
+        </div>
+    </div>
+{% endblock %}
 
 {% block table_headers %}
     <th>ID</th>
@@ -6,4 +32,32 @@
     <th>Precio</th>
     <th>Stock</th>
     <th>Acciones</th>
+{% endblock %}
+
+{% block filter_scripts %}
+    <script>
+        $(document).ready(function (){
+            $('#categories-select').select2({
+                theme: "bootstrap4",
+                placeholder: 'Categoría',
+                allowClear: true,
+                ajax: {
+                    url: "{% url 'products:categories_options' %}",
+                    processResults: function (response, params) {
+                        return {
+                            results: response.results,
+                        };
+                    }
+                },
+                language: {
+                    noResults: function() {
+                        return "No se encontraron categorías";
+                    },
+                    searching: function() {
+                        return "Buscando...";
+                    },
+                },
+            });
+        })
+    </script>
 {% endblock %}

@@ -1,6 +1,8 @@
 import ast
 
 from django.contrib import messages
+from django.db.models import Sum, F, Value, CharField
+from django.db.models.functions import Concat
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
@@ -45,20 +47,28 @@ class OrderListView(CustomAdminViewMixin, TemplateView):
 class OrderDatatableView(CustomDatatablesJsonMixin):
     permission_required = "orders.view_order"
     model = Order
-    columns = ["id", "created", "client", "state", "total", "actions"]
+    columns = ["id", "created", "client_full_name", "state", "total", "actions"]
 
     def get_initial_queryset(self):
-        return super().get_initial_queryset().select_related("client")
+        queryset = super().get_initial_queryset()
+        queryset = queryset.annotate(
+            total=Sum(F('items__price') * F('items__quantity')),
+            client_full_name=Concat(
+                F('client__first_name'),
+                Value(' '),
+                F('client__last_name'),
+                output_field=CharField()
+            )
+        )
+        return queryset
 
     def render_column(self, row, column):
-        if column == "client":
-            return row.client.full_name
         if column == "created":
             return timezone.localtime(row.created).strftime("%d/%m/%Y %H:%M")
         if column == "state":
             return row.get_state_display_with_style()
         if column == "total":
-            return f"${row.get_total_cost()}"
+            return f"${row.total}"
         if column == "actions":
             return get_order_buttons(row)
         return super().render_column(row, column)
@@ -155,13 +165,17 @@ class OrderItemDatatableView(CustomDatatablesJsonMixin):
     columns = ["product.name", "quantity", "state", "total", "actions"]
 
     def get_initial_queryset(self):
-        return super().get_initial_queryset().filter(order_id=self.kwargs.get("pk"))
+        queryset = super().get_initial_queryset().filter(order_id=self.kwargs.get("pk"))
+        queryset = queryset.annotate(
+            total=F('price') * F('quantity')
+        )
+        return queryset
 
     def render_column(self, row, column):
         if column == "state":
             return row.get_state_display_with_style()
         if column == "total":
-            return f"${row.get_cost()}"
+            return f"${row.total}"
         if column == "actions":
             return get_order_item_buttons(row)
         return super().render_column(row, column)
@@ -266,7 +280,7 @@ class PrintOrderItemDatatableView(CustomDatatablesJsonMixin):
         "print.minutes",
         "print.grams",
         "print.material.name",
-        "color",
+        "color.color",
         "state",
         "actions",
     ]
@@ -277,7 +291,7 @@ class PrintOrderItemDatatableView(CustomDatatablesJsonMixin):
         )
 
     def render_column(self, row, column):
-        if column == "color":
+        if column == "color.color":
             return row.color.color if row.color else "-"
         if column == "state":
             return row.get_state_display_with_style()

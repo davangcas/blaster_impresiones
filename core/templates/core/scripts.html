@@ -10,6 +10,13 @@
         $nav_items = document.querySelectorAll(`[selection=${active_section}]`);
         $nav_items.forEach(function ($nav_item) {
             $nav_item.classList.add("active");
+            const $parent_li = $nav_item.closest('li').parentElement.closest('li');
+            const $parent_anchor = $nav_item.closest('li').parentElement.parentElement.querySelector('a');
+
+            if ($parent_li && $parent_anchor){
+                $parent_li.classList.add("menu-open");
+                $parent_anchor.classList.add("active");
+            }
         });
     });
 
