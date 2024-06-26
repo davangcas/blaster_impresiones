@@ -27,16 +27,6 @@
     <div class="section padding_layout_1 product_list_main">
         <div class="container">
             <div class="row">
-                <div class="col-md-9">
-                    <div class="row" id="products_div"></div>
-                    <div class="row">
-                        <div class="col-md-12 payment-bt">
-                            <div class="center">
-                                <button class="btn sqaure_bt" id="load-more-products">Cargar más</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-md-3">
                     <div class="side_bar">
                         <div class="side_bar_blog">
@@ -48,6 +38,26 @@
                                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                                     </span>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="side_bar_blog">
+                            <h4>Categorías</h4>
+                            <div class="tags">
+                                <ul>
+                                    {% for category in categories %}
+                                        <li><a href="#" class="category-filter" data-category-id="{{ category.id }}">{{ category.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row" id="products_div"></div>
+                    <div class="row">
+                        <div class="col-md-12 payment-bt">
+                            <div class="center">
+                                <button class="btn sqaure_bt" id="load-more-products">Cargar más</button>
                             </div>
                         </div>
                     </div>
@@ -68,6 +78,12 @@
             });
 
             $('#search').on('input', function () {
+                $("#products_div").empty();
+                loadProducts(1, "{% url 'landing:products' %}", "{% url 'landing:product_detail' 0 %}");
+            });
+
+            $('.category-filter').click(function () {
+                $(this).toggleClass('active');
                 $("#products_div").empty();
                 loadProducts(1, "{% url 'landing:products' %}", "{% url 'landing:product_detail' 0 %}");
             });

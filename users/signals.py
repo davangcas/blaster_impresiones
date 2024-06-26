@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 
-from financials.models import Account, ACCOUNT_TYPES
+from financials.models import ACCOUNT_TYPES, Account
 from users.models import Role, User
 
 
@@ -12,7 +12,9 @@ def user_post_save(sender, instance, created, **kwargs):
     new_permissions = list(instance.role.permissions.all())
 
     if not instance.accounts.all().exists():
-        Account.objects.get_or_create(user=instance, name=instance.username, account_type=ACCOUNT_TYPES[1][0])
+        Account.objects.get_or_create(
+            user=instance, name=instance.username, account_type=ACCOUNT_TYPES[1][0]
+        )
 
     instance.accounts.all().update(name=instance.username)
 

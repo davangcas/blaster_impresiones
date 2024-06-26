@@ -1,6 +1,12 @@
 from django.urls import path
 
 from products.views import (
+    CategoryCreateView,
+    CategoryDatatableView,
+    CategoryDeleteView,
+    CategoryGetOptionsView,
+    CategoryListView,
+    CategoryUpdateView,
     ExtraProductCostCreateView,
     ExtraProductCostDatatableView,
     ExtraProductCostDeleteView,
@@ -9,14 +15,12 @@ from products.views import (
     ProductCreateView,
     ProductDatatableView,
     ProductDeleteView,
+    ProductImageCreateView,
+    ProductImageDatatableView,
+    ProductImageDeleteView,
+    ProductImageUpdateView,
     ProductListView,
     ProductUpdateView,
-    CategoryListView,
-    CategoryCreateView,
-    CategoryUpdateView,
-    CategoryDeleteView,
-    CategoryDatatableView,
-    CategoryGetOptionsView,
 )
 
 app_name = "products"
@@ -53,10 +57,38 @@ urlpatterns = [
     path("categories/json/", CategoryDatatableView.as_view(), name="categories_json"),
     path("categories/create/", CategoryCreateView.as_view(), name="categories_create"),
     path(
-        "categories/update/<int:pk>/", CategoryUpdateView.as_view(), name="categories_update"
+        "categories/update/<int:pk>/",
+        CategoryUpdateView.as_view(),
+        name="categories_update",
     ),
     path(
-        "categories/delete/<int:pk>/", CategoryDeleteView.as_view(), name="categories_delete"
+        "categories/delete/<int:pk>/",
+        CategoryDeleteView.as_view(),
+        name="categories_delete",
     ),
-    path("categories/options/", CategoryGetOptionsView.as_view(), name="categories_options"),
+    path(
+        "categories/options/",
+        CategoryGetOptionsView.as_view(),
+        name="categories_options",
+    ),
+    path(
+        "images/json/<int:pk>/",
+        ProductImageDatatableView.as_view(),
+        name="images_json",
+    ),
+    path(
+        "images/create/<int:pk>/",
+        ProductImageCreateView.as_view(),
+        name="images_create",
+    ),
+    path(
+        "images/update/<int:pk>/",
+        ProductImageUpdateView.as_view(),
+        name="images_update",
+    ),
+    path(
+        "images/delete/<int:pk>/",
+        ProductImageDeleteView.as_view(),
+        name="images_delete",
+    ),
 ]

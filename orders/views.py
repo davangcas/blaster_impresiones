@@ -1,7 +1,7 @@
 import ast
 
 from django.contrib import messages
-from django.db.models import Sum, F, Value, CharField
+from django.db.models import CharField, F, Sum, Value
 from django.db.models.functions import Concat
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -52,13 +52,13 @@ class OrderDatatableView(CustomDatatablesJsonMixin):
     def get_initial_queryset(self):
         queryset = super().get_initial_queryset()
         queryset = queryset.annotate(
-            total=Sum(F('items__price') * F('items__quantity')),
+            total=Sum(F("items__price") * F("items__quantity")),
             client_full_name=Concat(
-                F('client__first_name'),
-                Value(' '),
-                F('client__last_name'),
-                output_field=CharField()
-            )
+                F("client__first_name"),
+                Value(" "),
+                F("client__last_name"),
+                output_field=CharField(),
+            ),
         )
         return queryset
 
@@ -166,9 +166,7 @@ class OrderItemDatatableView(CustomDatatablesJsonMixin):
 
     def get_initial_queryset(self):
         queryset = super().get_initial_queryset().filter(order_id=self.kwargs.get("pk"))
-        queryset = queryset.annotate(
-            total=F('price') * F('quantity')
-        )
+        queryset = queryset.annotate(total=F("price") * F("quantity"))
         return queryset
 
     def render_column(self, row, column):
@@ -397,9 +395,7 @@ class PrintOrderItemModelsDatatableView(CustomDatatablesJsonMixin):
     ]
 
     def get_initial_queryset(self):
-        return super().get_initial_queryset().filter(
-            print_id=self.kwargs.get("pk")
-        )
+        return super().get_initial_queryset().filter(print_id=self.kwargs.get("pk"))
 
     def render_column(self, row, column):
         if column == "actions":

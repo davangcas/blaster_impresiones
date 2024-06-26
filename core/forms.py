@@ -1,6 +1,6 @@
 from crispy_forms.helper import FormHelper
 from django.forms import Form, ModelForm, ModelMultipleChoiceField
-from django.forms.fields import DateField, TimeField, DateTimeField
+from django.forms.fields import DateField, DateTimeField, TimeField
 
 from core.fields import (
     CommonLayout,

@@ -76,3 +76,7 @@ class CustomDatatablesJsonMixin(CustomAdminViewMixin, BaseDatatableView):
 
     def get_filter_method(self):
         return self.FILTER_ICONTAINS
+
+    def render_column(self, row, column):
+        rendered_column = super().render_column(row, column)
+        return rendered_column or "-"

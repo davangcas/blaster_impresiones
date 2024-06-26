@@ -12,7 +12,7 @@
         {% block styles %}{% endblock %}
     </head>
 
-    <body class="hold-transition sidebar-mini layout-fixed">
+    <body class="sidebar-mini layout-fixed {% if request.user.admin_dark_mode %}dark-mode{% endif %}">
         <div class="wrapper">
             {% include 'core/navbar.html' %}
             {% include 'core/aside.html' %}

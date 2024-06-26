@@ -2,7 +2,7 @@ from django import forms
 
 from core.fields import CustomPriceDecimalField
 from core.forms import DefaultModelForm
-from products.models import ExtraProductCost, Product, Category
+from products.models import Category, ExtraProductCost, Product, ProductImage
 
 
 class ProductCreateEditForm(DefaultModelForm):
@@ -40,7 +40,15 @@ class ProductCreateEditForm(DefaultModelForm):
 
     class Meta:
         model = Product
-        fields = ("name", "link", "description", "categories", "image", "stock", "available")
+        fields = (
+            "name",
+            "link",
+            "description",
+            "categories",
+            "image",
+            "stock",
+            "available",
+        )
 
     def clean_available(self):
         available = self.cleaned_data["available"]
@@ -83,8 +91,37 @@ class ExtraProductCostCreateForm(ExtraProductCostUpdateForm):
 class CategoryCreateEditForm(DefaultModelForm):
     class Meta:
         model = Category
-        fields = ("name", "description")
+        fields = ("name", "description", "is_active")
         labels = {
             "name": "Nombre",
             "description": "Descripción",
+            "is_active": "Activada",
         }
+        help_texts = {
+            "is_active": "Indica si la categoría está activa",
+        }
+
+
+class ProductImageUpdateForm(DefaultModelForm):
+    class Meta:
+        model = ProductImage
+        fields = ("image",)
+        labels = {
+            "image": "Imagen",
+        }
+        help_texts = {
+            "image": "Imagen del producto",
+        }
+
+
+class ProductImageCreateForm(ProductImageUpdateForm):
+    def __init__(self, *args, **kwargs):
+        self.product_id = kwargs.pop("product_id")
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.product_id = self.product_id
+        if commit:
+            instance.save()
+        return instance

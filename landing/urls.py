@@ -2,13 +2,13 @@ from django.urls import path
 
 from landing.views import (
     AboutView,
+    ContactView,
     IndexView,
     ModelingServiceView,
     PrintServiceView,
-    TermsAndConditionsView,
-    ProductsView,
-    ContactView,
     ProductDetailView,
+    ProductsView,
+    TermsAndConditionsView,
 )
 
 app_name = "landing"

@@ -101,6 +101,37 @@
             </div>
         </div>
     {% endif %}
+
+    {% if perms.products.view_productimage %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Imágenes del producto</h3>
+                        <div class="card-tools">
+                            <a href="{% url 'products:images_create' product.id %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Agregar
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <table id="product-images-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Imágen</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block table_headers %}
@@ -128,6 +159,19 @@
                 CommonDataTable.init({
                     table_id: "#extra-costs-table",
                     source_url: "{% url 'products:extra_costs_json' product.id %}",
+                    columnDefs: [
+                        {
+                            targets: [-1],
+                            orderable: false,
+                        },
+                    ],
+                });
+            }
+
+            if ("{{ perms.products.view_productimage }}" == "True"){
+                CommonDataTable.init({
+                    table_id: "#product-images-table",
+                    source_url: "{% url 'products:images_json' product.id %}",
                     columnDefs: [
                         {
                             targets: [-1],
