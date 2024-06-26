@@ -4,7 +4,6 @@
 {% block css %}
     <link rel="stylesheet" href="{% static 'lib/landing/css/hizoom.css' %}" />
 {% endblock %}
-
 {% block content %}
     <div id="inner_banner" class="section inner_banner_section">
         <div class="container">
@@ -36,7 +35,9 @@
                 <div class="col-md-12">
                     <div class="row">
                         <div class="product_detail_feature_img hizoom hi2">
-                            <div class='hizoom hi2'><img src="{{ object.image.url }}" alt="#" /></div>
+                            <div class="hizoom hi2">
+                                <img src="{{ object.image.url }}" alt="#" />
+                            </div>
                         </div>
                         <div
                             class="col-xl-6 col-lg-12 col-md-12 product_detail_side detail_style1"
@@ -56,15 +57,21 @@
                             </div>
                             <div class="detail-contant">
                                 <p>
-                                    {{ object.description }}<br><br>
-                                    <span class="stock">{{ object.stock }} en stock</span>
+                                    {{ object.description }}<br /><br />
+                                    <span class="stock"
+                                        >{{ object.stock }} en stock</span
+                                    >
                                 </p>
                             </div>
                             <div class="share-post">
-                                <a href="#" class="share-text">Visita nuestras redes</a>
+                                <a href="#" class="share-text"
+                                    >Visita nuestras redes</a
+                                >
                                 <ul class="social_icons">
                                     <li>
-                                        <a href="https://www.facebook.com/BasterImpresiones3D" target="_blank"
+                                        <a
+                                            href="https://www.facebook.com/BasterImpresiones3D"
+                                            target="_blank"
                                             ><i
                                                 class="fa fa-facebook"
                                                 aria-hidden="true"
@@ -72,7 +79,9 @@
                                         ></a>
                                     </li>
                                     <li>
-                                        <a href="https://www.instagram.com/blaster_impresiones3d/" target="_blank"
+                                        <a
+                                            href="https://www.instagram.com/blaster_impresiones3d/"
+                                            target="_blank"
                                             ><i
                                                 class="fa fa-instagram"
                                                 aria-hidden="true"
@@ -85,10 +94,43 @@
                     </div>
                 </div>
             </div>
+            {% if product.images.all.exists %}
+                <div class="row" style="margin-top: 1rem">
+                    <div class="col-md-12">
+                        <div class="full">
+                            <div
+                                class="main_heading text_align_left"
+                                style="margin-bottom: 35px"
+                            >
+                                <h3>Imágenes del producto</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for product_image in product.images.all %}
+                        <div class="col-md-4 col-sm-6 col-xs-12 margin_bottom_30_all">
+                            <div class="product_list">
+                                <div class="product_img">
+                                    <img
+                                        class="img-responsive"
+                                        src="{{ product_image.image.url }}"
+                                        alt=""
+                                    />
+                                </div>
+                                <div class="product_detail_btm">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="row">
                 <div class="col-md-12 payment-bt">
                     <div class="center">
-                        <a class="btn sqaure_bt" href="{% url 'landing:products' %}">Volver</a>
+                        <a class="btn sqaure_bt" href="{% url 'landing:products' %}"
+                            >Volver</a
+                        >
                     </div>
                 </div>
             </div>
@@ -100,9 +142,9 @@
     <script src="{% static 'lib/landing/js/hizoom.js' %}"></script>
     <script>
         $(document).ready(function () {
-            $('.hi2').hiZoom({
+            $(".hi2").hiZoom({
                 width: 400,
-                position: 'right'
+                position: "right",
             });
         });
     </script>

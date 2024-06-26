@@ -1,0 +1,6 @@
+{% extends 'core/delete.html' %}
+{% load static %}
+
+{% block delete_message %}
+    ¿Está seguro de querer eliminar la imagen para el producto <b>{{ object.product.name }}</b>?
+{% endblock %}

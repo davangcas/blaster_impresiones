@@ -20,6 +20,7 @@ a.btn.dark_gray_bt:focus,
 .social_icon_style_2 ul li a:focus,
 .progress-bar,
 .tags a:hover,
+.tags a.active,
 .tags a:focus,
 .testimonial_slider .carousel-control:hover,
 .testimonial_slider .carousel-control:focus,
@@ -118,6 +119,7 @@ hr.dottad_border,
 .social_icon_style_2 ul li a:hover,
 .social_icon_style_2 ul li a:focus,
 .tags a:hover,
+.tags a.active,
 .tags a:focus,
 .pagination > .active > a,
 .pagination > .active > a:focus,
@@ -338,6 +340,7 @@ h2 {
 }
 
 .tags a:hover,
+.tags a.active,
 .tags a:focus {
     border-color: #A77E58 !important;
 }

@@ -1,5 +1,10 @@
 const loadProducts = (page, url, detail_url) => {
     let current_page = Number(page);
+    let categories_ids = [];
+
+    $(".category-filter.active").each(function () {
+        categories_ids.push($(this).attr("data-category-id"));
+    });
 
     $.ajax({
         url: url,
@@ -7,6 +12,7 @@ const loadProducts = (page, url, detail_url) => {
         data: {
             page: page,
             search: $("#search").val(),
+            "categories_ids[]": categories_ids,
         },
         dataType: "json",
         success: function (response) {

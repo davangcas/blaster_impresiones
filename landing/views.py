@@ -1,8 +1,8 @@
+from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
-from django.views.generic import ListView, TemplateView, DetailView
-from django.core.paginator import PageNotAnInteger, EmptyPage
+from django.views.generic import DetailView, ListView, TemplateView
 
-from products.models import Product
+from products.models import Category, Product
 
 
 class IndexView(TemplateView):
@@ -85,10 +85,14 @@ class ProductsView(ListView):
         if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
             page = self.request.GET.get("page", 1)
             search = self.request.GET.get("search", None)
+            categories = self.request.GET.getlist("categories_ids[]", None)
             products_list = self.get_queryset()
 
             if search:
                 products_list = products_list.filter(name__icontains=search)
+
+            if categories:
+                products_list = products_list.filter(categories__id__in=categories)
 
             paginator = self.get_paginator(products_list, self.paginate_by)
 
@@ -118,6 +122,7 @@ class ProductsView(ListView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Productos"
         context["active_section"] = "products"
+        context["categories"] = Category.objects.filter(is_active=True)
         return context
 
 

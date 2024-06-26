@@ -1,6 +1,7 @@
 from django.urls import path
 
 from users.views import (
+    ChangeDarkModeView,
     ChangePasswordView,
     RoleCreateView,
     RoleDatatableView,
@@ -27,4 +28,5 @@ urlpatterns = [
     path("roles/create/", RoleCreateView.as_view(), name="roles_create"),
     path("roles/delete/<int:pk>/", RoleDeleteView.as_view(), name="roles_delete"),
     path("roles/update/<int:pk>/", RoleUpdateView.as_view(), name="roles_update"),
+    path("change_dark_mode/", ChangeDarkModeView.as_view(), name="change_dark_mode"),
 ]

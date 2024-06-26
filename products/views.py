@@ -1,16 +1,18 @@
 from django.contrib import messages
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
-from django.http import JsonResponse
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
 from products.forms import (
+    CategoryCreateEditForm,
     ExtraProductCostCreateForm,
     ExtraProductCostUpdateForm,
     ProductCreateEditForm,
-    CategoryCreateEditForm,
+    ProductImageCreateForm,
+    ProductImageUpdateForm,
 )
-from products.models import ExtraProductCost, Product, Category
+from products.models import Category, ExtraProductCost, Product, ProductImage
 
 
 class ProductListView(CustomAdminViewMixin, TemplateView):
@@ -265,8 +267,12 @@ class CategoryDatatableView(CustomDatatablesJsonMixin):
 
     def render_column(self, row, column):
         if column == "actions":
-            update_url = reverse_lazy("products:categories_update", kwargs={"pk": row.id})
-            delete_url = reverse_lazy("products:categories_delete", kwargs={"pk": row.id})
+            update_url = reverse_lazy(
+                "products:categories_update", kwargs={"pk": row.id}
+            )
+            delete_url = reverse_lazy(
+                "products:categories_delete", kwargs={"pk": row.id}
+            )
             return f"""
                 <a href="{update_url}" class="btn btn-warning">
                     <i class="fas fa-edit"></i>
@@ -362,3 +368,108 @@ class CategoryGetOptionsView(CustomAdminViewMixin, TemplateView):
                 },
             }
         )
+
+
+class ProductImageDatatableView(CustomDatatablesJsonMixin):
+    model = ProductImage
+    columns = ["image", "actions"]
+    permission_required = "products.view_productimage"
+
+    def get_initial_queryset(self):
+        return super().get_initial_queryset().filter(product_id=self.kwargs.get("pk"))
+
+    def render_column(self, row, column):
+        if column == "image":
+            return f"""
+                <img src="{row.image.url}" alt="{row.product.name}" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+            """
+        if column == "actions":
+            update_url = reverse_lazy("products:images_update", kwargs={"pk": row.id})
+            delete_url = reverse_lazy("products:images_delete", kwargs={"pk": row.id})
+            return f"""
+                <a href="{update_url}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{delete_url}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            """
+        return super().render_column(row, column)
+
+
+class ProductImageCreateView(CustomAdminViewMixin, CreateView):
+    model = ProductImage
+    template_name = "products/images/create.html"
+    form_class = ProductImageCreateForm
+    permission_required = "products.add_productimage"
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["product_id"] = self.kwargs.get("pk")
+        return form_kwargs
+
+    def get_success_url(self):
+        return reverse_lazy("prints:list", kwargs={"pk": self.kwargs.get("pk")})
+
+    def form_valid(self, form):
+        messages.success(self.request, "Imagen creada correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear la imagen")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Crear imagen"
+        context["cancel_url"] = reverse_lazy(
+            "prints:list", kwargs={"pk": self.kwargs.get("pk")}
+        )
+        context["active_section"] = "products"
+        return context
+
+
+class ProductImageUpdateView(CustomAdminViewMixin, UpdateView):
+    model = ProductImage
+    template_name = "products/images/update.html"
+    form_class = ProductImageUpdateForm
+    permission_required = "products.change_productimage"
+
+    def get_success_url(self):
+        return reverse_lazy("prints:list", kwargs={"pk": self.get_object().product_id})
+
+    def form_valid(self, form):
+        messages.success(self.request, "Imagen actualizada correctamente")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al actualizar la imagen")
+        return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Editar imagen"
+        context["cancel_url"] = reverse_lazy(
+            "prints:list", kwargs={"pk": self.get_object().product_id}
+        )
+        context["active_section"] = "products"
+        return context
+
+
+class ProductImageDeleteView(CustomAdminViewMixin, DeleteView):
+    model = ProductImage
+    template_name = "products/images/delete.html"
+    permission_required = "products.delete_productimage"
+
+    def get_success_url(self):
+        messages.success(self.request, "Imagen eliminada correctamente")
+        return reverse_lazy("prints:list", kwargs={"pk": self.get_object().product_id})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Eliminar imagen"
+        context["cancel_url"] = reverse_lazy(
+            "prints:list", kwargs={"pk": self.get_object().product_id}
+        )
+        context["active_section"] = "products"
+        return context

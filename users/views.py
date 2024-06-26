@@ -5,6 +5,7 @@ from django.views.generic import (
     CreateView,
     DeleteView,
     FormView,
+    RedirectView,
     TemplateView,
     UpdateView,
 )
@@ -242,3 +243,13 @@ class RoleDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("users:roles")
         context["active_section"] = "roles"
         return context
+
+
+class ChangeDarkModeView(RedirectView):
+    url = reverse_lazy("dashboard:index")
+
+    def get(self, request, *args, **kwargs):
+        request.user.admin_dark_mode = not request.user.admin_dark_mode
+        request.user.save()
+        messages.success(request, "Modo actualizado correctamente")
+        return super().get(request, *args, **kwargs)
