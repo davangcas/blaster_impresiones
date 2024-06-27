@@ -16,7 +16,7 @@ class ProductCreateEditForm(DefaultModelForm):
         ),
         label="Categorias",
         required=False,
-        queryset=Category.objects.all(),
+        queryset=Category.objects.all().order_by("name"),
     )
 
     available = forms.BooleanField(

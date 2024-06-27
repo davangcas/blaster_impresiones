@@ -122,7 +122,7 @@ class ProductsView(ListView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Productos"
         context["active_section"] = "products"
-        context["categories"] = Category.objects.filter(is_active=True)
+        context["categories"] = Category.objects.filter(is_active=True).order_by("name")
         return context
 
 

@@ -358,7 +358,7 @@ class CategoryGetOptionsView(CustomAdminViewMixin, TemplateView):
         if search:
             filter_lookup["name__icontains"] = search
 
-        categories = Category.objects.filter(**filter_lookup).values_list("id", "name")
+        categories = Category.objects.filter(**filter_lookup).order_by("name").values_list("id", "name")
         results = [{"id": id, "text": name} for id, name in categories]
         return JsonResponse(
             data={
