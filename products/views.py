@@ -263,9 +263,11 @@ class CategoryListView(CustomAdminViewMixin, TemplateView):
 class CategoryDatatableView(CustomDatatablesJsonMixin):
     permission_required = "products.view_category"
     model = Category
-    columns = ["name", "description", "actions"]
+    columns = ["name", "is_active", "actions"]
 
     def render_column(self, row, column):
+        if column == "is_active":
+            return "Activo" if row.is_active else "Inactivo"
         if column == "actions":
             update_url = reverse_lazy(
                 "products:categories_update", kwargs={"pk": row.id}
