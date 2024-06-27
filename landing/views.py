@@ -1,4 +1,5 @@
 from django.core.paginator import EmptyPage, PageNotAnInteger
+from django.db.models import Count
 from django.http import JsonResponse
 from django.views.generic import DetailView, ListView, TemplateView
 
@@ -122,7 +123,12 @@ class ProductsView(ListView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Productos"
         context["active_section"] = "products"
-        context["categories"] = Category.objects.filter(is_active=True).order_by("name")
+        context["categories"] = (
+            Category.objects.filter(is_active=True, products__isnull=False)
+            .annotate(product_count=Count("products"))
+            .filter(product_count__gt=0)
+            .order_by("name")
+        )
         return context
 
 
