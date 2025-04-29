@@ -1,0 +1,19 @@
+repos:
+  - repo: local
+    hooks:
+    - id: black
+      name: black
+      language: python
+      types_or: [python, pyi]
+      entry: black --check
+    - id: isort
+      name: isort
+      language: python
+      types_or: [python, pyi]
+      entry: isort --check
+    - id: run-tests
+      name: Run Unit Tests
+      language: system
+      entry: python manage.py test
+      pass_filenames: false
+      stages: [pre-push]
