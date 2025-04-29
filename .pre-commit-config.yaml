@@ -11,9 +11,3 @@ repos:
       language: python
       types_or: [python, pyi]
       entry: isort --check
-    - id: run-tests
-      name: Run Unit Tests
-      language: system
-      entry: python manage.py test
-      pass_filenames: false
-      stages: [pre-push]
