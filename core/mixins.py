@@ -29,7 +29,7 @@ class CustomDatatablesJsonMixin(CustomAdminViewMixin, BaseDatatableView):
                     filter_lookup[key.replace("table_filter_", "")] = datetime.strptime(
                         value, "%d/%m/%Y"
                     ).date()
-                except:
+                except (ValueError, TypeError):
                     filter_lookup[key.replace("table_filter_", "")] = value
 
         return super().get_initial_queryset().filter(**filter_lookup)

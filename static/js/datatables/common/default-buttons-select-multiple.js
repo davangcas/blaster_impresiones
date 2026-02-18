@@ -10,7 +10,7 @@ const buttons_config = {
         extend: "copy",
         className: "btn btn-secondary",
         exportOptions: {
-            columns: ":visible:not(:last-child)",
+            columns: ":visible:not(:first-child):not(:last-child)",
             modifier: {
                 page: "all",
             },
@@ -20,7 +20,7 @@ const buttons_config = {
         extend: "csv",
         className: "btn btn-info",
         exportOptions: {
-            columns: ":visible:not(:last-child)",
+            columns: ":visible:not(:first-child):not(:last-child)",
             modifier: {
                 page: "all",
             },
@@ -30,7 +30,7 @@ const buttons_config = {
         extend: "excel",
         className: "btn btn-success",
         exportOptions: {
-            columns: ":visible:not(:last-child)",
+            columns: ":visible:not(:first-child):not(:last-child)",
             modifier: {
                 page: "all",
             },
@@ -40,7 +40,7 @@ const buttons_config = {
         extend: "pdf",
         className: "btn btn-danger",
         exportOptions: {
-            columns: ":visible:not(:last-child)",
+            columns: ":visible:not(:first-child):not(:last-child)",
             modifier: {
                 page: "all",
             },
@@ -64,17 +64,11 @@ const buttons_config = {
         extend: "print",
         className: "btn btn-gray",
         exportOptions: {
-            columns: ":visible:not(:last-child)",
+            columns: ":visible:not(:first-child):not(:last-child)",
             modifier: {
                 page: "all",
             },
         },
-    },
-    colvis: {
-        extend: "colvis",
-        className: "btn btn-warning",
-        text: "Columnas visibles",
-        columns: ":not(:last-child)",
     },
 };
 

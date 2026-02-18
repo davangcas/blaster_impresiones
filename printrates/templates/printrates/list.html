@@ -47,7 +47,12 @@
 {% endblock %}
 
 {% block table_headers %}
-    <th>ID</th>
+    <th>
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input custom-control-input-lightblue" type="checkbox" id="select-all-items-checkbox">
+            <label for="select-all-items-checkbox" class="custom-control-label"></label>
+        </div>
+    </th>
     <th>Fecha de creacion</th>
     <th>Precio de impresion por hora</th>
     <th>Acciones</th>

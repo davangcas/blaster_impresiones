@@ -1,33 +1,32 @@
 {% extends 'core/list_with_filters.html' %}
 
 {% block filter_inputs %}
-    <div class="row">
-        <div class="col-6">
-            <input type="number" class="form-control table-filter mt-2" placeholder="Precio min" name="price__gte">
-        </div>
-        <div class="col-6">
-            <input type="number" class="form-control table-filter mt-2" placeholder="Precio máx" name="price__lte">
-        </div>
+    <div class="col-6">
+        <input type="number" class="form-control table-filter mt-2" placeholder="Precio min" name="price__gte">
     </div>
-    <div class="row">
-        <div class="col-6">
-            <input type="number" class="form-control table-filter mt-2" placeholder="Stock min" name="stock__gte">
-        </div>
-        <div class="col-6">
-            <input type="number" class="form-control table-filter mt-2" placeholder="Stock máx" name="stock__lte">
-        </div>
+    <div class="col-6">
+        <input type="number" class="form-control table-filter mt-2" placeholder="Precio máx" name="price__lte">
     </div>
-    <div class="row">
-        <div class="col-6 mt-2">
-            <select class="form-control select2bs4 table-filter" id="categories-select" style="width: 100%;" name="categories__id">
-                <option></option>
-            </select>
-        </div>
+    <div class="col-6">
+        <input type="number" class="form-control table-filter mt-2" placeholder="Stock min" name="stock__gte">
+    </div>
+    <div class="col-6">
+        <input type="number" class="form-control table-filter mt-2" placeholder="Stock máx" name="stock__lte">
+    </div>
+    <div class="col-6 mt-2">
+        <select class="form-control select2bs4 table-filter" id="categories-select" style="width: 100%;" name="categories__id">
+            <option></option>
+        </select>
     </div>
 {% endblock %}
 
 {% block table_headers %}
-    <th>ID</th>
+    <th>
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input custom-control-input-lightblue" type="checkbox" id="select-all-items-checkbox">
+            <label for="select-all-items-checkbox" class="custom-control-label"></label>
+        </div>
+    </th>
     <th>Nombre</th>
     <th>Precio</th>
     <th>Stock</th>

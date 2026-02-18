@@ -11,6 +11,7 @@ from django.views.generic import (
 )
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.services import get_select_checkbox
 from users.forms import ChangePasswordForm, CreateEditRoleForm, CreateEditUserForm
 from users.models import Role, User
 
@@ -35,9 +36,19 @@ class UserListView(CustomAdminViewMixin, TemplateView):
 class UserDatatableView(CustomDatatablesJsonMixin):
     permission_required = "users.view_user"
     model = User
-    columns = ["username", "email", "first_name", "last_name", "role.name", "actions"]
+    columns = [
+        "id",
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "role.name",
+        "actions",
+    ]
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "actions":
             update_url = reverse_lazy("users:update", kwargs={"pk": row.id})
             delete_url = reverse_lazy("users:delete", kwargs={"pk": row.id})
@@ -162,9 +173,11 @@ class RoleListView(CustomAdminViewMixin, TemplateView):
 class RoleDatatableView(CustomDatatablesJsonMixin):
     permission_required = "users.view_role"
     model = Role
-    columns = ["name", "permissions__name", "actions"]
+    columns = ["id", "name", "permissions__name", "actions"]
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "permissions__name":
             return row.get_permission_names()
         if column == "actions":

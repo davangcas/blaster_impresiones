@@ -16,7 +16,7 @@ class Command(BaseCommand):
                 database_connection = connection.cursor()
                 database_connection.execute("SELECT 1")
                 db_conn = True
-            except Exception as e:
+            except Exception:
                 self.stdout.write("database unavailable, waiting 1 second...")
                 time.sleep(1)
 

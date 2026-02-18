@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.services import get_select_checkbox
 from financials.choices import ACCOUNT_TYPES
 from financials.forms import TransactionCreateEditForm, TransactionCreateFromAccountForm
 from financials.models import Account, Transaction
@@ -50,6 +51,7 @@ class TransactionDatatableView(CustomDatatablesJsonMixin):
     def get_columns(self):
         from_personal_account = self.request.GET.get("from_personal_account")
         table_columns = [
+            "id",
             "date",
             "description",
             "amount",
@@ -85,6 +87,10 @@ class TransactionDatatableView(CustomDatatablesJsonMixin):
         return permissions
 
     def render_column(self, row, column):
+        if column == "id":
+            if self.request.GET.get("from_personal_account"):
+                return ""
+            return get_select_checkbox(row)
         if column == "date":
             return timezone.localtime(row.date).strftime("%d/%m/%Y %H:%M")
         if column == "from_account.name":

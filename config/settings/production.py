@@ -1,9 +1,12 @@
 import ast
+import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-from config.logging import *
-from config.settings.base import *
+from config.logging import *  # noqa: F403
+from config.settings.base import *  # noqa: F403
+from config.settings.base import BASE_DIR
 
 load_dotenv(Path.joinpath(BASE_DIR, ".env"))
 DEBUG = False
@@ -22,6 +25,6 @@ DATABASES = {
 }
 
 # Static files (CSS, JavaScript, images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# https://docs.djangoproject.com/en/6.0/howto/static-files/
 STATIC_URL = "/static/"
 STATIC_ROOT = Path.joinpath(BASE_DIR, "staticfiles")

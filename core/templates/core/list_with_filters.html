@@ -5,10 +5,12 @@
 {% endblock %}
 
 {% block table_filters %}
-    {% block filter_inputs %}
-    {% endblock %}
+    <div class="row" id="custom-filter-inputs-fields">
+        {% block filter_inputs %}
+        {% endblock %}
+    </div>
 
-    <div class="row mt-2">
+    <div class="row mt-2" id="default-filter-buttons">
         <div class="col-6">
             <button type="button" id="filter-button" class="btn btn-outline-primary btn-block"><i class="fas fa-filter"></i> Filtrar</button>
         </div>

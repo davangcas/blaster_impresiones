@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.services import get_select_checkbox
 from products.forms import (
     CategoryCreateEditForm,
     ExtraProductCostCreateForm,
@@ -35,6 +36,8 @@ class ProductDatatableView(CustomDatatablesJsonMixin):
     columns = ["id", "name", "price", "stock", "actions"]
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "price":
             return f"${row.price}"
         if column == "actions":
@@ -141,12 +144,14 @@ class ExtraProductCostListView(CustomAdminViewMixin, TemplateView):
 class ExtraProductCostDatatableView(CustomDatatablesJsonMixin):
     permission_required = "products.view_extraproductcost"
     model = ExtraProductCost
-    columns = ["name", "cost", "description", "actions"]
+    columns = ["id", "name", "cost", "description", "actions"]
 
     def get_initial_queryset(self):
         return super().get_initial_queryset().filter(product_id=self.kwargs.get("pk"))
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "cost":
             return f"${row.cost}"
         if column == "actions":
@@ -263,9 +268,11 @@ class CategoryListView(CustomAdminViewMixin, TemplateView):
 class CategoryDatatableView(CustomDatatablesJsonMixin):
     permission_required = "products.view_category"
     model = Category
-    columns = ["name", "is_active", "actions"]
+    columns = ["id", "name", "is_active", "actions"]
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "is_active":
             return "Activo" if row.is_active else "Inactivo"
         if column == "actions":

@@ -10,6 +10,7 @@ from django.views.generic import (
 )
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.services import get_select_checkbox
 from printrates.forms import MonthlyCostForm, PrintRateForm, PrintRateVariablesForm
 from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
 from printrates.services import generate_print_rate
@@ -57,6 +58,8 @@ class PrintRateDatatableView(CustomDatatablesJsonMixin):
     columns = ["id", "created_at", "rate", "actions"]
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "created_at":
             return timezone.localtime(row.created_at).strftime("%d/%m/%Y %H:%M")
         if column == "rate":

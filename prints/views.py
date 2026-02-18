@@ -12,6 +12,7 @@ from django.views.generic import (
 )
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.services import get_select_checkbox
 from prints.forms import (
     PrintCreateForm,
     PrintMaterialColorCreateForm,
@@ -48,9 +49,11 @@ class PrintMaterialListView(CustomAdminViewMixin, TemplateView):
 class PrintMaterialDatatableView(CustomDatatablesJsonMixin):
     permission_required = "prints.view_printmaterial"
     model = PrintMaterial
-    columns = ["name", "price", "actions"]
+    columns = ["id", "name", "price", "actions"]
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "price":
             return f"${row.price}"
         if column == "actions":
@@ -164,6 +167,7 @@ class PrintDatatableView(CustomDatatablesJsonMixin):
     permission_required = "prints.view_print"
     model = Print
     columns = [
+        "id",
         "hours",
         "minutes",
         "grams",
@@ -197,6 +201,8 @@ class PrintDatatableView(CustomDatatablesJsonMixin):
         return queryset
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "price":
             return f"${row.price}"
         if column == "actions":

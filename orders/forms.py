@@ -10,9 +10,9 @@ class OrderCreateEditForm(DefaultModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["client"].label = "Cliente"
-        self.fields["client"].widget.attrs[
-            "class"
-        ] = "select2bs4 select2-hidden-accessible"
+        self.fields["client"].widget.attrs["class"] = (
+            "select2bs4 select2-hidden-accessible"
+        )
         self.fields["client"].widget.attrs["style"] = "width: 100%;"
 
 
@@ -24,9 +24,9 @@ class OrderItemUpdateForm(DefaultModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["product"].label = "Producto"
-        self.fields["product"].widget.attrs[
-            "class"
-        ] = "select2bs4 select2-hidden-accessible"
+        self.fields["product"].widget.attrs["class"] = (
+            "select2bs4 select2-hidden-accessible"
+        )
         self.fields["product"].widget.attrs["style"] = "width: 100%;"
         self.fields["product"].empty_label = "Seleccione un producto"
         self.fields["quantity"].label = "Cantidad"
@@ -52,11 +52,11 @@ class PrintOrderItemUpdateForm(DefaultModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["color"].label = "Color"
-        self.fields["color"].widget.attrs[
-            "class"
-        ] = "select2bs4 select2-hidden-accessible"
+        self.fields["color"].widget.attrs["class"] = (
+            "select2bs4 select2-hidden-accessible"
+        )
         self.fields["color"].widget.attrs["style"] = "width: 100%;"
         self.fields["color"].empty_label = "Seleccione un color"
-        self.fields["color"].queryset = (
-            self.instance.print.material.printmaterialcolor_set.all()
-        )
+        self.fields[
+            "color"
+        ].queryset = self.instance.print.material.printmaterialcolor_set.all()

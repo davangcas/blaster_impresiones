@@ -6,4 +6,4 @@ class PrintratesConfig(AppConfig):
     name = "printrates"
 
     def ready(self):
-        import printrates.signals
+        import printrates.signals  # noqa

@@ -15,6 +15,7 @@ from django.views.generic import (
 )
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.services import get_select_checkbox
 from orders.forms import (
     OrderCreateEditForm,
     OrderItemCreateForm,
@@ -63,6 +64,8 @@ class OrderDatatableView(CustomDatatablesJsonMixin):
         return queryset
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "created":
             return timezone.localtime(row.created).strftime("%d/%m/%Y %H:%M")
         if column == "state":

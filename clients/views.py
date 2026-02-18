@@ -5,6 +5,7 @@ from django.views.generic import CreateView, DeleteView, TemplateView, UpdateVie
 from clients.forms import ClientCreateEditForm
 from clients.models import Client
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.services import get_select_checkbox
 
 
 class ClientListView(CustomAdminViewMixin, TemplateView):
@@ -24,9 +25,11 @@ class ClientListView(CustomAdminViewMixin, TemplateView):
 class ClientDatatableView(CustomDatatablesJsonMixin):
     permission_required = "clients.view_client"
     model = Client
-    columns = ["first_name", "last_name", "email", "phone_number", "actions"]
+    columns = ["id", "first_name", "last_name", "email", "phone_number", "actions"]
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "email":
             return row.email or "No posee email registrado"
         if column == "actions":

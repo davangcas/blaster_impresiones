@@ -130,12 +130,11 @@ class PrintModelCreateForm(PrintModelCommonForm):
 
 
 class PrintModelUpdateForm(PrintModelCommonForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["quantity"].initial = (
-            self.instance.printmodelrelation_set.first().quantity
-        )
+        self.fields[
+            "quantity"
+        ].initial = self.instance.printmodelrelation_set.first().quantity
 
     def save(self, *args, **kwargs):
         instance = super().save(commit=False)
@@ -150,9 +149,9 @@ class PrintMaterialColorUpdateForm(DefaultModelForm):
         super().__init__(*args, **kwargs)
         self.fields["color"].label = "Color"
         self.fields["remaining"].label = "Cantidad"
-        self.fields["remaining"].help_text = (
-            "Cantidad de material de impresión expresado en gramos"
-        )
+        self.fields[
+            "remaining"
+        ].help_text = "Cantidad de material de impresión expresado en gramos"
         self.fields["remaining"].initial = 1000
         self.fields["remaining"].widget.attrs["min"] = 0
 

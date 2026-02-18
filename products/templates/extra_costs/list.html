@@ -1,6 +1,12 @@
 {% extends 'core/list.html' %}
 
 {% block table_headers %}
+    <th>
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input custom-control-input-lightblue" type="checkbox" id="select-all-items-checkbox">
+            <label for="select-all-items-checkbox" class="custom-control-label"></label>
+        </div>
+    </th>
     <th>Nombre</th>
     <th>Precio</th>
     <th>Stock</th>

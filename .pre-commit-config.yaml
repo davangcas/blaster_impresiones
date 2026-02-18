@@ -1,13 +1,19 @@
 repos:
   - repo: local
     hooks:
-    - id: black
-      name: black
+    - id: ruff
+      name: ruff
       language: python
       types_or: [python, pyi]
-      entry: black --check
-    - id: isort
-      name: isort
+      entry: ruff check
+    - id: formatting
+      name: Format Code
       language: python
       types_or: [python, pyi]
-      entry: isort --check
+      entry: ruff format --check
+    - id: run-tests
+      name: Run Unit Tests
+      language: system
+      entry: python manage.py test
+      pass_filenames: false
+      stages: [pre-push]

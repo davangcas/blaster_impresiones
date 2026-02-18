@@ -1,5 +1,8 @@
-from config.logging import *
-from config.settings.base import *
+import os
+
+from config.logging import *  # noqa: F403
+from config.settings.base import *  # noqa: F403
+from config.settings.base import BASE_DIR
 
 DEBUG = True
 SECRET_KEY = os.environ.get("SECRET_KEY", "default")

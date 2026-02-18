@@ -6,4 +6,4 @@ class PrintsConfig(AppConfig):
     name = "prints"
 
     def ready(self):
-        import prints.signals
+        import prints.signals  # noqa

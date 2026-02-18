@@ -4,14 +4,14 @@ const CommonDataTable = (function () {
             extend: "pageLength",
             text: "Registros por página",
             className: "btn btn-default",
-            options: [10, 25, 50, 100, 500, -1],
+            options: [10, 25, 50, 100, -1],
             postfix: " entradas",
         },
         copy: {
             extend: "copy",
             className: "btn btn-secondary",
             exportOptions: {
-                columns: ":not(:last-child)",
+                columns: ":visible:not(:first-child):not(:last-child)",
                 modifier: {
                     page: "all",
                 },
@@ -21,7 +21,7 @@ const CommonDataTable = (function () {
             extend: "csv",
             className: "btn btn-info",
             exportOptions: {
-                columns: ":not(:last-child)",
+                columns: ":visible:not(:first-child):not(:last-child)",
                 modifier: {
                     page: "all",
                 },
@@ -31,7 +31,7 @@ const CommonDataTable = (function () {
             extend: "excel",
             className: "btn btn-success",
             exportOptions: {
-                columns: ":not(:last-child)",
+                columns: ":visible:not(:first-child):not(:last-child)",
                 modifier: {
                     page: "all",
                 },
@@ -41,7 +41,7 @@ const CommonDataTable = (function () {
             extend: "pdf",
             className: "btn btn-danger",
             exportOptions: {
-                columns: ":not(:last-child)",
+                columns: ":visible:not(:first-child):not(:last-child)",
                 modifier: {
                     page: "all",
                 },
@@ -65,11 +65,17 @@ const CommonDataTable = (function () {
             extend: "print",
             className: "btn btn-gray",
             exportOptions: {
-                columns: ":not(:last-child)",
+                columns: ":visible:not(:first-child):not(:last-child)",
                 modifier: {
                     page: "all",
                 },
             },
+        },
+        colvis: {
+            extend: "colvis",
+            className: "btn btn-warning",
+            text: "Columnas visibles",
+            columns: ":not(:first-child):not(:last-child)",
         },
     };
 
@@ -77,13 +83,108 @@ const CommonDataTable = (function () {
         const table_id = settings.table_id;
         const source_url = settings.source_url;
         const table_filters = {};
+        const defaultColumnDefs = [];
+
+        if (settings.columnDefs) {
+            settings.columnDefs = defaultColumnDefs.concat(settings.columnDefs);
+        } else {
+            settings.columnDefs = defaultColumnDefs;
+        }
 
         const buttonsConfig = settings.buttonsConfig || {};
         const buttons = Object.keys(defaultButtonConfig).map((buttonKey) => {
-            return {
+            let buttonsettings = {
                 ...defaultButtonConfig[buttonKey],
                 ...buttonsConfig[buttonKey],
             };
+            buttonsettings.title =
+                $(settings.table_id).attr("data-title") || document.title;
+
+            if (buttonKey === "print") {
+                buttonsettings.title = "";
+                buttonsettings.messageTop = function () {
+                    const title =
+                        $(settings.table_id).attr("data-title") ||
+                        document.title;
+                    return `
+                        <div style="text-align: center; margin-bottom: 20px;" id="print-header">
+                            <img src="${organization_logo}" alt="Logo" style="max-width: 100px;"/><br>
+                            <strong>${title}</strong><br>
+                        </div>
+                    `;
+                };
+                buttonsettings.messageBottom = function () {
+                    let rendered_text = `<div style="text-align: left; margin-top: 20px;">${organization_name}<br>`;
+
+                    if (organization_phone_number) {
+                        rendered_text += `Teléfono: ${organization_phone_number}<br>`;
+                    }
+
+                    if (organization_email) {
+                        rendered_text += `Email: ${organization_email}<br>`;
+                    }
+
+                    if (organization_cuit) {
+                        rendered_text += `CUIT: ${organization_cuit}<br>`;
+                    }
+
+                    rendered_text += `</div>`;
+                    return rendered_text;
+                };
+            } else if (buttonKey === "pdf") {
+                let originalPdfCustomize = buttonsettings.customize;
+
+                buttonsettings.customize = function (doc) {
+                    if (typeof originalPdfCustomize === "function") {
+                        originalPdfCustomize(doc);
+                    }
+
+                    let rendered_text = `${organization_name}\n`;
+
+                    if (organization_phone_number) {
+                        rendered_text += `Teléfono: ${organization_phone_number}\n`;
+                    }
+
+                    if (organization_email) {
+                        rendered_text += `Email: ${organization_email}\n`;
+                    }
+
+                    if (organization_cuit) {
+                        rendered_text += `CUIT: ${organization_cuit}\n`;
+                    }
+
+                    doc.content.push({
+                        text: rendered_text,
+                        margin: [0, 20, 0, 0],
+                        alignment: "left",
+                        fontSize: 10,
+                        bold: true,
+                    });
+                };
+            } else if (buttonKey === "excel") {
+                const currencyRe =
+                    /^\s*\$\s*(?:\d{1,3}(?:\.\d{3})*|\d+)(?:,\d+)?\s*$/;
+
+                buttonsettings.customizeData = function (data) {
+                    data.body.forEach((row) => {
+                        row.forEach((cell, colIndex) => {
+                            if (
+                                typeof cell !== "string" ||
+                                !currencyRe.test(cell.trim())
+                            ) {
+                                return;
+                            }
+
+                            let raw = cell.replace(/[^0-9,\.]/g, "");
+                            raw = raw.replace(/[\.\s]/g, "");
+                            raw = raw.replace(/,([^,]*)$/, ".$1");
+                            row[colIndex] = raw;
+                        });
+                    });
+                };
+            }
+
+            return buttonsettings;
         });
 
         const commonTable = $(table_id).DataTable({
@@ -91,9 +192,16 @@ const CommonDataTable = (function () {
             lengthChange: true,
             pageLength: 10,
             lengthMenu: [
-                [10, 25, 50, 100, 500, -1],
-                [10, 25, 50, 100, 500, "Todos"],
+                [10, 25, 50, 100, -1],
+                [10, 25, 50, 100, "Todos"],
             ],
+            select: settings.multiSelect
+                ? {
+                      style: "multi",
+                      blurable: false,
+                      selector: 'td:first-child input[type="checkbox"]',
+                  }
+                : false,
             autoWidth: false,
             paging: true,
             processing: true,
@@ -134,6 +242,13 @@ const CommonDataTable = (function () {
                     colvis: "Columnas visibles",
                     copy: "Copiar",
                     print: "Imprimir",
+                },
+                select: {
+                    rows: {
+                        _: "%d filas seleccionadas",
+                        0: "Ninguna fila seleccionada",
+                        1: "1 fila seleccionada",
+                    },
                 },
             },
             ajax: {
@@ -187,8 +302,154 @@ const CommonDataTable = (function () {
             commonTable.ajax.reload();
         });
 
+        $("#select-all-items-checkbox").on("change", function () {
+            const checked = $(this).prop("checked");
+            const checkboxes = $(table_id).find("tbody input[type='checkbox']");
+            checkboxes.prop("checked", checked).trigger("change");
+
+            if (checked) {
+                checkboxes.each(function () {
+                    const row = $(this).closest("tr");
+                    commonTable.row(row).select();
+                });
+                $(".custom-table-actions-button").show();
+            } else {
+                checkboxes.each(function () {
+                    const row = $(this).closest("tr");
+                    commonTable.row(row).deselect();
+                });
+                $(".custom-table-actions-button").hide();
+            }
+        });
+
+        $(".custom-table-actions-button").on("click", function () {
+            const selectedRows = commonTable.rows({ selected: true });
+            const selectedData = selectedRows.nodes().toArray();
+            const selectedIds = selectedData.map((row) => {
+                return $(row).find("input[type='checkbox']").val();
+            });
+
+            if (selectedIds.length) {
+                const url = $(this).data("url");
+                const displayedText = $(this).data("text");
+                const modalType = $(this).data("modal-type");
+                const data = {
+                    selected_ids: selectedIds,
+                    csrfmiddlewaretoken: $(
+                        "input[name=csrfmiddlewaretoken]"
+                    ).val(),
+                };
+
+                const modalHtml = `
+                    <div class="modal fade" id="custom-table-action-modal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content bg-${
+                                modalType || "info"
+                            }">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmar acción</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    ${
+                                        displayedText ||
+                                        "¿Está seguro que desea realizar esta acción?"
+                                    }
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" id="cancel-custom-table-action-modal" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary" id="confirm-custom-table-action-modal">Confirmar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $("body").append(modalHtml);
+                $("#custom-table-action-modal").modal("show");
+
+                $("#cancel-custom-table-action-modal").on("click", function () {
+                    $("#custom-table-action-modal").modal("hide");
+                    $("#custom-table-action-modal").on(
+                        "hidden.bs.modal",
+                        function () {
+                            $("#custom-table-action-modal").remove();
+                        }
+                    );
+                });
+
+                $("#confirm-custom-table-action-modal").on(
+                    "click",
+                    function () {
+                        $("#custom-table-action-modal").modal("hide");
+                        $(this).prop("disabled", true);
+                        $(this).text("Procesando...");
+
+                        $.ajax({
+                            url: url,
+                            type: "POST",
+                            data: data,
+                            success: function (data) {
+                                $("#custom-table-action-modal").on(
+                                    "hidden.bs.modal",
+                                    function () {
+                                        $(
+                                            "#custom-table-action-modal"
+                                        ).remove();
+                                    }
+                                );
+                                $(".custom-table-actions-button").hide();
+                                $("#select-all-items-checkbox").prop(
+                                    "checked",
+                                    false
+                                );
+                                $("#select-all-items-checkbox").trigger(
+                                    "change"
+                                );
+
+                                if (data.success) {
+                                    commonTable.ajax.reload();
+                                    toastr.success(data.message);
+                                } else {
+                                    toastr.error(
+                                        "Ocurrió un error al realizar la acción"
+                                    );
+                                }
+                            },
+                        });
+                    }
+                );
+            }
+        });
+
+        $(table_id).on("change", "tbody input[type='checkbox']", function () {
+            if (
+                $(table_id).find("tbody input[type='checkbox']:checked").length
+            ) {
+                $(".custom-table-actions-button").show();
+            } else {
+                $(".custom-table-actions-button").hide();
+            }
+        });
+
         $(".table-reloader").on("click", function () {
             commonTable.ajax.reload();
+        });
+
+        $(document).on("click", ".table-element-ajax-request", function () {
+            $.ajax({
+                url: $(this).data("url"),
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: $(
+                        "input[name=csrfmiddlewaretoken]"
+                    ).val(),
+                },
+                complete: function () {
+                    commonTable.ajax.reload();
+                },
+            });
         });
 
         return commonTable;
@@ -196,7 +457,7 @@ const CommonDataTable = (function () {
 
     return {
         init: function (settings) {
-            initTable(settings);
+            return initTable(settings);
         },
     };
 })();
