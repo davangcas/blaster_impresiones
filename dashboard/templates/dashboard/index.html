@@ -1,5 +1,16 @@
 {% extends 'core/body.html' %}
 
+{% block styles %}
+<style>
+    .info-box-number {
+        font-weight: 600;
+    }
+    .info-box-text {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-12">
@@ -9,63 +20,59 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-info elevation-1"
-                                    ><i class="fas fa-users"></i
-                                ></span>
-
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Clientes registrados</span>
-                                    <span class="info-box-number">
-                                        {{ clients_count }}
-                                    </span>
-                                </div>
-                            </div>
+                      <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <div class="info-box shadow-sm">
+                          <span class="info-box-icon bg-info elevation-1">
+                            <i class="fas fa-users"></i>
+                          </span>
+                          <div class="info-box-content">
+                            <span class="info-box-text text-muted">Clientes registrados</span>
+                            <span class="info-box-number h4 mb-0">
+                              {{ clients_count }}
+                            </span>
+                          </div>
                         </div>
-
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box mb-3">
-                                <span class="info-box-icon bg-danger elevation-1"
-                                    ><i class="fas fa-box"></i
-                                ></span>
-
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Productos creados</span>
-                                    <span class="info-box-number">{{ products_count }}</span>
-                                </div>
-                            </div>
+                      </div>
+                  
+                      <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <div class="info-box mb-3 shadow-sm">
+                          <span class="info-box-icon bg-danger elevation-1">
+                            <i class="fas fa-box"></i>
+                          </span>
+                          <div class="info-box-content">
+                            <span class="info-box-text text-muted">Productos creados</span>
+                            <span class="info-box-number h4 mb-0">{{ products_count }}</span>
+                          </div>
                         </div>
-
-                        <div class="clearfix hidden-md-up"></div>
-
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box mb-3">
-                                <span class="info-box-icon bg-success elevation-1"
-                                    ><i class="fas fa-shopping-cart"></i
-                                ></span>
-
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Pedidos completados</span>
-                                    <span class="info-box-number">{{ completed_orders_count }}</span>
-                                </div>
-                            </div>
+                      </div>
+                  
+                      <div class="clearfix hidden-md-up"></div>
+                  
+                      <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <div class="info-box mb-3 shadow-sm">
+                          <span class="info-box-icon bg-success elevation-1">
+                            <i class="fas fa-shopping-cart"></i>
+                          </span>
+                          <div class="info-box-content">
+                            <span class="info-box-text text-muted">Pedidos completados</span>
+                            <span class="info-box-number h4 mb-0">{{ completed_orders_count }}</span>
+                          </div>
                         </div>
-
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box mb-3">
-                                <span class="info-box-icon bg-warning elevation-1"
-                                    ><i class="fas fa-clipboard-list"></i
-                                ></span>
-
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Pedidos pendientes</span>
-                                    <span class="info-box-number">{{ pending_orders_count }}</span>
-                                </div>
-                            </div>
+                      </div>
+                  
+                      <div class="col-12 col-sm-6 col-md-3 mb-3">
+                        <div class="info-box mb-3 shadow-sm">
+                          <span class="info-box-icon bg-warning elevation-1">
+                            <i class="fas fa-clipboard-list"></i>
+                          </span>
+                          <div class="info-box-content">
+                            <span class="info-box-text text-muted">Pedidos pendientes</span>
+                            <span class="info-box-number h4 mb-0">{{ pending_orders_count }}</span>
+                          </div>
                         </div>
+                      </div>
                     </div>
-                </div>
+                  </div>
             </div>
         </div>
     </div>
