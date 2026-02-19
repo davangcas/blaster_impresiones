@@ -40,6 +40,7 @@ class MonthlyCostForm(DefaultModelForm):
         super().__init__(*args, **kwargs)
         self.fields["name"].label = "Nombre"
         self.fields["description"].label = "Descripción"
+        self.fields["description"].required = False
 
 
 class PrintRateVariablesForm(DefaultModelForm):

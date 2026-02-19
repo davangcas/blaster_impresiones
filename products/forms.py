@@ -33,10 +33,13 @@ class ProductCreateEditForm(DefaultModelForm):
         self.fields["image"].label = "Imagen"
         self.fields["stock"].initial = 0
         self.fields["description"].label = "Descripción"
+        self.fields["description"].required = False
         self.fields["name"].label = "Nombre"
         self.fields["link"].label = "Enlace"
         self.fields["link"].required = True
         self.fields["link"].help_text = "Enlace a la página de los modelos del producto"
+        if not self.instance or not self.instance.pk:
+            self.fields["link"].initial = "https://www.google.com"
 
     class Meta:
         model = Product

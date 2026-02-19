@@ -197,10 +197,10 @@ const CommonDataTable = (function () {
             ],
             select: settings.multiSelect
                 ? {
-                      style: "multi",
-                      blurable: false,
-                      selector: 'td:first-child input[type="checkbox"]',
-                  }
+                    style: "multi",
+                    blurable: false,
+                    selector: 'td:first-child input[type="checkbox"]',
+                }
                 : false,
             autoWidth: false,
             paging: true,
@@ -302,136 +302,143 @@ const CommonDataTable = (function () {
             commonTable.ajax.reload();
         });
 
-        $("#select-all-items-checkbox").on("change", function () {
-            const checked = $(this).prop("checked");
-            const checkboxes = $(table_id).find("tbody input[type='checkbox']");
-            checkboxes.prop("checked", checked).trigger("change");
+        const tableCard = $(table_id).closest(".card");
+        const selectAllCheckbox = $(table_id).find("#select-all-items-checkbox");
+        if (settings.multiSelect && selectAllCheckbox.length) {
+            selectAllCheckbox.on("change", function () {
+                const checked = $(this).prop("checked");
+                const checkboxes = $(table_id).find("tbody input[type='checkbox']");
+                checkboxes.prop("checked", checked).trigger("change");
 
-            if (checked) {
-                checkboxes.each(function () {
-                    const row = $(this).closest("tr");
-                    commonTable.row(row).select();
-                });
-                $(".custom-table-actions-button").show();
-            } else {
-                checkboxes.each(function () {
-                    const row = $(this).closest("tr");
-                    commonTable.row(row).deselect();
-                });
-                $(".custom-table-actions-button").hide();
-            }
-        });
-
-        $(".custom-table-actions-button").on("click", function () {
-            const selectedRows = commonTable.rows({ selected: true });
-            const selectedData = selectedRows.nodes().toArray();
-            const selectedIds = selectedData.map((row) => {
-                return $(row).find("input[type='checkbox']").val();
+                if (checked) {
+                    checkboxes.each(function () {
+                        const row = $(this).closest("tr");
+                        commonTable.row(row).select();
+                    });
+                    tableCard.find(".custom-table-actions-button").show();
+                } else {
+                    checkboxes.each(function () {
+                        const row = $(this).closest("tr");
+                        commonTable.row(row).deselect();
+                    });
+                    tableCard.find(".custom-table-actions-button").hide();
+                }
             });
+        }
 
-            if (selectedIds.length) {
-                const url = $(this).data("url");
-                const displayedText = $(this).data("text");
-                const modalType = $(this).data("modal-type");
-                const data = {
-                    selected_ids: selectedIds,
-                    csrfmiddlewaretoken: $(
-                        "input[name=csrfmiddlewaretoken]"
-                    ).val(),
-                };
+        const tableActionsButton = tableCard.find(".custom-table-actions-button");
+        if (settings.multiSelect && tableActionsButton.length) {
+            tableActionsButton.on("click", function () {
+                const selectedRows = commonTable.rows({ selected: true });
+                const selectedData = selectedRows.nodes().toArray();
+                const selectedIds = selectedData.map((row) => {
+                    return $(row).find("input[type='checkbox']").val();
+                });
 
-                const modalHtml = `
-                    <div class="modal fade" id="custom-table-action-modal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content bg-${
-                                modalType || "info"
-                            }">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Confirmar acción</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    ${
-                                        displayedText ||
-                                        "¿Está seguro que desea realizar esta acción?"
-                                    }
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" id="cancel-custom-table-action-modal" data-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-primary" id="confirm-custom-table-action-modal">Confirmar</button>
+                if (selectedIds.length) {
+                    const url = $(this).data("url");
+                    const displayedText = $(this).data("text");
+                    const modalType = $(this).data("modal-type");
+                    const data = {
+                        selected_ids: selectedIds,
+                        csrfmiddlewaretoken: $(
+                            "input[name=csrfmiddlewaretoken]"
+                        ).val(),
+                    };
+
+                    const modalHtml = `
+                        <div class="modal fade" id="custom-table-action-modal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content bg-${modalType || "info"
+                        }">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Confirmar acción</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ${displayedText ||
+                        "¿Está seguro que desea realizar esta acción?"
+                        }
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="cancel-custom-table-action-modal" data-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-primary" id="confirm-custom-table-action-modal">Confirmar</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-                $("body").append(modalHtml);
-                $("#custom-table-action-modal").modal("show");
+                    `;
+                    $("body").append(modalHtml);
+                    $("#custom-table-action-modal").modal("show");
 
-                $("#cancel-custom-table-action-modal").on("click", function () {
-                    $("#custom-table-action-modal").modal("hide");
-                    $("#custom-table-action-modal").on(
-                        "hidden.bs.modal",
+                    $("#cancel-custom-table-action-modal").on("click", function () {
+                        $("#custom-table-action-modal").modal("hide");
+                        $("#custom-table-action-modal").on(
+                            "hidden.bs.modal",
+                            function () {
+                                $("#custom-table-action-modal").remove();
+                            }
+                        );
+                    });
+
+                    $("#confirm-custom-table-action-modal").on(
+                        "click",
                         function () {
-                            $("#custom-table-action-modal").remove();
+                            $("#custom-table-action-modal").modal("hide");
+                            $(this).prop("disabled", true);
+                            $(this).text("Procesando...");
+
+                            $.ajax({
+                                url: url,
+                                type: "POST",
+                                data: data,
+                                success: function (data) {
+                                    $("#custom-table-action-modal").on(
+                                        "hidden.bs.modal",
+                                        function () {
+                                            $(
+                                                "#custom-table-action-modal"
+                                            ).remove();
+                                        }
+                                    );
+                                    tableCard.find(".custom-table-actions-button").hide();
+                                    $(table_id).find("#select-all-items-checkbox").prop(
+                                        "checked",
+                                        false
+                                    );
+                                    $(table_id).find("#select-all-items-checkbox").trigger(
+                                        "change"
+                                    );
+
+                                    if (data.success) {
+                                        commonTable.ajax.reload();
+                                        toastr.success(data.message);
+                                    } else {
+                                        toastr.error(
+                                            "Ocurrió un error al realizar la acción"
+                                        );
+                                    }
+                                },
+                            });
                         }
                     );
-                });
+                }
+            });
+        }
 
-                $("#confirm-custom-table-action-modal").on(
-                    "click",
-                    function () {
-                        $("#custom-table-action-modal").modal("hide");
-                        $(this).prop("disabled", true);
-                        $(this).text("Procesando...");
-
-                        $.ajax({
-                            url: url,
-                            type: "POST",
-                            data: data,
-                            success: function (data) {
-                                $("#custom-table-action-modal").on(
-                                    "hidden.bs.modal",
-                                    function () {
-                                        $(
-                                            "#custom-table-action-modal"
-                                        ).remove();
-                                    }
-                                );
-                                $(".custom-table-actions-button").hide();
-                                $("#select-all-items-checkbox").prop(
-                                    "checked",
-                                    false
-                                );
-                                $("#select-all-items-checkbox").trigger(
-                                    "change"
-                                );
-
-                                if (data.success) {
-                                    commonTable.ajax.reload();
-                                    toastr.success(data.message);
-                                } else {
-                                    toastr.error(
-                                        "Ocurrió un error al realizar la acción"
-                                    );
-                                }
-                            },
-                        });
-                    }
-                );
-            }
-        });
-
-        $(table_id).on("change", "tbody input[type='checkbox']", function () {
-            if (
-                $(table_id).find("tbody input[type='checkbox']:checked").length
-            ) {
-                $(".custom-table-actions-button").show();
-            } else {
-                $(".custom-table-actions-button").hide();
-            }
-        });
+        if (settings.multiSelect) {
+            $(table_id).on("change", "tbody input[type='checkbox']", function () {
+                if (
+                    $(table_id).find("tbody input[type='checkbox']:checked").length
+                ) {
+                    tableCard.find(".custom-table-actions-button").show();
+                } else {
+                    tableCard.find(".custom-table-actions-button").hide();
+                }
+            });
+        }
 
         $(".table-reloader").on("click", function () {
             commonTable.ajax.reload();
