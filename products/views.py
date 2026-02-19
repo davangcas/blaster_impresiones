@@ -153,14 +153,12 @@ class ExtraProductCostListView(CustomAdminViewMixin, TemplateView):
 class ExtraProductCostDatatableView(CustomDatatablesJsonMixin):
     permission_required = "products.view_extraproductcost"
     model = ExtraProductCost
-    columns = ["id", "name", "cost", "description", "actions"]
+    columns = ["name", "cost", "description", "actions"]
 
     def get_initial_queryset(self):
         return super().get_initial_queryset().filter(product_id=self.kwargs.get("pk"))
 
     def render_column(self, row, column):
-        if column == "id":
-            return get_select_checkbox(row)
         if column == "cost":
             return f"${row.cost}"
         if column == "actions":

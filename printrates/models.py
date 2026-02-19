@@ -42,6 +42,8 @@ class MonthlyCost(models.Model):
 
 
 class PrintRateVariables(models.Model):
+    """Singleton: solo existe una instancia (id=1) con las variables actuales."""
+
     failure_percentage = models.PositiveSmallIntegerField(default=0)
     maintenance_cost = models.DecimalField(
         max_digits=15, decimal_places=2, default=0.00
@@ -53,7 +55,22 @@ class PrintRateVariables(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.created_at
+        return str(self.created_at)
 
     class Meta:
         ordering = ["-created_at"]
+
+    @classmethod
+    def get_singleton(cls):
+        """Devuelve la única instancia del modelo (singleton). La crea si no existe."""
+        instance, _ = cls.objects.get_or_create(
+            pk=1,
+            defaults={
+                "failure_percentage": 0,
+                "maintenance_cost": Decimal("0.00"),
+                "minutes_spent_per_print": 0,
+                "extra_percentage": 0,
+                "available_printers": 1,
+            },
+        )
+        return instance

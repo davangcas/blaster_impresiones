@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
@@ -214,6 +215,9 @@ class PrintRateVariablesDatatableView(CustomDatatablesJsonMixin):
         "actions",
     ]
 
+    def get_initial_queryset(self):
+        return self.model.objects.filter(pk=1).order_by("-created_at")
+
     def render_column(self, row, column):
         if column == "created_at":
             return timezone.localtime(row.created_at).strftime("%d/%m/%Y %H:%M")
@@ -227,15 +231,9 @@ class PrintRateVariablesDatatableView(CustomDatatablesJsonMixin):
             update_url = reverse_lazy(
                 "printrates:variables_update", kwargs={"pk": row.pk}
             )
-            delete_url = reverse_lazy(
-                "printrates:variables_delete", kwargs={"pk": row.pk}
-            )
             return f"""
                 <a href="{update_url}" class="btn btn-warning">
                     <i class="fas fa-edit"></i>
-                </a>
-                <a href="{delete_url}" class="btn btn-danger">
-                    <i class="fas fa-trash"></i>
                 </a>
             """
         return super().render_column(row, column)
@@ -248,9 +246,17 @@ class PrintRateVariablesCreateView(CustomAdminViewMixin, CreateView):
     form_class = PrintRateVariablesForm
     permission_required = "printrates.add_printratevariables"
 
+    def dispatch(self, request, *args, **kwargs):
+        if PrintRateVariables.objects.filter(pk=1).exists():
+            return redirect("printrates:variables_update", pk=1)
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.pk = 1
+        instance.save()
         messages.success(self.request, "Variables creadas correctamente")
-        return super().form_valid(form)
+        return redirect(self.success_url)
 
     def form_invalid(self, form):
         messages.error(self.request, "Error al crear las variables")
@@ -271,6 +277,9 @@ class PrintRateVariablesUpdateView(CustomAdminViewMixin, UpdateView):
     form_class = PrintRateVariablesForm
     permission_required = "printrates.change_printratevariables"
 
+    def get_object(self, queryset=None):
+        return PrintRateVariables.get_singleton()
+
     def form_valid(self, form):
         messages.success(self.request, "Variables actualizadas correctamente")
         return super().form_valid(form)
@@ -282,24 +291,6 @@ class PrintRateVariablesUpdateView(CustomAdminViewMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Editar variables a considerar en el precio de impresión"
-        context["cancel_url"] = reverse_lazy("printrates:list")
-        context["active_section"] = "configuration"
-        return context
-
-
-class PrintRateVariablesDeleteView(CustomAdminViewMixin, DeleteView):
-    model = PrintRateVariables
-    template_name = "variables/delete.html"
-    success_url = reverse_lazy("printrates:list")
-    permission_required = "printrates.delete_printratevariables"
-
-    def get_success_url(self):
-        messages.success(self.request, "Variables eliminadas correctamente")
-        return super().get_success_url()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Eliminar variables a considerar en el precio de impresión"
         context["cancel_url"] = reverse_lazy("printrates:list")
         context["active_section"] = "configuration"
         return context

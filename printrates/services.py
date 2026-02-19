@@ -10,10 +10,8 @@ def obtain_print_rate():
     print_rate = Decimal(0)
     month_days = Decimal(30)
     available_printers = Decimal(1)
-    print_rate_variables = PrintRateVariables.objects.order_by("-created_at").first()
-
-    if print_rate_variables:
-        available_printers = print_rate_variables.available_printers
+    print_rate_variables = PrintRateVariables.get_singleton()
+    available_printers = print_rate_variables.available_printers
 
     monthly_costs = MonthlyCost.objects.all().aggregate(Sum("cost"))["cost__sum"] or 0
     print_rate += (monthly_costs / month_days) / 24 / available_printers

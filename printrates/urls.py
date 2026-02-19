@@ -11,7 +11,6 @@ from printrates.views import (
     PrintRateUpdateView,
     PrintRateVariablesCreateView,
     PrintRateVariablesDatatableView,
-    PrintRateVariablesDeleteView,
     PrintRateVariablesUpdateView,
 )
 
@@ -54,11 +53,6 @@ urlpatterns = [
         "variables/update/<int:pk>/",
         PrintRateVariablesUpdateView.as_view(),
         name="variables_update",
-    ),
-    path(
-        "variables/delete/<int:pk>/",
-        PrintRateVariablesDeleteView.as_view(),
-        name="variables_delete",
     ),
     path(
         "generate-new-rate/",

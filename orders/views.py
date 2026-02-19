@@ -286,6 +286,7 @@ class PrintOrderItemDatatableView(CustomDatatablesJsonMixin):
     permission_required = "orders.view_printorderitem"
     model = PrintOrderItem
     columns = [
+        "id",
         "print.hours",
         "print.minutes",
         "print.grams",
@@ -301,6 +302,8 @@ class PrintOrderItemDatatableView(CustomDatatablesJsonMixin):
         )
 
     def render_column(self, row, column):
+        if column == "id":
+            return get_select_checkbox(row)
         if column == "color.color":
             return row.color.color if row.color else "-"
         if column == "state":
