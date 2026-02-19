@@ -6,9 +6,7 @@ from printrates.views import (
     MonthlyCostDatatableView,
     MonthlyCostDeleteView,
     MonthlyCostUpdateView,
-    PrintRateCreateView,
     PrintRateDatatableView,
-    PrintRateDeleteView,
     PrintRateListView,
     PrintRateUpdateView,
     PrintRateVariablesCreateView,
@@ -21,9 +19,7 @@ app_name = "printrates"
 urlpatterns = [
     path("", PrintRateListView.as_view(), name="list"),
     path("json/", PrintRateDatatableView.as_view(), name="json"),
-    path("create/", PrintRateCreateView.as_view(), name="create"),
-    path("update/<int:pk>/", PrintRateUpdateView.as_view(), name="update"),
-    path("delete/<int:pk>/", PrintRateDeleteView.as_view(), name="delete"),
+    path("update/", PrintRateUpdateView.as_view(), name="update"),
     path(
         "monthly-costs/json/",
         MonthlyCostDatatableView.as_view(),

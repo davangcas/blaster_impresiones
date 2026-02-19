@@ -1,4 +1,5 @@
 {% extends 'core/list.html' %}
+{% load static %}
 
 {% block previous_content %}
     <div class="row">
@@ -47,15 +48,12 @@
 {% endblock %}
 
 {% block table_headers %}
-    <th>
-        <div class="custom-control custom-checkbox">
-            <input class="custom-control-input custom-control-input-lightblue" type="checkbox" id="select-all-items-checkbox">
-            <label for="select-all-items-checkbox" class="custom-control-label"></label>
-        </div>
-    </th>
     <th>Fecha de creacion</th>
     <th>Precio de impresion por hora</th>
-    <th>Acciones</th>
+{% endblock %}
+
+{% block table_buttons_script %}
+    {# Sin botón de selección múltiple: la tabla muestra solo historial (solo lectura) #}
 {% endblock %}
 
 {% block next_content %}
@@ -129,7 +127,34 @@
     {% endif %}
 {% endblock %}
 
-{% block table_scripts %}
+{% block scripts %}
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-select/js/dataTables.select.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'lib/adminlte-3.2.0/plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+    <script src="{% static 'js/datatables/common/customize-total-helpers.js' %}"></script>
+    <script src="{% static 'js/datatables/common/datatables.js' %}"></script>
+    <script src="{% static 'js/datatables/common/default-buttons.js' %}"></script>
+    <script>
+        const mainDatatableObject = CommonDataTable.init({
+            table_id: "#main-table",
+            source_url: "{{ json_view_url }}",
+            columnDefs: [],
+            buttonsConfig: typeof buttons_config !== "undefined" ? buttons_config : {},
+            initComplete: function(){ typeof initDatatableComplete === "function" && initDatatableComplete(); },
+            multiSelect: false,
+        });
+    </script>
+    {% block table_scripts %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             if ("{{ perms.printrates.view_monthlycost }}" == "True"){
@@ -159,4 +184,5 @@
             }
         });
     </script>
+    {% endblock %}
 {% endblock %}

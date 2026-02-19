@@ -10,7 +10,6 @@ from django.views.generic import (
 )
 
 from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
-from core.services import get_select_checkbox
 from printrates.forms import MonthlyCostForm, PrintRateForm, PrintRateVariablesForm
 from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
 from printrates.services import generate_print_rate
@@ -23,54 +22,41 @@ class PrintRateListView(CustomAdminViewMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        current_printrate_price = 0
-        previous_printrate_price = 0
-        first_printrate_price = 0
+        singleton = PrintRate.get_singleton()
+        history = list(singleton.historical.all().order_by("-history_date"))
 
-        current_printrate = PrintRate.objects.order_by("-created_at").first()
-        previous_printrate = (
-            PrintRate.objects.order_by("-created_at")[1]
-            if PrintRate.objects.count() > 1
-            else None
-        )
-        first_printrate = PrintRate.objects.order_by("created_at").first()
-
-        if current_printrate:
-            current_printrate_price = current_printrate.rate
-        if previous_printrate:
-            previous_printrate_price = previous_printrate.rate
-        if first_printrate:
-            first_printrate_price = first_printrate.rate
+        current_printrate_price = singleton.rate
+        previous_printrate_price = history[1].rate if len(history) > 1 else 0
+        first_printrate_price = history[-1].rate if history else 0
 
         context["title"] = "Precios de impresión por hora - historial"
         context["current_printrate"] = current_printrate_price
         context["previous_printrate"] = previous_printrate_price
         context["first_printrate"] = first_printrate_price
-        context["create_url"] = reverse_lazy("printrates:create")
+        context["create_url"] = (
+            None  # Singleton: no se agregan filas, solo se actualiza
+        )
         context["active_section"] = "configuration"
         context["json_view_url"] = reverse_lazy("printrates:json")
         return context
 
 
 class PrintRateDatatableView(CustomDatatablesJsonMixin):
+    """Tabla con el historial del singleton (history records)."""
+
     permission_required = "printrates.view_printrate"
-    model = PrintRate
-    columns = ["id", "created_at", "rate", "actions"]
+    model = PrintRate.historical.model
+    columns = ["history_date", "rate"]
+
+    def get_initial_queryset(self):
+        singleton = PrintRate.get_singleton()
+        return self.model.objects.filter(id=singleton.pk).order_by("-history_date")
 
     def render_column(self, row, column):
-        if column == "id":
-            return get_select_checkbox(row)
-        if column == "created_at":
-            return timezone.localtime(row.created_at).strftime("%d/%m/%Y %H:%M")
+        if column == "history_date":
+            return timezone.localtime(row.history_date).strftime("%d/%m/%Y %H:%M")
         if column == "rate":
             return f"${row.rate}"
-        if column == "actions":
-            delete_url = reverse_lazy("printrates:delete", kwargs={"pk": row.pk})
-            return f"""
-                <a href="{delete_url}" class="btn btn-danger">
-                    <i class="fas fa-trash"></i>
-                </a>
-            """
         return super().render_column(row, column)
 
 
@@ -104,6 +90,9 @@ class PrintRateUpdateView(CustomAdminViewMixin, UpdateView):
     form_class = PrintRateForm
     permission_required = "printrates.change_printrate"
 
+    def get_object(self, queryset=None):
+        return PrintRate.get_singleton()
+
     def form_valid(self, form):
         messages.success(self.request, "Valor actualizado correctamente")
         return super().form_valid(form)
@@ -115,24 +104,6 @@ class PrintRateUpdateView(CustomAdminViewMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Editar valor de precio por hora"
-        context["cancel_url"] = reverse_lazy("printrates:list")
-        context["active_section"] = "configuration"
-        return context
-
-
-class PrintRateDeleteView(CustomAdminViewMixin, DeleteView):
-    model = PrintRate
-    template_name = "printrates/delete.html"
-    success_url = reverse_lazy("printrates:list")
-    permission_required = "printrates.delete_printrate"
-
-    def get_success_url(self):
-        messages.success(self.request, "Valor eliminado correctamente")
-        return super().get_success_url()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Eliminar valor de precio por hora"
         context["cancel_url"] = reverse_lazy("printrates:list")
         context["active_section"] = "configuration"
         return context

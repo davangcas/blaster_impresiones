@@ -26,4 +26,6 @@ def obtain_print_rate():
 
 
 def generate_print_rate():
-    PrintRate.objects.create(rate=obtain_print_rate())
+    instance = PrintRate.get_singleton()
+    instance.rate = obtain_print_rate()
+    instance.save()

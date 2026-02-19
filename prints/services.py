@@ -7,12 +7,9 @@ def calculate_print_price(print_instance):
     current_price = 0
     material_cost = print_instance.material.price / 1000
     current_price += material_cost * print_instance.grams
-    print_rate_instance = PrintRate.objects.order_by("-created_at").first()
+    print_rate_instance = PrintRate.get_singleton()
     print_rate_variables = PrintRateVariables.objects.order_by("-created_at").first()
-    print_rate = 0
-
-    if print_rate_instance:
-        print_rate = print_rate_instance.rate
+    print_rate = print_rate_instance.rate
 
     print_rate_in_minutes = print_rate / 60
     print_time = (print_instance.hours * 60) + print_instance.minutes

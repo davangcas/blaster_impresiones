@@ -1,15 +1,30 @@
+from decimal import Decimal
+
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 
 class PrintRate(models.Model):
+    """Singleton: solo existe una instancia (id=1) con el precio actual. El historial se guarda en history."""
+
     rate = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
+    historical = HistoricalRecords()
 
     def __str__(self):
         return f"{self.rate}"
 
     class Meta:
         ordering = ["-created_at"]
+
+    @classmethod
+    def get_singleton(cls):
+        """Devuelve la única instancia del modelo (singleton). La crea si no existe."""
+        instance, _ = cls.objects.get_or_create(
+            pk=1,
+            defaults={"rate": Decimal("0.00")},
+        )
+        return instance
 
 
 class MonthlyCost(models.Model):

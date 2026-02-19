@@ -16,11 +16,11 @@ def print_rate_post_save(sender, instance, **kwargs):
 
 @receiver(post_delete, sender=PrintRate)
 def print_rate_post_delete(sender, instance, **kwargs):
-    if PrintRate.objects.count() != 0:
-        all_prints = Print.objects.all()
-
-        for print_instance in all_prints:
-            print_instance.save()
+    # Singleton: si por error se elimina la instancia, recalculamos precios de prints
+    # (get_singleton() creará una nueva instancia en la siguiente petición)
+    all_prints = Print.objects.all()
+    for print_instance in all_prints:
+        print_instance.save()
 
 
 @receiver(post_save, sender=PrintRateVariables)
