@@ -65,6 +65,7 @@ class TransactionDatatableView(CustomDatatablesJsonMixin):
         ]
 
         if from_personal_account:
+            table_columns.remove("id")
             table_columns.remove("actions")
 
         return table_columns
