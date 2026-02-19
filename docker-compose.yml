@@ -15,7 +15,7 @@ services:
     environment:
       - DEBUG=${DEBUG}
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
-    restart: always
+    restart: unless-stopped
 
   postgres:
     image: postgres:15.3
@@ -27,7 +27,7 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
-    restart: always
+    restart: unless-stopped
 
 volumes:
   staticfiles:
