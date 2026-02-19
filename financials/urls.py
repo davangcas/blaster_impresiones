@@ -4,6 +4,7 @@ from financials.views import (
     AccountDetailView,
     TransactionCreateView,
     TransactionDatatableView,
+    TransactionDeleteMultipleView,
     TransactionDeleteView,
     TransactionListView,
     TransactionUpdateView,
@@ -32,5 +33,10 @@ urlpatterns = [
         "transactions/delete/<int:pk>/",
         TransactionDeleteView.as_view(),
         name="transactions_delete",
+    ),
+    path(
+        "transactions/delete-multiple/",
+        TransactionDeleteMultipleView.as_view(),
+        name="transactions_delete_multiple",
     ),
 ]

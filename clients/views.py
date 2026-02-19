@@ -4,7 +4,11 @@ from django.views.generic import CreateView, DeleteView, TemplateView, UpdateVie
 
 from clients.forms import ClientCreateEditForm
 from clients.models import Client
-from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.mixins import (
+    CustomAdminViewMixin,
+    CustomDatatablesJsonMixin,
+    DeleteMultipleObjectsMixin,
+)
 from core.services import get_select_checkbox
 
 
@@ -108,3 +112,8 @@ class ClientDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("clients:list")
         context["active_section"] = "clients"
         return context
+
+
+class ClientDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = Client
+    permission_required = "clients.delete_client"

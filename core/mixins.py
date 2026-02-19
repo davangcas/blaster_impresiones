@@ -2,9 +2,11 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.core.exceptions import FieldDoesNotExist
+from django.db.models import CharField, F, ForeignKey, Q, TextField
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
+from django.views.generic import View
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
@@ -23,13 +25,14 @@ class CustomAdminViewMixin(LoginRequiredMixin, PermissionRequiredMixin):
 class CustomDatatablesJsonMixin(CustomAdminViewMixin, BaseDatatableView):
     def get_initial_queryset(self):
         filter_lookup = {}
+
         for key, value in self.request.GET.items():
             if "table_filter" in key:
                 try:
                     filter_lookup[key.replace("table_filter_", "")] = datetime.strptime(
                         value, "%d/%m/%Y"
                     ).date()
-                except (ValueError, TypeError):
+                except Exception:
                     filter_lookup[key.replace("table_filter_", "")] = value
 
         return super().get_initial_queryset().filter(**filter_lookup)
@@ -61,7 +64,24 @@ class CustomDatatablesJsonMixin(CustomAdminViewMixin, BaseDatatableView):
                     continue
 
                 if search and col["searchable"]:
-                    q |= Q(**{"{0}__{1}".format(column, filter_method): search})
+                    try:
+                        model = self.model
+                        parts = column.split("__")
+
+                        for part in parts[:-1]:
+                            field = model._meta.get_field(part)
+                            if isinstance(field, ForeignKey):
+                                model = field.remote_field.model
+                            else:
+                                raise FieldDoesNotExist
+
+                        final_field = model._meta.get_field(parts[-1])
+
+                        if isinstance(final_field, (CharField, TextField)):
+                            q |= Q(**{f"{column}__{filter_method}": search})
+
+                    except FieldDoesNotExist:
+                        continue
 
                 if col["search.value"]:
                     qs = qs.filter(
@@ -78,5 +98,29 @@ class CustomDatatablesJsonMixin(CustomAdminViewMixin, BaseDatatableView):
         return self.FILTER_ICONTAINS
 
     def render_column(self, row, column):
-        rendered_column = super().render_column(row, column)
-        return rendered_column or "-"
+        return super().render_column(row, column) or "-"
+
+
+class DeleteMultipleObjectsMixin(CustomAdminViewMixin, View):
+    model = None
+
+    def post(self, request, *args, **kwargs):
+        self.model.objects.filter(
+            pk__in=request.POST.getlist("selected_ids[]")
+        ).delete()
+        return JsonResponse(
+            {"success": True, "message": "Elementos eliminados con éxito"}
+        )
+
+
+class ActiveToggleMultipleObjecsMixin(CustomAdminViewMixin, View):
+    model = None
+
+    def post(self, request, *args, **kwargs):
+        queryset = self.model.objects.filter(
+            pk__in=request.POST.getlist("selected_ids[]")
+        )
+        queryset.update(is_active=~F("is_active"))
+        return JsonResponse(
+            {"success": True, "message": "Elementos actualizados con éxito"}
+        )

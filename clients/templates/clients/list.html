@@ -1,5 +1,13 @@
 {% extends 'core/list.html' %}
 
+{% block custom_list_card_buttons %}
+    {% if perms.clients.delete_client %}
+        <button type="button" class="btn btn-danger m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'clients:delete_multiple' %}" data-text="¿Desea eliminar los clientes seleccionados?" data-modal-type="danger">
+            <i class="fas fa-trash"></i> Eliminar
+        </button>
+    {% endif %}
+{% endblock %}
+
 {% block table_headers %}
     <th>
         <div class="custom-control custom-checkbox">

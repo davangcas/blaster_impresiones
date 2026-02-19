@@ -1,5 +1,13 @@
 {% extends 'core/list.html' %}
 
+{% block custom_list_card_buttons %}
+    {% if perms.users.delete_user %}
+        <button type="button" class="btn btn-danger m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'users:delete_multiple' %}" data-text="¿Desea eliminar los usuarios seleccionados?" data-modal-type="danger">
+            <i class="fas fa-trash"></i> Eliminar
+        </button>
+    {% endif %}
+{% endblock %}
+
 {% block table_headers %}
     <th>
         <div class="custom-control custom-checkbox">

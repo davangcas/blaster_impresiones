@@ -10,7 +10,11 @@ from django.views.generic import (
     UpdateView,
 )
 
-from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.mixins import (
+    CustomAdminViewMixin,
+    CustomDatatablesJsonMixin,
+    DeleteMultipleObjectsMixin,
+)
 from core.services import get_select_checkbox
 from users.forms import ChangePasswordForm, CreateEditRoleForm, CreateEditUserForm
 from users.models import Role, User
@@ -125,6 +129,11 @@ class UserDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("users:list")
         context["active_section"] = "users"
         return context
+
+
+class UserDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = User
+    permission_required = "users.delete_user"
 
 
 class ChangePasswordView(CustomAdminViewMixin, FormView):
@@ -256,6 +265,11 @@ class RoleDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("users:roles")
         context["active_section"] = "roles"
         return context
+
+
+class RoleDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = Role
+    permission_required = "users.delete_role"
 
 
 class ChangeDarkModeView(RedirectView):

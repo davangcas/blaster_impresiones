@@ -3,6 +3,7 @@ from django.urls import path
 from products.views import (
     CategoryCreateView,
     CategoryDatatableView,
+    CategoryDeleteMultipleView,
     CategoryDeleteView,
     CategoryGetOptionsView,
     CategoryListView,
@@ -14,6 +15,7 @@ from products.views import (
     ExtraProductCostUpdateView,
     ProductCreateView,
     ProductDatatableView,
+    ProductDeleteMultipleView,
     ProductDeleteView,
     ProductImageCreateView,
     ProductImageDatatableView,
@@ -30,6 +32,9 @@ urlpatterns = [
     path("create/", ProductCreateView.as_view(), name="create"),
     path("update/<int:pk>/", ProductUpdateView.as_view(), name="update"),
     path("delete/<int:pk>/", ProductDeleteView.as_view(), name="delete"),
+    path(
+        "delete-multiple/", ProductDeleteMultipleView.as_view(), name="delete_multiple"
+    ),
     path(
         "extra-costs/<int:pk>/", ExtraProductCostListView.as_view(), name="extra_costs"
     ),
@@ -65,6 +70,11 @@ urlpatterns = [
         "categories/delete/<int:pk>/",
         CategoryDeleteView.as_view(),
         name="categories_delete",
+    ),
+    path(
+        "categories/delete-multiple/",
+        CategoryDeleteMultipleView.as_view(),
+        name="categories_delete_multiple",
     ),
     path(
         "categories/options/",

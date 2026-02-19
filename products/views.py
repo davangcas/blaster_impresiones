@@ -3,7 +3,11 @@ from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.mixins import (
+    CustomAdminViewMixin,
+    CustomDatatablesJsonMixin,
+    DeleteMultipleObjectsMixin,
+)
 from core.services import get_select_checkbox
 from products.forms import (
     CategoryCreateEditForm,
@@ -123,6 +127,11 @@ class ProductDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("products:list")
         context["active_section"] = "products"
         return context
+
+
+class ProductDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = Product
+    permission_required = "products.delete_product"
 
 
 class ExtraProductCostListView(CustomAdminViewMixin, TemplateView):
@@ -355,6 +364,11 @@ class CategoryDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("products:categories")
         context["active_section"] = "categories"
         return context
+
+
+class CategoryDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = Category
+    permission_required = "products.delete_category"
 
 
 class CategoryGetOptionsView(CustomAdminViewMixin, TemplateView):

@@ -11,7 +11,11 @@ from django.views.generic import (
     UpdateView,
 )
 
-from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.mixins import (
+    CustomAdminViewMixin,
+    CustomDatatablesJsonMixin,
+    DeleteMultipleObjectsMixin,
+)
 from core.services import get_select_checkbox
 from prints.forms import (
     PrintCreateForm,
@@ -138,6 +142,11 @@ class PrintMaterialDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("prints:materials")
         context["active_section"] = "materials"
         return context
+
+
+class PrintMaterialDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = PrintMaterial
+    permission_required = "prints.delete_printmaterial"
 
 
 class PrintListView(CustomAdminViewMixin, TemplateView):

@@ -3,6 +3,7 @@ from django.urls import path
 from clients.views import (
     ClientCreateView,
     ClientDatatableView,
+    ClientDeleteMultipleView,
     ClientDeleteView,
     ClientListView,
     ClientUpdateView,
@@ -15,4 +16,7 @@ urlpatterns = [
     path("create/", ClientCreateView.as_view(), name="create"),
     path("update/<int:pk>/", ClientUpdateView.as_view(), name="update"),
     path("delete/<int:pk>/", ClientDeleteView.as_view(), name="delete"),
+    path(
+        "delete-multiple/", ClientDeleteMultipleView.as_view(), name="delete_multiple"
+    ),
 ]

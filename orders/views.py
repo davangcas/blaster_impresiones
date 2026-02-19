@@ -14,7 +14,11 @@ from django.views.generic import (
     UpdateView,
 )
 
-from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.mixins import (
+    CustomAdminViewMixin,
+    CustomDatatablesJsonMixin,
+    DeleteMultipleObjectsMixin,
+)
 from core.services import get_select_checkbox
 from orders.forms import (
     OrderCreateEditForm,
@@ -139,6 +143,11 @@ class OrderDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("orders:list")
         context["active_section"] = "orders"
         return context
+
+
+class OrderDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = Order
+    permission_required = "orders.delete_order"
 
 
 class OrderItemListView(CustomAdminViewMixin, DetailView):

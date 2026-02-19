@@ -1,5 +1,13 @@
 {% extends 'core/list_with_filters.html' %}
 
+{% block custom_list_card_buttons %}
+    {% if perms.products.delete_product %}
+        <button type="button" class="btn btn-danger m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'products:delete_multiple' %}" data-text="¿Desea eliminar los productos seleccionados?" data-modal-type="danger">
+            <i class="fas fa-trash"></i> Eliminar
+        </button>
+    {% endif %}
+{% endblock %}
+
 {% block filter_inputs %}
     <div class="col-6">
         <input type="number" class="form-control table-filter mt-2" placeholder="Precio min" name="price__gte">

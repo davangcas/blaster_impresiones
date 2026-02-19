@@ -3,7 +3,11 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, TemplateView, UpdateView
 
-from core.mixins import CustomAdminViewMixin, CustomDatatablesJsonMixin
+from core.mixins import (
+    CustomAdminViewMixin,
+    CustomDatatablesJsonMixin,
+    DeleteMultipleObjectsMixin,
+)
 from core.services import get_select_checkbox
 from financials.choices import ACCOUNT_TYPES
 from financials.forms import TransactionCreateEditForm, TransactionCreateFromAccountForm
@@ -209,3 +213,8 @@ class TransactionDeleteView(CustomAdminViewMixin, DeleteView):
         context["cancel_url"] = reverse_lazy("financials:transactions")
         context["active_section"] = "transactions"
         return context
+
+
+class TransactionDeleteMultipleView(DeleteMultipleObjectsMixin):
+    model = Transaction
+    permission_required = "financials.delete_transaction"

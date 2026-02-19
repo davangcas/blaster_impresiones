@@ -1,6 +1,14 @@
 {% extends 'core/list.html' %}
 {% load static %}
 
+{% block custom_list_card_buttons %}
+    {% if perms.users.delete_role %}
+        <button type="button" class="btn btn-danger m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'users:roles_delete_multiple' %}" data-text="¿Desea eliminar los roles seleccionados?" data-modal-type="danger">
+            <i class="fas fa-trash"></i> Eliminar
+        </button>
+    {% endif %}
+{% endblock %}
+
 {% block table_headers %}
     <th>
         <div class="custom-control custom-checkbox">
@@ -11,12 +19,6 @@
     <th>Nombre</th>
     <th>Permisos</th>
     <th>Acciones</th>
-{% endblock %}
-
-{% block custom_list_card_buttons %}
-    <button type="button" class="btn bg-maroon m-1" data-toggle="modal" data-target="#info-modal">
-        <i class="fas fa-info-circle"></i>
-    </button>
 {% endblock %}
 
 {% block content_modals %}

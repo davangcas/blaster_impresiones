@@ -1,6 +1,14 @@
 {% extends 'core/list_with_filters.html' %}
 {% load static %}
 
+{% block custom_list_card_buttons %}
+    {% if perms.orders.delete_order %}
+        <button type="button" class="btn btn-danger m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'orders:delete_multiple' %}" data-text="¿Desea eliminar los pedidos seleccionados?" data-modal-type="danger">
+            <i class="fas fa-trash"></i> Eliminar
+        </button>
+    {% endif %}
+{% endblock %}
+
 {% block filter_inputs %}
     <div class="col-6">
         <div class="input-group date mt-2" id="start_date" data-target-input="nearest">
