@@ -14,6 +14,7 @@ from products.forms import (
     ExtraProductCostCreateForm,
     ExtraProductCostUpdateForm,
     ProductCreateEditForm,
+    ProductDeleteMultipleForm,
     ProductImageCreateForm,
     ProductImageUpdateForm,
 )
@@ -132,6 +133,31 @@ class ProductDeleteView(CustomAdminViewMixin, DeleteView):
 class ProductDeleteMultipleView(DeleteMultipleObjectsMixin):
     model = Product
     permission_required = "products.delete_product"
+
+    def post(self, request, *args, **kwargs):
+        form = ProductDeleteMultipleForm(request.POST)
+        if not form.is_valid():
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Datos inválidos",
+                    "errors": form.errors,
+                },
+                status=400,
+            )
+        return super().post(request, *args, **kwargs)
+
+
+class ProductDeleteMultipleFormView(CustomAdminViewMixin, TemplateView):
+    """Returns the form HTML fragment for the delete-multiple modal (GET)."""
+
+    template_name = "products/partials/delete_multiple_form.html"
+    permission_required = "products.delete_product"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ProductDeleteMultipleForm()
+        return context
 
 
 class ExtraProductCostListView(CustomAdminViewMixin, TemplateView):

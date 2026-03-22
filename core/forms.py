@@ -16,6 +16,8 @@ from core.fields import (
 
 
 class DefaultForm(Form):
+    include_footer_buttons = True
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -40,7 +42,9 @@ class DefaultForm(Form):
             else:
                 fields.append(field_name)
 
-        self.helper.layout = CommonLayout(*tuple(fields))
+        self.helper.layout = CommonLayout(
+            include_footer_buttons=self.include_footer_buttons, *tuple(fields)
+        )
 
 
 class DefaultModelForm(DefaultForm, ModelForm):

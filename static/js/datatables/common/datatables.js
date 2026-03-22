@@ -336,21 +336,30 @@ const CommonDataTable = (function () {
                 });
 
                 if (selectedIds.length) {
-                    const url = $(this).data("url");
-                    const displayedText = $(this).data("text");
-                    const modalType = $(this).data("modal-type");
-                    const data = {
+                    const actionButton = $(this);
+                    const url = actionButton.data("url");
+                    const displayedText = actionButton.data("text");
+                    const modalType = actionButton.data("modal-type");
+                    const formUrl = actionButton.data("form-url");
+                    const csrfToken = $(
+                        "input[name=csrfmiddlewaretoken]"
+                    ).val();
+                    const basePayload = {
                         selected_ids: selectedIds,
-                        csrfmiddlewaretoken: $(
-                            "input[name=csrfmiddlewaretoken]"
-                        ).val(),
+                        csrfmiddlewaretoken: csrfToken,
                     };
+
+                    const bodyContent = formUrl
+                        ? (displayedText
+                              ? `<p class="mb-2">${displayedText}</p><div id="custom-table-action-form-container">Cargando...</div>`
+                              : '<div id="custom-table-action-form-container">Cargando...</div>')
+                        : displayedText ||
+                          "¿Está seguro que desea realizar esta acción?";
 
                     const modalHtml = `
                         <div class="modal fade" id="custom-table-action-modal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
-                                <div class="modal-content bg-${modalType || "info"
-                        }">
+                                <div class="modal-content bg-${modalType || "info"}">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Confirmar acción</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
@@ -358,9 +367,7 @@ const CommonDataTable = (function () {
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        ${displayedText ||
-                        "¿Está seguro que desea realizar esta acción?"
-                        }
+                                        ${bodyContent}
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" id="cancel-custom-table-action-modal" data-dismiss="modal">Cancelar</button>
@@ -372,6 +379,24 @@ const CommonDataTable = (function () {
                     `;
                     $("body").append(modalHtml);
                     $("#custom-table-action-modal").modal("show");
+
+                    const formContainer = $("#custom-table-action-form-container");
+                    if (formUrl && formContainer.length) {
+                        $.get(formUrl)
+                            .done(function (formHtml) {
+                                formContainer.html(formHtml);
+                            })
+                            .fail(function () {
+                                toastr.error("Error al cargar el formulario");
+                                $("#custom-table-action-modal").modal("hide");
+                                $("#custom-table-action-modal").on(
+                                    "hidden.bs.modal",
+                                    function () {
+                                        $("#custom-table-action-modal").remove();
+                                    }
+                                );
+                            });
+                    }
 
                     $("#cancel-custom-table-action-modal").on("click", function () {
                         $("#custom-table-action-modal").modal("hide");
@@ -386,21 +411,36 @@ const CommonDataTable = (function () {
                     $("#confirm-custom-table-action-modal").on(
                         "click",
                         function () {
+                            const confirmBtn = $(this);
+                            const modalForm = $("#custom-table-action-modal form");
+                            let postData;
+                            if (modalForm.length) {
+                                const formSerialized = modalForm.serialize();
+                                const extraParams = $.param({
+                                    selected_ids: selectedIds,
+                                    csrfmiddlewaretoken: csrfToken,
+                                });
+                                postData =
+                                    formSerialized +
+                                    (formSerialized ? "&" : "") +
+                                    extraParams;
+                            } else {
+                                postData = basePayload;
+                            }
+
                             $("#custom-table-action-modal").modal("hide");
-                            $(this).prop("disabled", true);
-                            $(this).text("Procesando...");
+                            confirmBtn.prop("disabled", true);
+                            confirmBtn.text("Procesando...");
 
                             $.ajax({
                                 url: url,
                                 type: "POST",
-                                data: data,
-                                success: function (data) {
+                                data: postData,
+                                success: function (response) {
                                     $("#custom-table-action-modal").on(
                                         "hidden.bs.modal",
                                         function () {
-                                            $(
-                                                "#custom-table-action-modal"
-                                            ).remove();
+                                            $("#custom-table-action-modal").remove();
                                         }
                                     );
                                     tableCard.find(".custom-table-actions-button").hide();
@@ -412,14 +452,20 @@ const CommonDataTable = (function () {
                                         "change"
                                     );
 
-                                    if (data.success) {
+                                    if (response.success) {
                                         commonTable.ajax.reload();
-                                        toastr.success(data.message);
+                                        toastr.success(response.message);
                                     } else {
                                         toastr.error(
-                                            "Ocurrió un error al realizar la acción"
+                                            response.message ||
+                                                "Ocurrió un error al realizar la acción"
                                         );
                                     }
+                                },
+                                error: function () {
+                                    toastr.error(
+                                        "Ocurrió un error al realizar la acción"
+                                    );
                                 },
                             });
                         }

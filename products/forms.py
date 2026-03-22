@@ -1,8 +1,28 @@
 from django import forms
 
 from core.fields import CustomPriceDecimalField
-from core.forms import DefaultModelForm
+from core.forms import DefaultForm, DefaultModelForm
 from products.models import Category, ExtraProductCost, Product, ProductImage
+
+
+class ProductDeleteMultipleForm(DefaultForm):
+    include_footer_buttons = False
+
+    reason = forms.CharField(
+        required=False,
+        label="Motivo (opcional)",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control",
+                "rows": 2,
+                "placeholder": "Motivo de la eliminación",
+            }
+        ),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.form_tag = False
 
 
 class ProductCreateEditForm(DefaultModelForm):

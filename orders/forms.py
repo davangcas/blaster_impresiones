@@ -1,5 +1,44 @@
-from core.forms import DefaultModelForm
+from django import forms
+
+from core.forms import DefaultForm, DefaultModelForm
+from orders.choices import ORDER_STATE_CHOICES
 from orders.models import Order, OrderItem, PrintOrderItem
+from prints.models import PrintMaterialColor
+
+
+class PrintOrderItemChangeStateForm(DefaultForm):
+    """Formulario para el modal de cambiar estado de varias impresiones."""
+
+    include_footer_buttons = False
+
+    state = forms.ChoiceField(
+        label="Nuevo estado",
+        choices=ORDER_STATE_CHOICES,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.form_tag = False
+
+
+class PrintOrderItemChangeColorForm(DefaultForm):
+    """Formulario para el modal de especificar color en varias impresiones."""
+
+    include_footer_buttons = False
+
+    color = forms.ModelChoiceField(
+        queryset=PrintMaterialColor.objects.all().order_by("material", "color"),
+        label="Color",
+        widget=forms.Select(
+            attrs={"class": "form-control select2bs4", "style": "width: 100%;"}
+        ),
+        empty_label="Seleccione un color",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.form_tag = False
 
 
 class OrderCreateEditForm(DefaultModelForm):

@@ -13,6 +13,10 @@ from orders.views import (
     OrderItemUpdateView,
     OrderListView,
     OrderUpdateView,
+    PrintOrderItemChangeColorFormView,
+    PrintOrderItemChangeColorMultipleView,
+    PrintOrderItemChangeStateFormView,
+    PrintOrderItemChangeStateMultipleView,
     PrintOrderItemChangeStateView,
     PrintOrderItemDatatableView,
     PrintOrderItemDetailView,
@@ -61,6 +65,26 @@ urlpatterns = [
         "print_order_items/change_state/<int:pk>/",
         PrintOrderItemChangeStateView.as_view(),
         name="print_order_items_change_state",
+    ),
+    path(
+        "print_order_items/change-state-form/",
+        PrintOrderItemChangeStateFormView.as_view(),
+        name="print_order_items_change_state_form",
+    ),
+    path(
+        "print_order_items/change-state-multiple/",
+        PrintOrderItemChangeStateMultipleView.as_view(),
+        name="print_order_items_change_state_multiple",
+    ),
+    path(
+        "print_order_items/change-color-form/",
+        PrintOrderItemChangeColorFormView.as_view(),
+        name="print_order_items_change_color_form",
+    ),
+    path(
+        "print_order_items/change-color-multiple/",
+        PrintOrderItemChangeColorMultipleView.as_view(),
+        name="print_order_items_change_color_multiple",
     ),
     path(
         "change-state/<int:pk>/",

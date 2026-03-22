@@ -15,6 +15,7 @@ from products.views import (
     ExtraProductCostUpdateView,
     ProductCreateView,
     ProductDatatableView,
+    ProductDeleteMultipleFormView,
     ProductDeleteMultipleView,
     ProductDeleteView,
     ProductImageCreateView,
@@ -34,6 +35,11 @@ urlpatterns = [
     path("delete/<int:pk>/", ProductDeleteView.as_view(), name="delete"),
     path(
         "delete-multiple/", ProductDeleteMultipleView.as_view(), name="delete_multiple"
+    ),
+    path(
+        "delete-multiple-form/",
+        ProductDeleteMultipleFormView.as_view(),
+        name="delete_multiple_form",
     ),
     path(
         "extra-costs/<int:pk>/", ExtraProductCostListView.as_view(), name="extra_costs"

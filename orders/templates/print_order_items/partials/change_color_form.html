@@ -1,0 +1,5 @@
+{% load crispy_forms_tags %}
+<form method="post" id="custom-table-action-form">
+    {% csrf_token %}
+    {% crispy form %}
+</form>

@@ -2,7 +2,7 @@
 
 {% block custom_list_card_buttons %}
     {% if perms.products.delete_product %}
-        <button type="button" class="btn btn-danger m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'products:delete_multiple' %}" data-text="¿Desea eliminar los productos seleccionados?" data-modal-type="danger">
+        <button type="button" class="btn btn-danger m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'products:delete_multiple' %}" data-form-url="{% url 'products:delete_multiple_form' %}" data-text="¿Desea eliminar los productos seleccionados?" data-modal-type="danger">
             <i class="fas fa-trash"></i> Eliminar
         </button>
     {% endif %}

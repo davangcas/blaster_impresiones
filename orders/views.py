@@ -3,8 +3,10 @@ import ast
 from django.contrib import messages
 from django.db.models import CharField, F, Sum, Value
 from django.db.models.functions import Concat
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views import View
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -24,6 +26,8 @@ from orders.forms import (
     OrderCreateEditForm,
     OrderItemCreateForm,
     OrderItemUpdateForm,
+    PrintOrderItemChangeColorForm,
+    PrintOrderItemChangeStateForm,
     PrintOrderItemUpdateForm,
 )
 from orders.models import Order, OrderItem, PrintOrderItem
@@ -347,6 +351,89 @@ class PrintOrderItemUpdateView(CustomAdminViewMixin, UpdateView):
         )
         context["active_section"] = "orders"
         return context
+
+
+class PrintOrderItemChangeStateFormView(CustomAdminViewMixin, TemplateView):
+    """Devuelve el fragmento del formulario para el modal de cambiar estado (GET)."""
+
+    template_name = "print_order_items/partials/change_state_form.html"
+    permission_required = "orders.change_printorderitem"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = PrintOrderItemChangeStateForm()
+        return context
+
+
+class PrintOrderItemChangeStateMultipleView(CustomAdminViewMixin, View):
+    """Actualiza el estado de las impresiones seleccionadas (POST)."""
+
+    permission_required = "orders.change_printorderitem"
+
+    def post(self, request, *args, **kwargs):
+        form = PrintOrderItemChangeStateForm(request.POST)
+        if not form.is_valid():
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Datos inválidos",
+                    "errors": form.errors,
+                },
+                status=400,
+            )
+        selected_ids = request.POST.getlist("selected_ids[]")
+        new_state = form.cleaned_data["state"]
+        updated = PrintOrderItem.objects.filter(pk__in=selected_ids).update(
+            state=new_state
+        )
+        return JsonResponse(
+            {
+                "success": True,
+                "message": f"Estado actualizado correctamente ({updated} impresión/es).",
+            }
+        )
+
+
+class PrintOrderItemChangeColorFormView(CustomAdminViewMixin, TemplateView):
+    """Devuelve el fragmento del formulario para el modal de especificar color (GET)."""
+
+    template_name = "print_order_items/partials/change_color_form.html"
+    permission_required = "orders.change_printorderitem"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = PrintOrderItemChangeColorForm()
+        return context
+
+
+class PrintOrderItemChangeColorMultipleView(CustomAdminViewMixin, View):
+    """Actualiza el color de las impresiones seleccionadas (POST). Solo aplica a items cuyo material coincide con el color elegido."""
+
+    permission_required = "orders.change_printorderitem"
+
+    def post(self, request, *args, **kwargs):
+        form = PrintOrderItemChangeColorForm(request.POST)
+        if not form.is_valid():
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Datos inválidos",
+                    "errors": form.errors,
+                },
+                status=400,
+            )
+        selected_ids = request.POST.getlist("selected_ids[]")
+        color = form.cleaned_data["color"]
+        # Solo actualizar items cuyo print tiene el mismo material que el color elegido
+        updated = PrintOrderItem.objects.filter(
+            pk__in=selected_ids, print__material=color.material
+        ).update(color=color)
+        return JsonResponse(
+            {
+                "success": True,
+                "message": f"Color aplicado correctamente a {updated} impresión/es.",
+            }
+        )
 
 
 class PrintOrderItemChangeStateView(RedirectView):

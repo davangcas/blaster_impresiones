@@ -4,26 +4,30 @@ from django.forms import DecimalField, IntegerField
 
 class CommonLayout(Layout):
     def __init__(self, *fields, **kwargs):
+        include_footer_buttons = kwargs.pop("include_footer_buttons", True)
         creation_layout = Div(
             Div(css_id="previous-form-content", css_class="row"),
             *fields,
             Div(css_id="next-form-content", css_class="row"),
             css_class="card-body",
         )
-        footer_div = Div(
-            Div(
+        if include_footer_buttons:
+            footer_div = Div(
                 Div(
-                    HTML(
-                        "<a class='btn btn-outline-secondary m-1' href='{{ cancel_url }}' id='cancel-button' >Cancelar</a>"
+                    Div(
+                        HTML(
+                            "<a class='btn btn-outline-secondary m-1' href='{{ cancel_url }}' id='cancel-button' >Cancelar</a>"
+                        ),
+                        Submit("submit", "Guardar", css_class="btn-primary m-1"),
+                        css_class="col-12 text-center",
                     ),
-                    Submit("submit", "Guardar", css_class="btn-primary m-1"),
-                    css_class="col-12 text-center",
+                    css_class="row",
                 ),
-                css_class="row",
-            ),
-            css_class="card-footer",
-        )
-        initial_fields = (creation_layout, footer_div)
+                css_class="card-footer",
+            )
+            initial_fields = (creation_layout, footer_div)
+        else:
+            initial_fields = (creation_layout,)
         self.fields = list(initial_fields)
 
 
