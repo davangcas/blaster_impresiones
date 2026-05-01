@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.db.models import CharField, F, Sum, Value
 from django.db.models.functions import Concat
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
@@ -31,6 +31,7 @@ from orders.forms import (
     PrintOrderItemChangeStateForm,
     PrintOrderItemUpdateForm,
 )
+from orders.choices import ORDER_ITEM_PRINT_EDIT_STATES
 from orders.models import Order, OrderItem, PrintOrderItem
 from orders.services import (
     get_order_buttons,
@@ -80,7 +81,8 @@ class OrderDatatableView(CustomDatatablesJsonMixin):
         if column == "state":
             return row.get_state_display_with_style()
         if column == "total":
-            return f"${row.total}"
+            total = row.total or 0
+            return f"${total}"
         if column == "actions":
             return get_order_buttons(row)
         return super().render_column(row, column)
@@ -284,6 +286,9 @@ class PrintOrderItemListView(CustomAdminViewMixin, DetailView):
         context["json_view_url"] = reverse_lazy(
             "orders:print_order_items_json", kwargs={"pk": self.kwargs.get("pk")}
         )
+        context["order_item_allows_print_edit"] = (
+            self.object.state in ORDER_ITEM_PRINT_EDIT_STATES
+        )
         return context
 
 
@@ -303,7 +308,10 @@ class PrintOrderItemDatatableView(CustomDatatablesJsonMixin):
 
     def get_initial_queryset(self):
         return (
-            super().get_initial_queryset().filter(order_item_id=self.kwargs.get("pk"))
+            super()
+            .get_initial_queryset()
+            .filter(order_item_id=self.kwargs.get("pk"))
+            .select_related("order_item")
         )
 
     def render_column(self, row, column):
@@ -323,6 +331,25 @@ class PrintOrderItemUpdateView(CustomAdminViewMixin, UpdateView):
     template_name = "print_order_items/update.html"
     form_class = PrintOrderItemUpdateForm
     permission_required = "orders.change_printorderitem"
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            obj = PrintOrderItem.objects.select_related("order_item").get(
+                pk=kwargs.get("pk")
+            )
+        except PrintOrderItem.DoesNotExist:
+            return super().dispatch(request, *args, **kwargs)
+        if obj.order_item.state not in ORDER_ITEM_PRINT_EDIT_STATES:
+            messages.error(
+                request,
+                "No se puede editar el color: el ítem de la orden no está pendiente ni en progreso.",
+            )
+            return HttpResponseRedirect(
+                reverse_lazy(
+                    "orders:print_order_items", kwargs={"pk": obj.order_item_id}
+                )
+            )
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         instance = self.get_object()
@@ -384,14 +411,23 @@ class PrintOrderItemChangeStateMultipleView(CustomAdminViewMixin, View):
             )
         selected_ids = request.POST.getlist("selected_ids[]")
         new_state = form.cleaned_data["state"]
-        # Importante: no usar QuerySet.update(): no dispara post_save y la señal
-        # update_print_order_item no sincroniza OrderItem ni Order en cascada.
         queryset = PrintOrderItem.objects.filter(pk__in=selected_ids).select_related(
             "order_item",
             "order_item__order",
             "color",
             "print",
         )
+        if any(
+            p.order_item.state not in ORDER_ITEM_PRINT_EDIT_STATES
+            for p in queryset
+        ):
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "No se puede modificar: el ítem de la orden no está pendiente ni en progreso.",
+                },
+                status=403,
+            )
         with transaction.atomic():
             updated = 0
             for print_order_item in queryset:
@@ -438,7 +474,9 @@ class PrintOrderItemChangeColorMultipleView(CustomAdminViewMixin, View):
         color = form.cleaned_data["color"]
         # Solo actualizar items cuyo print tiene el mismo material que el color elegido
         updated = PrintOrderItem.objects.filter(
-            pk__in=selected_ids, print__material=color.material
+            pk__in=selected_ids,
+            print__material=color.material,
+            order_item__state__in=ORDER_ITEM_PRINT_EDIT_STATES,
         ).update(color=color)
         return JsonResponse(
             {
@@ -450,12 +488,21 @@ class PrintOrderItemChangeColorMultipleView(CustomAdminViewMixin, View):
 
 class PrintOrderItemChangeStateView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        instance = PrintOrderItem.objects.get(id=kwargs.get("pk"))
+        instance = PrintOrderItem.objects.select_related("order_item").get(
+            id=kwargs.get("pk")
+        )
         next_step = ast.literal_eval(self.request.GET.get("next_step", "True"))
         state = instance.get_next_state()
         return_url = reverse_lazy(
             "orders:print_order_items", kwargs={"pk": instance.order_item_id}
         )
+
+        if instance.order_item.state not in ORDER_ITEM_PRINT_EDIT_STATES:
+            messages.error(
+                self.request,
+                "No se puede cambiar el estado: el ítem de la orden no está pendiente ni en progreso.",
+            )
+            return return_url
 
         if not instance.color:
             messages.error(self.request, "Primero debes seleccionar un color")

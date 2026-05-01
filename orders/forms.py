@@ -1,19 +1,17 @@
 from django import forms
 
 from core.forms import DefaultForm, DefaultModelForm
-from orders.choices import ORDER_STATE_CHOICES
+from orders.choices import PRINT_ORDER_ITEM_SELECTABLE_STATE_CHOICES
 from orders.models import Order, OrderItem, PrintOrderItem
 from prints.models import PrintMaterialColor
 
 
 class PrintOrderItemChangeStateForm(DefaultForm):
-    """Formulario para el modal de cambiar estado de varias impresiones."""
-
     include_footer_buttons = False
 
     state = forms.ChoiceField(
-        label="Nuevo estado",
-        choices=ORDER_STATE_CHOICES,
+        label="Estado",
+        choices=PRINT_ORDER_ITEM_SELECTABLE_STATE_CHOICES,
         widget=forms.Select(attrs={"class": "form-control"}),
     )
 
@@ -23,8 +21,6 @@ class PrintOrderItemChangeStateForm(DefaultForm):
 
 
 class PrintOrderItemChangeColorForm(DefaultForm):
-    """Formulario para el modal de especificar color en varias impresiones."""
-
     include_footer_buttons = False
 
     color = forms.ModelChoiceField(

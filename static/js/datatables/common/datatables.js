@@ -85,6 +85,15 @@ const CommonDataTable = (function () {
         const table_filters = {};
         const defaultColumnDefs = [];
 
+        function teardownCustomTableModal($modal) {
+            $("body").removeClass("modal-open");
+            $("body").css("padding-right", "");
+            $(".modal-backdrop").remove();
+            if ($modal && $modal.length) {
+                $modal.remove();
+            }
+        }
+
         if (settings.columnDefs) {
             settings.columnDefs = defaultColumnDefs.concat(settings.columnDefs);
         } else {
@@ -377,10 +386,16 @@ const CommonDataTable = (function () {
                             </div>
                         </div>
                     `;
+                    teardownCustomTableModal(
+                        $("#custom-table-action-modal")
+                    );
                     $("body").append(modalHtml);
-                    $("#custom-table-action-modal").modal("show");
+                    const $actionModal = $("#custom-table-action-modal");
+                    $actionModal.modal("show");
 
-                    const formContainer = $("#custom-table-action-form-container");
+                    const formContainer = $actionModal.find(
+                        "#custom-table-action-form-container"
+                    );
                     if (formUrl && formContainer.length) {
                         $.get(formUrl)
                             .done(function (formHtml) {
@@ -388,31 +403,21 @@ const CommonDataTable = (function () {
                             })
                             .fail(function () {
                                 toastr.error("Error al cargar el formulario");
-                                $("#custom-table-action-modal").modal("hide");
-                                $("#custom-table-action-modal").on(
-                                    "hidden.bs.modal",
-                                    function () {
-                                        $("#custom-table-action-modal").remove();
-                                    }
-                                );
+                                teardownCustomTableModal($actionModal);
                             });
                     }
 
-                    $("#cancel-custom-table-action-modal").on("click", function () {
-                        $("#custom-table-action-modal").modal("hide");
-                        $("#custom-table-action-modal").on(
-                            "hidden.bs.modal",
-                            function () {
-                                $("#custom-table-action-modal").remove();
-                            }
-                        );
-                    });
+                    $actionModal
+                        .find("#cancel-custom-table-action-modal")
+                        .on("click", function () {
+                            teardownCustomTableModal($actionModal);
+                        });
 
-                    $("#confirm-custom-table-action-modal").on(
-                        "click",
-                        function () {
+                    $actionModal
+                        .find("#confirm-custom-table-action-modal")
+                        .on("click", function () {
                             const confirmBtn = $(this);
-                            const modalForm = $("#custom-table-action-modal form");
+                            const modalForm = $actionModal.find("form");
                             let postData;
                             if (modalForm.length) {
                                 const formSerialized = modalForm.serialize();
@@ -428,7 +433,7 @@ const CommonDataTable = (function () {
                                 postData = basePayload;
                             }
 
-                            $("#custom-table-action-modal").modal("hide");
+                            $actionModal.modal("hide");
                             confirmBtn.prop("disabled", true);
                             confirmBtn.text("Procesando...");
 
@@ -437,12 +442,6 @@ const CommonDataTable = (function () {
                                 type: "POST",
                                 data: postData,
                                 success: function (response) {
-                                    $("#custom-table-action-modal").on(
-                                        "hidden.bs.modal",
-                                        function () {
-                                            $("#custom-table-action-modal").remove();
-                                        }
-                                    );
                                     tableCard.find(".custom-table-actions-button").hide();
                                     $(table_id).find("#select-all-items-checkbox").prop(
                                         "checked",
@@ -467,9 +466,11 @@ const CommonDataTable = (function () {
                                         "Ocurrió un error al realizar la acción"
                                     );
                                 },
+                                complete: function () {
+                                    teardownCustomTableModal($actionModal);
+                                },
                             });
-                        }
-                    );
+                        });
                 }
             });
         }

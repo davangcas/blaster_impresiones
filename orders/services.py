@@ -1,5 +1,7 @@
 from django.urls import reverse_lazy
 
+from orders.choices import ORDER_ITEM_PRINT_EDIT_STATES
+
 
 def get_order_state_button(order):
     state_options = {
@@ -107,7 +109,13 @@ def get_print_order_item_buttons(print_order_item):
         </a>
     """
 
-    if print_order_item.state not in ("delivered", "paid"):
+    order_item_state = print_order_item.order_item.state
+    parent_allows_edit = order_item_state in ORDER_ITEM_PRINT_EDIT_STATES
+
+    if (
+        parent_allows_edit
+        and print_order_item.state not in ("delivered", "paid")
+    ):
         change_state_foward_content = f"""
             <a href="{change_state_url}?next_step=True" class="btn btn-dark">
                 <i class="fas fa-step-forward"></i>

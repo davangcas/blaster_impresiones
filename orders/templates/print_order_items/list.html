@@ -1,7 +1,7 @@
 {% extends 'core/list.html' %}
 
 {% block custom_list_card_buttons %}
-    {% if perms.orders.change_printorderitem %}
+    {% if perms.orders.change_printorderitem and order_item_allows_print_edit %}
         <button type="button" class="btn btn-warning m-1 custom-table-actions-button" style="display: none;" data-url="{% url 'orders:print_order_items_change_state_multiple' %}" data-form-url="{% url 'orders:print_order_items_change_state_form' %}" data-text="Seleccione el nuevo estado para las impresiones elegidas." data-modal-type="warning">
             <i class="fas fa-exchange-alt"></i> Cambiar estado
         </button>
