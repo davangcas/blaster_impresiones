@@ -3,24 +3,19 @@ from django.dispatch import receiver
 
 from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
 from printrates.services import generate_print_rate
-from prints.models import Print
+from printrates.tasks import refresh_prints_after_print_rate_change
 
 
 @receiver(post_save, sender=PrintRate)
 def print_rate_post_save(sender, instance, **kwargs):
-    all_prints = Print.objects.all()
-
-    for print_instance in all_prints:
-        print_instance.save()
+    refresh_prints_after_print_rate_change.delay()
 
 
 @receiver(post_delete, sender=PrintRate)
 def print_rate_post_delete(sender, instance, **kwargs):
     # Singleton: si por error se elimina la instancia, recalculamos precios de prints
     # (get_singleton() creará una nueva instancia en la siguiente petición)
-    all_prints = Print.objects.all()
-    for print_instance in all_prints:
-        print_instance.save()
+    refresh_prints_after_print_rate_change.delay()
 
 
 @receiver(post_save, sender=PrintRateVariables)
