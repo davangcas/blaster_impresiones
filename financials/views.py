@@ -12,6 +12,7 @@ from core.services import get_select_checkbox
 from financials.choices import ACCOUNT_TYPES
 from financials.forms import TransactionCreateEditForm, TransactionCreateFromAccountForm
 from financials.models import Account, Transaction
+from financials.services import get_organization_account
 
 
 class AccountDetailView(CustomAdminViewMixin, TemplateView):
@@ -27,9 +28,7 @@ class AccountDetailView(CustomAdminViewMixin, TemplateView):
             name=self.request.user.username,
             account_type=ACCOUNT_TYPES[1][0],
         )[0]
-        context["organization_account"] = Account.objects.get_or_create(
-            user=None, name="blaster", account_type=ACCOUNT_TYPES[0][0]
-        )[0]
+        context["organization_account"] = get_organization_account()
         return context
 
 
@@ -43,7 +42,7 @@ class TransactionListView(CustomAdminViewMixin, TemplateView):
         context["title"] = "Transacciones"
         context["active_section"] = "transactions"
         context["create_url"] = reverse_lazy("financials:transactions_create")
-        context["account"] = Account.objects.get_or_create(user=None, name="blaster")[0]
+        context["account"] = get_organization_account()
         context["json_view_url"] = reverse_lazy("financials:transactions_json")
         return context
 

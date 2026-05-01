@@ -1,6 +1,7 @@
 import ast
 
 from django.contrib import messages
+from django.db import transaction
 from django.db.models import CharField, F, Sum, Value
 from django.db.models.functions import Concat
 from django.http import JsonResponse
@@ -383,9 +384,20 @@ class PrintOrderItemChangeStateMultipleView(CustomAdminViewMixin, View):
             )
         selected_ids = request.POST.getlist("selected_ids[]")
         new_state = form.cleaned_data["state"]
-        updated = PrintOrderItem.objects.filter(pk__in=selected_ids).update(
-            state=new_state
+        # Importante: no usar QuerySet.update(): no dispara post_save y la señal
+        # update_print_order_item no sincroniza OrderItem ni Order en cascada.
+        queryset = PrintOrderItem.objects.filter(pk__in=selected_ids).select_related(
+            "order_item",
+            "order_item__order",
+            "color",
+            "print",
         )
+        with transaction.atomic():
+            updated = 0
+            for print_order_item in queryset:
+                print_order_item.state = new_state
+                print_order_item.save(update_fields=["state"])
+                updated += 1
         return JsonResponse(
             {
                 "success": True,

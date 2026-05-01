@@ -6,10 +6,26 @@ from printrates.models import MonthlyCost
 from users.models import User
 
 
+def get_organization_account():
+    qs = Account.objects.filter(
+        user__isnull=True,
+        name="blaster",
+        account_type=ACCOUNT_TYPES[0][0],
+    ).order_by("pk")
+    account = qs.first()
+
+    if account is not None:
+        return account
+
+    return Account.objects.create(
+        user=None,
+        name="blaster",
+        account_type=ACCOUNT_TYPES[0][0],
+    )
+
+
 def distribute_payment(order_instance):
-    organization_account = Account.objects.get_or_create(
-        user=None, name="blaster", account_type=ACCOUNT_TYPES[0][0]
-    )[0]
+    organization_account = get_organization_account()
     sale_transaction = Transaction.objects.create(
         to_account=organization_account,
         amount=order_instance.get_total_cost(),

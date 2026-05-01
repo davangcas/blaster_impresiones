@@ -106,6 +106,18 @@ TIME_ZONE = "America/Argentina/La_Rioja"
 USE_I18N = True
 USE_TZ = True
 
+# Celery (namespace CELERY_* → celery.conf); Redis = servicio Docker "redis"
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND",
+    os.environ.get("CELERY_BROKER_URL", "redis://redis:6379/0"),
+)
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
