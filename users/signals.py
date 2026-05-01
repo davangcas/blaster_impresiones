@@ -1,8 +1,9 @@
 from django.db import transaction
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 
 from financials.models import ACCOUNT_TYPES, Account
+from printrates.services import generate_print_rate
 from users.models import Role, User
 
 
@@ -21,6 +22,21 @@ def user_post_save(sender, instance, created, **kwargs):
     if created or set(new_permissions) != set(current_permissions):
         instance.user_permissions.clear()
         instance.user_permissions.add(*instance.role.permissions.all())
+
+
+@receiver(post_save, sender=User)
+def user_recalculate_print_rate(sender, instance, **kwargs):
+    update_fields = kwargs.get("update_fields")
+    if update_fields is not None and not any(
+        f in update_fields for f in ("salary", "is_active")
+    ):
+        return
+    generate_print_rate()
+
+
+@receiver(post_delete, sender=User)
+def user_delete_recalculate_print_rate(sender, instance, **kwargs):
+    generate_print_rate()
 
 
 @receiver(m2m_changed, sender=Role.permissions.through)

@@ -4,36 +4,27 @@ from printrates.models import PrintRate, PrintRateVariables
 
 
 def calculate_print_price(print_instance):
-    current_price = 0
-    material_cost = print_instance.material.price / 1000
-    current_price += material_cost * print_instance.grams
-    print_rate_instance = PrintRate.get_singleton()
-    print_rate_variables = PrintRateVariables.get_singleton()
-    print_rate = print_rate_instance.rate
+    variables = PrintRateVariables.get_singleton()
+    rate_per_hour = PrintRate.get_singleton().rate
+    rate_per_minute = rate_per_hour / Decimal(60)
 
-    print_rate_in_minutes = print_rate / 60
-    print_time = (print_instance.hours * 60) + print_instance.minutes
-    current_price += print_time * Decimal(print_rate_in_minutes)
+    material_cost = (print_instance.material.price / Decimal(1000)) * Decimal(
+        print_instance.grams
+    )
+    print_minutes = Decimal((print_instance.hours * 60) + print_instance.minutes)
+    time_cost = print_minutes * rate_per_minute
+    operator_cost = Decimal(variables.minutes_spent_per_print) * rate_per_minute
 
-    current_price *= (
-        1
-        + Decimal(print_rate_variables.failure_percentage).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-        / 100
+    direct_cost = material_cost + time_cost + operator_cost + variables.maintenance_cost
+    cost_with_failures = direct_cost * (
+        Decimal(1) + Decimal(variables.failure_percentage) / Decimal(100)
     )
-    current_price *= (
-        1
-        + Decimal(print_rate_variables.extra_percentage).quantize(
-            Decimal("0.01"), rounding=ROUND_HALF_UP
-        )
-        / 100
+    total_cost = cost_with_failures * (
+        Decimal(1) + Decimal(variables.extra_percentage) / Decimal(100)
     )
-    current_price += print_rate_variables.maintenance_cost
-    current_price += (
-        print_rate_variables.minutes_spent_per_print * print_rate_in_minutes
+    final_price = total_cost * (
+        Decimal(1) + Decimal(variables.general_profit_margin) / Decimal(100)
     )
 
-    current_price = current_price.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-    current_price = round(current_price / 10) * 10
-    return current_price
+    final_price = final_price.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return Decimal(round(final_price / 10) * 10)

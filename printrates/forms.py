@@ -72,14 +72,25 @@ class PrintRateVariablesForm(DefaultModelForm):
         label="Porcentaje extra",
         required=True,
         initial=0,
-        help_text="Porcentaje extra para cubrir gastos",
+        help_text="Contingencia sobre el costo (antes del margen de ganancia)",
     )
-    available_printers = forms.IntegerField(
+    expected_daily_print_hours = forms.IntegerField(
         widget=forms.NumberInput(attrs={"class": "form-control"}),
-        label="Impresoras disponibles",
+        label="Horas de impresión esperadas por día",
         required=True,
-        initial=1,
-        help_text="Cantidad de impresoras disponibles",
+        initial=6,
+        min_value=1,
+        help_text=(
+            "Promedio diario de impresión. Se multiplica por 30 para repartir "
+            "costos mensuales y sueldos sobre cada hora de impresión."
+        ),
+    )
+    general_profit_margin = CustomPercentageField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+        label="Margen de ganancia general",
+        required=True,
+        initial=50,
+        help_text="Porcentaje de ganancia sobre el costo total de cada impresión",
     )
 
     class Meta:
@@ -89,5 +100,6 @@ class PrintRateVariablesForm(DefaultModelForm):
             "maintenance_cost",
             "minutes_spent_per_print",
             "extra_percentage",
-            "available_printers",
+            "expected_daily_print_hours",
+            "general_profit_margin",
         ]

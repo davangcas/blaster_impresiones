@@ -211,7 +211,8 @@ class PrintRateVariablesDatatableView(CustomDatatablesJsonMixin):
         "maintenance_cost",
         "minutes_spent_per_print",
         "extra_percentage",
-        "available_printers",
+        "expected_daily_print_hours",
+        "general_profit_margin",
         "actions",
     ]
 
@@ -225,6 +226,8 @@ class PrintRateVariablesDatatableView(CustomDatatablesJsonMixin):
             return f"{row.failure_percentage}%"
         if column == "extra_percentage":
             return f"{row.extra_percentage}%"
+        if column == "general_profit_margin":
+            return f"{row.general_profit_margin}%"
         if column == "maintenance_cost":
             return f"${row.maintenance_cost}"
         if column == "actions":

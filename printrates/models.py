@@ -50,7 +50,14 @@ class PrintRateVariables(models.Model):
     )
     minutes_spent_per_print = models.PositiveSmallIntegerField(default=0)
     extra_percentage = models.PositiveSmallIntegerField(default=0)
-    available_printers = models.PositiveSmallIntegerField(default=1)
+    expected_daily_print_hours = models.PositiveSmallIntegerField(
+        default=6,
+        help_text="Horas de impresión esperadas por día; se multiplican por 30 para repartir costos mensuales.",
+    )
+    general_profit_margin = models.PositiveSmallIntegerField(
+        default=50,
+        help_text="Margen de ganancia (%) sobre el costo total de cada impresión.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -70,7 +77,8 @@ class PrintRateVariables(models.Model):
                 "maintenance_cost": Decimal("0.00"),
                 "minutes_spent_per_print": 0,
                 "extra_percentage": 0,
-                "available_printers": 1,
+                "expected_daily_print_hours": 6,
+                "general_profit_margin": 50,
             },
         )
         return instance
