@@ -7,19 +7,9 @@ from django.core.validators import FileExtensionValidator
 
 from core.forms import DefaultForm
 from prints.models import PrintMaterial
+from slicer.choices import ALLOWED_MESH_EXTENSIONS
+from slicer.services import validate_mesh_file_size
 from slicer.slicer_api import fetch_slicer_machines
-
-_MESH_EXTENSIONS = ("stl", "obj")
-_MAX_MESH_BYTES = 50 * 1024 * 1024
-
-
-def _validate_mesh_file_size(uploaded):
-    size = getattr(uploaded, "size", None)
-    if size is not None and size > _MAX_MESH_BYTES:
-        raise forms.ValidationError(
-            "El archivo supera el tamaño máximo permitido (50 MB).",
-            code="mesh_too_large",
-        )
 
 
 class PrintEstimateForm(DefaultForm):
@@ -30,8 +20,8 @@ class PrintEstimateForm(DefaultForm):
         required=True,
         help_text="Archivo de malla para estimar tiempo y consumo de filamento.",
         validators=[
-            FileExtensionValidator(allowed_extensions=list(_MESH_EXTENSIONS)),
-            _validate_mesh_file_size,
+            FileExtensionValidator(allowed_extensions=list(ALLOWED_MESH_EXTENSIONS)),
+            validate_mesh_file_size,
         ],
         widget=forms.ClearableFileInput(
             attrs={"class": "form-control-file", "accept": ".stl,.obj,model/stl"}
@@ -98,7 +88,7 @@ class PrintEstimateForm(DefaultForm):
         uploaded = self.cleaned_data["source_file"]
         name = (getattr(uploaded, "name", "") or "").lower()
         ext = os.path.splitext(name)[1].lstrip(".")
-        if ext not in _MESH_EXTENSIONS:
+        if ext not in ALLOWED_MESH_EXTENSIONS:
             raise forms.ValidationError(
                 "Solo se admiten archivos con extensión .stl o .obj.",
                 code="invalid_mesh_ext",
