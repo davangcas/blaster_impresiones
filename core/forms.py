@@ -43,7 +43,9 @@ class DefaultForm(Form):
                 fields.append(field_name)
 
         self.helper.layout = CommonLayout(
-            include_footer_buttons=self.include_footer_buttons, *tuple(fields)
+            include_footer_buttons=self.include_footer_buttons,
+            submit_button_text=getattr(self, "submit_button_text", "Guardar"),
+            *tuple(fields),
         )
 
 

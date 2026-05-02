@@ -3,10 +3,9 @@ from django.forms import DecimalField, IntegerField
 
 
 class CommonLayout(Layout):
-    submit_button_text = "Guardar"
-
     def __init__(self, *fields, **kwargs):
         include_footer_buttons = kwargs.pop("include_footer_buttons", True)
+        submit_button_text = kwargs.pop("submit_button_text", "Guardar")
         creation_layout = Div(
             Div(css_id="previous-form-content", css_class="row"),
             *fields,
@@ -22,7 +21,7 @@ class CommonLayout(Layout):
                         ),
                         Submit(
                             "submit",
-                            self.submit_button_text,
+                            submit_button_text,
                             css_class="btn-primary m-1",
                         ),
                         css_class="col-12 text-center",
