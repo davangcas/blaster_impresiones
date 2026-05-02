@@ -18,6 +18,7 @@ LOCAL_APPS = [
     "core",
     "clients",
     "prints",
+    "slicer",
     "products",
     "dashboard",
     "landing",

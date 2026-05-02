@@ -15,8 +15,21 @@ class PrintModel(models.Model):
 
 
 class PrintMaterial(models.Model):
+    class SlicerFilament(models.TextChoices):
+        ABS = "ABS", "ABS"
+        ASA = "ASA", "ASA"
+        PETG = "PETG", "PETG"
+        PLA = "PLA", "PLA"
+        TPU = "TPU", "TPU"
+
     name = models.CharField(max_length=150)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    slicer_filament = models.CharField(
+        max_length=8,
+        choices=SlicerFilament.choices,
+        default=SlicerFilament.PLA,
+        help_text="Tipo de filamento reconocido por Cura en el servicio de estimación.",
+    )
 
     def __str__(self):
         return self.name

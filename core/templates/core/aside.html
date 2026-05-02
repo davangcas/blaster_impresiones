@@ -60,6 +60,14 @@
                         </ul>
                     </li>
                 {% endif %}
+                {% if perms.prints.view_printmaterial %}
+                    <li class="nav-item">
+                        <a href="{% url 'slicer:estimate' %}" class="nav-link" selection="print_estimate">
+                            <i class="nav-icon fas fa-calculator"></i>
+                            <p>Calcular impresión</p>
+                        </a>
+                    </li>
+                {% endif %}
                 {% if perms.orders.view_order %}
                     <li class="nav-item">
                         <a href="{% url 'orders:list' %}" class="nav-link" selection="orders">

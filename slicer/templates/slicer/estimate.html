@@ -1,0 +1,37 @@
+{% extends 'core/form.html' %}
+{% load crispy_forms_tags %}
+
+{% block form %}
+    {% if not slicer_configured %}
+        <div class="alert alert-warning" role="alert">
+            SLICER_HOST no está configurado: no se podrá estimar hasta definir la URL base del servicio slicer.
+        </div>
+    {% endif %}
+    {% crispy form %}
+{% endblock %}
+
+{% block next_content %}
+    {% if estimate_result %}
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Resultado de la estimación</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3">Tiempo estimado</dt>
+                            <dd class="col-sm-9">{{ estimate_result.hours }} h {{ estimate_result.minutes }} min</dd>
+                            <dt class="col-sm-3">Filamento (aprox.)</dt>
+                            <dd class="col-sm-9">{{ estimate_result.grams|floatformat:1 }} g</dd>
+                            <dt class="col-sm-3">Material</dt>
+                            <dd class="col-sm-9">{{ estimate_result.material_name }} ({{ estimate_result.slicer_filament }})</dd>
+                            <dt class="col-sm-3">Precio estimado</dt>
+                            <dd class="col-sm-9"><strong>${{ estimate_result.price|floatformat:2 }}</strong></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

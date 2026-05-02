@@ -3,6 +3,8 @@ from django.forms import DecimalField, IntegerField
 
 
 class CommonLayout(Layout):
+    submit_button_text = "Guardar"
+
     def __init__(self, *fields, **kwargs):
         include_footer_buttons = kwargs.pop("include_footer_buttons", True)
         creation_layout = Div(
@@ -18,7 +20,11 @@ class CommonLayout(Layout):
                         HTML(
                             "<a class='btn btn-outline-secondary m-1' href='{{ cancel_url }}' id='cancel-button' >Cancelar</a>"
                         ),
-                        Submit("submit", "Guardar", css_class="btn-primary m-1"),
+                        Submit(
+                            "submit",
+                            self.submit_button_text,
+                            css_class="btn-primary m-1",
+                        ),
                         css_class="col-12 text-center",
                     ),
                     css_class="row",

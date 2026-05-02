@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator
 from core.fields import CustomPercentageField, CustomPriceDecimalField
 from core.forms import DefaultModelForm
 from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
-from printrates.slicer_api import fetch_slicer_machines
+from slicer.slicer_api import fetch_slicer_machines
 
 
 class PrintRateForm(DefaultModelForm):

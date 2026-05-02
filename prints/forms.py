@@ -27,10 +27,17 @@ class PrintMaterialForm(DefaultModelForm):
         initial=0,
         help_text="Precio por kilogramo",
     )
+    slicer_filament = forms.ChoiceField(
+        choices=PrintMaterial.SlicerFilament.choices,
+        widget=forms.Select(attrs={"class": "form-control"}),
+        label="Tipo filamento",
+        required=True,
+        help_text="Valor enviado al servicio slicer al estimar (ABS, ASA, PETG, PLA, TPU).",
+    )
 
     class Meta:
         model = PrintMaterial
-        fields = "__all__"
+        fields = ["name", "price", "slicer_filament"]
 
 
 class PrintUpdateForm(DefaultModelForm):
