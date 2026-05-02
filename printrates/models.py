@@ -74,6 +74,12 @@ class PrintRateVariables(models.Model):
             "(precio - costo) / precio. Valores entre 0 y 99."
         ),
     )
+    default_machine = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text=("ID de máquina Cura devuelto por GET /machines del servicio slicer"),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -95,6 +101,7 @@ class PrintRateVariables(models.Model):
                 "extra_percentage": 0,
                 "expected_daily_print_hours": 6,
                 "general_profit_margin": 33,
+                "default_machine": "",
             },
         )
         return instance

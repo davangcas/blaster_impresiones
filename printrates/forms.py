@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator
 from core.fields import CustomPercentageField, CustomPriceDecimalField
 from core.forms import DefaultModelForm
 from printrates.models import MonthlyCost, PrintRate, PrintRateVariables
+from printrates.slicer_api import fetch_slicer_machines
 
 
 class PrintRateForm(DefaultModelForm):
@@ -108,6 +109,17 @@ class PrintRateVariablesForm(DefaultModelForm):
             "(precio - costo) / precio. Máximo 99 %."
         ),
     )
+    default_machine = forms.ChoiceField(
+        widget=forms.Select(
+            attrs={
+                "class": "select2bs4 select2-hidden-accessible",
+                "style": "width: 100%;",
+            }
+        ),
+        label="Máquina por defecto",
+        required=False,
+        help_text="Máquina por defecto para estimaciones.",
+    )
 
     class Meta:
         model = PrintRateVariables
@@ -118,4 +130,24 @@ class PrintRateVariablesForm(DefaultModelForm):
             "extra_percentage",
             "expected_daily_print_hours",
             "general_profit_margin",
+            "default_machine",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        machines = fetch_slicer_machines()
+        choices = [(m["id"], m["name"]) for m in machines]
+        current = ""
+
+        if self.instance and getattr(self.instance, "pk", None):
+            current = (self.instance.default_machine or "").strip()
+        elif self.initial.get("default_machine") is not None:
+            current = str(self.initial.get("default_machine") or "").strip()
+
+        if current and all(c[0] != current for c in choices):
+            choices.insert(0, (current, f"{current} (guardado)"))
+
+        self.fields["default_machine"].choices = [
+            ("", "— Sin máquina por defecto —"),
+            *choices,
         ]

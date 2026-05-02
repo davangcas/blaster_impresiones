@@ -139,3 +139,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.blasterimpresiones.com",
     "https://blasterimpresiones.com",
 ]
+
+SLICER_HOST = os.environ.get("SLICER_HOST", "").strip()
+SLICER_OAUTH_CLIENT_ID = os.environ.get("SLICER_OAUTH_CLIENT_ID", "").strip()
+SLICER_OAUTH_CLIENT_SECRET = os.environ.get("SLICER_OAUTH_CLIENT_SECRET", "").strip()
