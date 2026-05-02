@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import MaxValueValidator
 
 from core.fields import CustomPercentageField, CustomPriceDecimalField
 from core.forms import DefaultModelForm
@@ -29,7 +30,11 @@ class MonthlyCostForm(DefaultModelForm):
         max_digits=15,
         decimal_places=2,
         initial=0,
-        help_text="Monto mensual a pagar",
+        help_text=(
+            "Gastos fijos mensuales (alquiler, luz, software, mantenimiento "
+            "contratado a plazo fijo, etc.). No duplicar aquí costos que ya cargues "
+            "por impresión en las variables de precio."
+        ),
     )
 
     class Meta:
@@ -58,14 +63,21 @@ class PrintRateVariablesForm(DefaultModelForm):
         max_digits=15,
         decimal_places=2,
         initial=0,
-        help_text="Costo de mantenimiento de impresora",
+        help_text=(
+            "Costo fijo por pieza no incluido en costos mensuales (consumibles "
+            "puntuales, etc.); si el mantenimiento ya está en costos mensuales, dejar "
+            "en 0 para no duplicar."
+        ),
     )
     minutes_spent_per_print = forms.DecimalField(
         widget=forms.NumberInput(attrs={"class": "form-control"}),
         label="Minutos por impresión",
         required=True,
         initial=0,
-        help_text="Minutos promedio por impresión para mantenimiento de impresora",
+        help_text=(
+            "Minutos de operación por pieza a la misma tarifa horaria; usar solo "
+            "tiempo adicional no ya cubierto por los salarios que alimentan esa tarifa."
+        ),
     )
     extra_percentage = CustomPercentageField(
         widget=forms.NumberInput(attrs={"class": "form-control"}),
@@ -87,10 +99,14 @@ class PrintRateVariablesForm(DefaultModelForm):
     )
     general_profit_margin = CustomPercentageField(
         widget=forms.NumberInput(attrs={"class": "form-control"}),
-        label="Margen de ganancia general",
+        label="Margen bruto sobre venta",
         required=True,
-        initial=50,
-        help_text="Porcentaje de ganancia sobre el costo total de cada impresión",
+        initial=33,
+        validators=[MaxValueValidator(99)],
+        help_text=(
+            "Porcentaje del precio final que representa margen bruto: "
+            "(precio - costo) / precio. Máximo 99 %."
+        ),
     )
 
     class Meta:

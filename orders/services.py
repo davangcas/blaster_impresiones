@@ -112,10 +112,7 @@ def get_print_order_item_buttons(print_order_item):
     order_item_state = print_order_item.order_item.state
     parent_allows_edit = order_item_state in ORDER_ITEM_PRINT_EDIT_STATES
 
-    if (
-        parent_allows_edit
-        and print_order_item.state not in ("delivered", "paid")
-    ):
+    if parent_allows_edit and print_order_item.state not in ("delivered", "paid"):
         change_state_foward_content = f"""
             <a href="{change_state_url}?next_step=True" class="btn btn-dark">
                 <i class="fas fa-step-forward"></i>

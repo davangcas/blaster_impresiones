@@ -22,9 +22,13 @@ def calculate_print_price(print_instance):
     total_cost = cost_with_failures * (
         Decimal(1) + Decimal(variables.extra_percentage) / Decimal(100)
     )
-    final_price = total_cost * (
-        Decimal(1) + Decimal(variables.general_profit_margin) / Decimal(100)
-    )
+
+    margin_on_sales = Decimal(variables.general_profit_margin) / Decimal(100)
+    if margin_on_sales <= 0:
+        final_price = total_cost
+    else:
+        margin_on_sales = min(margin_on_sales, Decimal("0.99"))
+        final_price = total_cost / (Decimal(1) - margin_on_sales)
 
     final_price = final_price.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     return Decimal(round(final_price / 10) * 10)

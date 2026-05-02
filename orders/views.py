@@ -23,6 +23,7 @@ from core.mixins import (
     DeleteMultipleObjectsMixin,
 )
 from core.services import get_select_checkbox
+from orders.choices import ORDER_ITEM_PRINT_EDIT_STATES
 from orders.forms import (
     OrderCreateEditForm,
     OrderItemCreateForm,
@@ -31,7 +32,6 @@ from orders.forms import (
     PrintOrderItemChangeStateForm,
     PrintOrderItemUpdateForm,
 )
-from orders.choices import ORDER_ITEM_PRINT_EDIT_STATES
 from orders.models import Order, OrderItem, PrintOrderItem
 from orders.services import (
     get_order_buttons,
@@ -418,8 +418,7 @@ class PrintOrderItemChangeStateMultipleView(CustomAdminViewMixin, View):
             "print",
         )
         if any(
-            p.order_item.state not in ORDER_ITEM_PRINT_EDIT_STATES
-            for p in queryset
+            p.order_item.state not in ORDER_ITEM_PRINT_EDIT_STATES for p in queryset
         ):
             return JsonResponse(
                 {

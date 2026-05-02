@@ -227,7 +227,7 @@ class PrintRateVariablesDatatableView(CustomDatatablesJsonMixin):
         if column == "extra_percentage":
             return f"{row.extra_percentage}%"
         if column == "general_profit_margin":
-            return f"{row.general_profit_margin}%"
+            return f"{row.general_profit_margin}% s/venta"
         if column == "maintenance_cost":
             return f"${row.maintenance_cost}"
         if column == "actions":
