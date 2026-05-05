@@ -2,6 +2,8 @@ import os
 from types import SimpleNamespace
 
 from django.conf import settings
+from django.contrib import messages
+from django.urls import reverse
 from django.views.generic import FormView
 
 from core.mixins import CustomAdminViewMixin
@@ -30,6 +32,7 @@ class PrintEstimateView(CustomAdminViewMixin, FormView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Calcular impresión"
         context["active_section"] = "print_estimate"
+        context["cancel_url"] = reverse("dashboard:index")
         context["slicer_configured"] = bool(
             (getattr(settings, "SLICER_HOST", None) or "").strip()
         )
@@ -101,6 +104,11 @@ class PrintEstimateView(CustomAdminViewMixin, FormView):
                 "slicer_filament": material_obj.get_slicer_filament_display(),
                 "from_api": False,
             }
+
+        messages.success(
+            self.request,
+            "Cálculo listo. Revisá tiempo, consumo y precio estimado abajo.",
+        )
 
         fresh_form = self.get_form_class()(initial=self.get_initial())
         context = self.get_context_data(

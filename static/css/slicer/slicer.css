@@ -1,0 +1,42 @@
+/* Página Calcular impresión (estimate) */
+
+.estimate-card-intro {
+    margin-top: -0.25rem;
+}
+
+#estimate-result {
+    scroll-margin-top: 5.5rem;
+}
+
+.estimate-price-box {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 105, 217, 0.15);
+}
+
+.estimate-stat {
+    padding: 0.75rem 1rem;
+    border-radius: 0.35rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    height: 100%;
+}
+
+.estimate-stat .estimate-stat-value {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #343a40;
+}
+
+.estimate-stat .estimate-stat-value--material {
+    font-size: 1.05rem;
+}
+
+.estimate-stat .estimate-stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6c757d;
+    margin-bottom: 0.35rem;
+}

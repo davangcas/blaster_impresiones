@@ -1,11 +1,45 @@
 {% extends 'core/form.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/slicer/slicer.css' %}">
+{% endblock %}
+
+{% block card_intro %}
+    <div class="estimate-card-intro border-bottom pb-3 mb-3">
+        <p class="text-muted mb-3 mb-md-2">
+            Obtené un <strong>precio orientativo</strong> según la tarifa configurada y las variables de negocio.
+            Si subís un modelo, el tiempo y los gramos salen del servicio slicer (cuando esté disponible).
+        </p>
+        <div class="estimate-intro alert alert-light border mb-0" role="note">
+            <i class="fas fa-lightbulb text-warning mr-2"></i>
+            <strong>Dos formas de trabajar:</strong> subí un <strong>STL/OBJ</strong> para que el servicio calcule tiempo y gramos,
+            o <strong>sin archivo</strong> completá tiempo y gramos vos mismo. Siempre elegí el <strong>material</strong> del catálogo para el precio.
+        </div>
+    </div>
+{% endblock %}
+
+{% block modal_info %}
+    {% if slicer_configured %}
+        <span class="badge badge-success" title="Variable SLICER_HOST definida">
+            <i class="fas fa-link"></i> Slicer
+        </span>
+    {% else %}
+        <span class="badge badge-warning" title="Solo cálculo manual o revisá la configuración">
+            <i class="fas fa-exclamation-triangle"></i> Sin slicer
+        </span>
+    {% endif %}
+{% endblock %}
 
 {% block form %}
     {% if not slicer_configured %}
-        <div class="alert alert-warning" role="alert">
-            Sin <code>SLICER_HOST</code> no se puede enviar un modelo al servicio de estimación.
-            Podés igualmente calcular el precio completando material y los campos horas, minutos y gramos sin subir archivo.
+        <div class="alert alert-info border-0 shadow-sm" role="status">
+            <h6 class="alert-heading"><i class="fas fa-info-circle"></i> Servicio no enlazado</h6>
+            <p class="mb-0 small">
+                No hay <code>SLICER_HOST</code> configurado: no se puede enviar un archivo al servicio.
+                Podés usar la <strong>sección 2</strong> del formulario (horas, minutos, gramos) y el <strong>material</strong> para calcular igual.
+            </p>
         </div>
     {% endif %}
     {% crispy form %}
@@ -13,31 +47,64 @@
 
 {% block next_content %}
     {% if estimate_result %}
-        <div class="row mt-3">
+        <div class="row mt-2" id="estimate-result">
             <div class="col-12">
-                <div class="card card-success">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Resultado de la estimación</h5>
+                <div class="card card-success card-outline shadow">
+                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-check-circle text-success mr-1"></i> Resultado
+                        </h5>
+                        {% if estimate_result.from_api %}
+                            <span class="badge badge-info mt-1 mt-sm-0">
+                                <i class="fas fa-cloud"></i> Estimación vía slicer
+                            </span>
+                        {% else %}
+                            <span class="badge badge-secondary mt-1 mt-sm-0">
+                                <i class="fas fa-keyboard"></i> Datos ingresados a mano
+                            </span>
+                        {% endif %}
                     </div>
                     <div class="card-body">
-                        {% if estimate_result.from_api %}
-                            <p class="text-muted small mb-3">Estimación obtenida del servicio slicer (modelo cargado).</p>
-                        {% else %}
-                            <p class="text-muted small mb-3">Cálculo con tiempo y gramos ingresados manualmente (sin llamar al servicio).</p>
-                        {% endif %}
-                        <dl class="row mb-0">
-                            <dt class="col-sm-3">Tiempo estimado</dt>
-                            <dd class="col-sm-9">{{ estimate_result.hours }} h {{ estimate_result.minutes }} min</dd>
-                            <dt class="col-sm-3">Filamento (aprox.)</dt>
-                            <dd class="col-sm-9">{{ estimate_result.grams|floatformat:1 }} g</dd>
-                            <dt class="col-sm-3">Material</dt>
-                            <dd class="col-sm-9">{{ estimate_result.material_name }} ({{ estimate_result.slicer_filament }})</dd>
-                            <dt class="col-sm-3">Precio estimado</dt>
-                            <dd class="col-sm-9"><strong>${{ estimate_result.price|floatformat:2 }}</strong></dd>
-                        </dl>
+                        <div class="row align-items-stretch mb-4">
+                            <div class="col-sm-4 mb-3 mb-sm-0">
+                                <div class="estimate-stat text-center text-sm-left">
+                                    <div class="estimate-stat-label">Tiempo</div>
+                                    <div class="estimate-stat-value">
+                                        {{ estimate_result.hours }}<span class="text-muted font-weight-normal">h</span>
+                                        {{ estimate_result.minutes }}<span class="text-muted font-weight-normal">min</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 mb-3 mb-sm-0">
+                                <div class="estimate-stat text-center text-sm-left">
+                                    <div class="estimate-stat-label">Filamento (aprox.)</div>
+                                    <div class="estimate-stat-value">{{ estimate_result.grams|floatformat:1 }} <span class="text-muted font-weight-normal small">g</span></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="estimate-stat text-center text-sm-left">
+                                    <div class="estimate-stat-label">Material</div>
+                                    <div class="estimate-stat-value estimate-stat-value--material">
+                                        {{ estimate_result.material_name }}
+                                        <span class="text-muted font-weight-normal small d-block">{{ estimate_result.slicer_filament }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="estimate-price-box p-4 text-center">
+                            <div class="text-muted small text-uppercase mb-1">Precio estimado de venta</div>
+                            <div class="display-4 text-primary font-weight-bold mb-0">
+                                ${{ estimate_result.price|floatformat:2 }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'js/slicer/slicer.js' %}"></script>
 {% endblock %}

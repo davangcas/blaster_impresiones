@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import os
 
+from crispy_forms.layout import HTML, Column, Div, Field, Row
 from django import forms
 from django.core.validators import FileExtensionValidator
 
+from core.fields import CommonLayout
 from core.forms import DefaultForm
 from prints.models import PrintMaterial
 from slicer.choices import ALLOWED_MESH_EXTENSIONS
@@ -16,12 +18,9 @@ class PrintEstimateForm(DefaultForm):
     submit_button_text = "Calcular"
 
     source_file = forms.FileField(
-        label="Modelo",
+        label="Archivo del modelo",
         required=False,
-        help_text=(
-            "Archivo STL u OBJ: se envía al servicio slicer para estimar tiempo y gramos. "
-            "Si no subís archivo, completá horas, minutos y gramos abajo."
-        ),
+        help_text="STL u OBJ. Si lo dejás vacío, usá la sección manual más abajo.",
         validators=[
             FileExtensionValidator(allowed_extensions=list(ALLOWED_MESH_EXTENSIONS)),
             validate_mesh_file_size,
@@ -32,9 +31,9 @@ class PrintEstimateForm(DefaultForm):
     )
     material = forms.ModelChoiceField(
         queryset=PrintMaterial.objects.all().order_by("name"),
-        label="Material",
+        label="Material del catálogo",
         required=True,
-        help_text="Material del catálogo (precio por kg y tipo Cura para el slicer).",
+        help_text="Precio por kg y tipo de filamento para el slicer y el cálculo.",
         widget=forms.Select(
             attrs={
                 "class": "select2bs4 select2-hidden-accessible",
@@ -46,7 +45,7 @@ class PrintEstimateForm(DefaultForm):
         label="Máquina",
         required=False,
         choices=[],
-        help_text="Perfil de impresora (GET /machines). Opcional; vacío usa la máquina por defecto del servicio.",
+        help_text="Lista del servicio slicer. Vacío = usa la máquina por defecto del servidor.",
         widget=forms.Select(
             attrs={
                 "class": "select2bs4 select2-hidden-accessible",
@@ -60,14 +59,14 @@ class PrintEstimateForm(DefaultForm):
         max_value=500,
         initial=40,
         required=False,
-        help_text="Velocidad en mm/s enviada al endpoint de estimación cuando hay modelo (por defecto 40).",
+        help_text="mm/s enviados al slicer junto con el archivo (por defecto 40).",
         widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
     hours = forms.IntegerField(
         label="Horas",
         required=False,
         min_value=0,
-        help_text="Solo si no subís modelo: tiempo de impresión manual.",
+        help_text="Solo sin archivo.",
         widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
     minutes = forms.IntegerField(
@@ -75,7 +74,7 @@ class PrintEstimateForm(DefaultForm):
         required=False,
         min_value=0,
         max_value=59,
-        help_text="Solo si no subís modelo; entre 0 y 59.",
+        help_text="0–59. Solo sin archivo.",
         widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
     grams = forms.DecimalField(
@@ -84,7 +83,7 @@ class PrintEstimateForm(DefaultForm):
         min_value=0,
         max_digits=10,
         decimal_places=2,
-        help_text="Solo si no subís modelo: filamento estimado en gramos.",
+        help_text="Filamento estimado. Solo sin archivo.",
         widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
 
@@ -111,6 +110,45 @@ class PrintEstimateForm(DefaultForm):
                 ("", "— Sin máquina específica (usa la del servicio) —"),
                 *choices,
             ]
+
+        self.helper.form_id = "print-estimate-form"
+        self.helper.layout = CommonLayout(
+            Div(
+                HTML(
+                    '<div class="col-12 mb-3">'
+                    '<span class="badge badge-primary badge-pill mr-2">1</span>'
+                    '<span class="font-weight-bold text-dark">Archivo y parámetros del slicer</span>'
+                    '<small class="d-block text-muted mt-2 ml-1">Si subís modelo, también podés ajustar máquina y velocidad.</small>'
+                    "</div>"
+                ),
+                Row(
+                    Column(Field("source_file"), css_class="col-lg-6"),
+                    Column(Field("material"), css_class="col-lg-6"),
+                ),
+                Row(
+                    Column(Field("machine"), css_class="col-lg-6"),
+                    Column(Field("speed"), css_class="col-lg-6"),
+                ),
+                css_class="row estimate-panel bg-light rounded-lg border p-3 p-lg-4 mb-4 shadow-sm",
+            ),
+            Div(
+                HTML(
+                    '<div class="col-12 mb-3">'
+                    '<span class="badge badge-secondary badge-pill mr-2">2</span>'
+                    '<span class="font-weight-bold text-dark">Sin archivo: tiempo y filamento manual</span>'
+                    '<small class="d-block text-muted mt-2 ml-1">Completá los tres valores solo cuando no subas STL/OBJ.</small>'
+                    "</div>"
+                ),
+                Row(
+                    Column(Field("hours"), css_class="col-md-4"),
+                    Column(Field("minutes"), css_class="col-md-4"),
+                    Column(Field("grams"), css_class="col-md-4"),
+                ),
+                css_class="row estimate-panel rounded-lg border p-3 p-lg-4 mb-2 shadow-sm",
+            ),
+            include_footer_buttons=self.include_footer_buttons,
+            submit_button_text=self.submit_button_text,
+        )
 
     def clean_machine(self):
         value = (self.cleaned_data.get("machine") or "").strip()
