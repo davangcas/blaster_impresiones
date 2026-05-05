@@ -23,6 +23,7 @@ class PrintEstimateView(CustomAdminViewMixin, FormView):
         ).strip()
         if default_machine:
             initial["machine"] = default_machine
+        initial.setdefault("speed", 40)
         return initial
 
     def get_context_data(self, **kwargs):
@@ -36,38 +37,39 @@ class PrintEstimateView(CustomAdminViewMixin, FormView):
         return context
 
     def form_valid(self, form):
-        uploaded = form.cleaned_data["source_file"]
-        try:
-            uploaded.seek(0)
-        except OSError:
-            pass
-
         material_obj = form.cleaned_data["material"]
-        machine = (form.cleaned_data.get("machine") or "").strip()
+        uploaded = form.cleaned_data.get("source_file")
+        speed = form.cleaned_data.get("speed")
+        if speed is None:
+            speed = 40
 
-        data, err = post_slicer_estimate(
-            file_obj=uploaded,
-            filename=os.path.basename(uploaded.name or "model.stl"),
-            slicer_material=material_obj.slicer_filament,
-            machine_id=machine or None,
-        )
-        if err:
-            form.add_error(None, err)
-            return self.form_invalid(form)
+        if uploaded:
+            try:
+                uploaded.seek(0)
+            except OSError:
+                pass
 
-        grams_int = int(round(float(data["grams"])))
-        pseudo = SimpleNamespace(
-            material=material_obj,
-            hours=int(data["hours"]),
-            minutes=int(data["minutes"]),
-            grams=grams_int,
-        )
-        price = calculate_print_price(pseudo)
+            machine = (form.cleaned_data.get("machine") or "").strip()
+            data, err = post_slicer_estimate(
+                file_obj=uploaded,
+                filename=os.path.basename(uploaded.name or "model.stl"),
+                slicer_material=material_obj.slicer_filament,
+                machine_id=machine or None,
+                speed=speed,
+            )
+            if err:
+                form.add_error(None, err)
+                return self.form_invalid(form)
 
-        fresh_form = self.get_form_class()(initial=self.get_initial())
-        context = self.get_context_data(
-            form=fresh_form,
-            estimate_result={
+            grams_int = int(round(float(data["grams"])))
+            pseudo = SimpleNamespace(
+                material=material_obj,
+                hours=int(data["hours"]),
+                minutes=int(data["minutes"]),
+                grams=grams_int,
+            )
+            price = calculate_print_price(pseudo)
+            estimate_result = {
                 "hours": int(data["hours"]),
                 "minutes": int(data["minutes"]),
                 "grams": data["grams"],
@@ -75,6 +77,34 @@ class PrintEstimateView(CustomAdminViewMixin, FormView):
                 "price": price,
                 "material_name": material_obj.name,
                 "slicer_filament": material_obj.get_slicer_filament_display(),
-            },
+                "from_api": True,
+            }
+        else:
+            hours = int(form.cleaned_data["hours"])
+            minutes = int(form.cleaned_data["minutes"])
+            grams_value = form.cleaned_data["grams"]
+            grams_int = int(round(float(grams_value)))
+            pseudo = SimpleNamespace(
+                material=material_obj,
+                hours=hours,
+                minutes=minutes,
+                grams=grams_int,
+            )
+            price = calculate_print_price(pseudo)
+            estimate_result = {
+                "hours": hours,
+                "minutes": minutes,
+                "grams": float(grams_value),
+                "grams_int": grams_int,
+                "price": price,
+                "material_name": material_obj.name,
+                "slicer_filament": material_obj.get_slicer_filament_display(),
+                "from_api": False,
+            }
+
+        fresh_form = self.get_form_class()(initial=self.get_initial())
+        context = self.get_context_data(
+            form=fresh_form,
+            estimate_result=estimate_result,
         )
         return self.render_to_response(context)

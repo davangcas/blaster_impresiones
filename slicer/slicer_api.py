@@ -155,6 +155,7 @@ def post_slicer_estimate(
     filename: str,
     slicer_material: str,
     machine_id: str | None,
+    speed: int = 40,
 ) -> tuple[dict[str, int | float] | None, str | None]:
     """
     POST /estimate (multipart). Devuelve ({"hours", "minutes", "grams"}, None) si OK,
@@ -165,7 +166,10 @@ def post_slicer_estimate(
         return None, "SLICER_HOST no está configurado."
 
     url_path = "/estimate"
-    payload: dict[str, str] = {"material": slicer_material}
+    payload: dict[str, str] = {
+        "material": slicer_material,
+        "speed": str(int(speed)),
+    }
     if machine_id and str(machine_id).strip():
         payload["machine"] = str(machine_id).strip()
 

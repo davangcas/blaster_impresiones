@@ -4,7 +4,8 @@
 {% block form %}
     {% if not slicer_configured %}
         <div class="alert alert-warning" role="alert">
-            SLICER_HOST no está configurado: no se podrá estimar hasta definir la URL base del servicio slicer.
+            Sin <code>SLICER_HOST</code> no se puede enviar un modelo al servicio de estimación.
+            Podés igualmente calcular el precio completando material y los campos horas, minutos y gramos sin subir archivo.
         </div>
     {% endif %}
     {% crispy form %}
@@ -19,6 +20,11 @@
                         <h5 class="card-title mb-0">Resultado de la estimación</h5>
                     </div>
                     <div class="card-body">
+                        {% if estimate_result.from_api %}
+                            <p class="text-muted small mb-3">Estimación obtenida del servicio slicer (modelo cargado).</p>
+                        {% else %}
+                            <p class="text-muted small mb-3">Cálculo con tiempo y gramos ingresados manualmente (sin llamar al servicio).</p>
+                        {% endif %}
                         <dl class="row mb-0">
                             <dt class="col-sm-3">Tiempo estimado</dt>
                             <dd class="col-sm-9">{{ estimate_result.hours }} h {{ estimate_result.minutes }} min</dd>

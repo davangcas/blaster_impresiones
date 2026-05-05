@@ -17,8 +17,11 @@ class PrintEstimateForm(DefaultForm):
 
     source_file = forms.FileField(
         label="Modelo",
-        required=True,
-        help_text="Archivo de malla para estimar tiempo y consumo de filamento.",
+        required=False,
+        help_text=(
+            "Archivo STL u OBJ: se envía al servicio slicer para estimar tiempo y gramos. "
+            "Si no subís archivo, completá horas, minutos y gramos abajo."
+        ),
         validators=[
             FileExtensionValidator(allowed_extensions=list(ALLOWED_MESH_EXTENSIONS)),
             validate_mesh_file_size,
@@ -50,6 +53,39 @@ class PrintEstimateForm(DefaultForm):
                 "style": "width: 100%;",
             }
         ),
+    )
+    speed = forms.IntegerField(
+        label="Velocidad de impresión",
+        min_value=1,
+        max_value=500,
+        initial=40,
+        required=False,
+        help_text="Velocidad en mm/s enviada al endpoint de estimación cuando hay modelo (por defecto 40).",
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+    )
+    hours = forms.IntegerField(
+        label="Horas",
+        required=False,
+        min_value=0,
+        help_text="Solo si no subís modelo: tiempo de impresión manual.",
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+    )
+    minutes = forms.IntegerField(
+        label="Minutos",
+        required=False,
+        min_value=0,
+        max_value=59,
+        help_text="Solo si no subís modelo; entre 0 y 59.",
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
+    )
+    grams = forms.DecimalField(
+        label="Gramos",
+        required=False,
+        min_value=0,
+        max_digits=10,
+        decimal_places=2,
+        help_text="Solo si no subís modelo: filamento estimado en gramos.",
+        widget=forms.NumberInput(attrs={"class": "form-control"}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -85,7 +121,9 @@ class PrintEstimateForm(DefaultForm):
         return value
 
     def clean_source_file(self):
-        uploaded = self.cleaned_data["source_file"]
+        uploaded = self.cleaned_data.get("source_file")
+        if not uploaded:
+            return None
         name = (getattr(uploaded, "name", "") or "").lower()
         ext = os.path.splitext(name)[1].lstrip(".")
         if ext not in ALLOWED_MESH_EXTENSIONS:
@@ -94,3 +132,47 @@ class PrintEstimateForm(DefaultForm):
                 code="invalid_mesh_ext",
             )
         return uploaded
+
+    def clean_speed(self):
+        value = self.cleaned_data.get("speed")
+        if value is None:
+            return 40
+        return int(value)
+
+    def clean(self):
+        cleaned = super().clean()
+
+        has_file = bool(cleaned.get("source_file"))
+        hours = cleaned.get("hours")
+        minutes = cleaned.get("minutes")
+        grams = cleaned.get("grams")
+
+        if has_file:
+            return cleaned
+
+        if hours is None:
+            self.add_error(
+                "hours",
+                "Indicá las horas o subí un modelo STL/OBJ.",
+            )
+        if minutes is None:
+            self.add_error(
+                "minutes",
+                "Indicá los minutos o subí un modelo STL/OBJ.",
+            )
+        if grams is None:
+            self.add_error(
+                "grams",
+                "Indicá los gramos o subí un modelo STL/OBJ.",
+            )
+
+        if self.errors:
+            return cleaned
+
+        if grams is not None and grams <= 0:
+            self.add_error(
+                "grams",
+                "Los gramos deben ser mayores que cero.",
+            )
+
+        return cleaned
